@@ -2,7 +2,7 @@ namespace SpriteKind {
     export const Menu = SpriteKind.create()
 }
 class Menu {
-    protected menuSprite: Sprite
+    public menuSprite: Sprite
     protected updateLoop: any
     public top: number
     public left: number
@@ -13,6 +13,7 @@ class Menu {
     protected updater = true
     public selectedIdx = 0
     public oppositeAlign: boolean
+    public active = true
     public font = [img`
         . e .
         e . e
@@ -289,23 +290,15 @@ class Menu {
         this.updateLoop = game.currentScene().eventContext.registerFrameHandler(18, () => {
             this.updater = true
         })
-        controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-            ++this.selectedIdx
-            this.modValueByLength()
-            this.buildMenu(false)
-        })
-        controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-            --this.selectedIdx
-            this.modValueByLength()
-            this.buildMenu(false)
-        })
     }
-    protected modValueByLength() {
+    public changeIdx(toChangeBy: number) {
+        this.selectedIdx += toChangeBy
         if (this.selectedIdx > this.options.length - 1) {
             this.selectedIdx -= this.options.length
         } else if (this.selectedIdx < 0) {
             this.selectedIdx += this.options.length
         }
+        this.buildMenu(false)
     }
     protected buildMenu(smooth: boolean) {
         this.fullMenuImg.fill(1)
@@ -340,18 +333,15 @@ class Menu {
         }
         this.menuSprite.setImage(this.fullMenuImg)
     }
-    onButtonPressed(button: controller.Button, handler: (selection: string, selectedIndex: number) => void) {
-        
-    }
     public onMenuButton(button: controller.Button, run: (idx: number) => void) {
-        button.onEvent(ControllerButtonEvent.Pressed, () => {
+        if (button.isPressed() && this.active === true) {
             run(this.selectedIdx)
-        })
+        }
     }
     public destroy() {
-        this.updateLoop.destroy()
+        game.currentScene().eventContext.unregisterFrameHandler(this.updateLoop)
+        this.oppositeAlign = this.active = this.selectedIdx = this.updateLoop = this.font = this.itemHeight = this.fontNames = this.fullMenuImg = this.left = this.options = this.top = this.updater = this.width = null
         this.menuSprite.destroy()
-        this.font = this.itemHeight = this.fontNames = this.fullMenuImg = this.left = this.options = this.top = this.updater = this.width = null
     }
     
 }
@@ -368,23 +358,27 @@ function editMode() {
         . d . d .
         d . . . d
     `, SpriteKind.Player)
-    
+    let test: Menu
     controller.moveSprite(cursor)
     controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-        let test = new Menu(4, 4, 80, ["test", "test", "hi", "><~`", "0123"])
+        test = new Menu(4, 4, 80, ["test", "test", "hi", "><~`", "0123"])
         controller.moveSprite(cursor, 0, 0)
+    })    
+    controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
+        if (test) {
+            test.onMenuButton(controller.A, (idx) => {
+                console.log(idx)
+            })
+            test.onMenuButton(controller.down, (idx) => {
+                test.changeIdx(1)
+            })
+            test.onMenuButton(controller.up, (idx) => {
+                test.changeIdx(-1)
+            })
+            test.onMenuButton(controller.B, (idx) => {
+                test.destroy()
+                controller.moveSprite(cursor)
+            })
+        }
     })
 }
-let test: Menu
-game.onUpdate(function () {
-    if (test) {
-        test.onMenuButton(controller.B, (idx) => {
-            test.destroy()
-        })
-        test.onMenuButton(controller.A, (idx) => {
-            console.log(idx)
-            test.destroy()
-        })
-
-    }
-})
