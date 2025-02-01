@@ -7,10 +7,12 @@ class Menu {
     public top: number
     public left: number
     public width: number
+    public itemHeight: number
     public options: string[]
     public fullMenuImg: Image
     protected updater = true
     public selectedIdx = 0
+    public oppositeAlign: boolean
     public font = [img`
         . e .
         e . e
@@ -265,18 +267,23 @@ class Menu {
         . d d d .
     `]
     public fontNames = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "<", ">"]
-    constructor(left: number, top: number, width: number, options: string[]) {
+    constructor(left: number, top: number, width: number, options: string[], itemheight = 7, oppositeAlign = false) {
         this.left = left
         this.top = top
         this.width = width
+        this.itemHeight = itemheight
+        this.oppositeAlign = oppositeAlign
         this.options = options
-        this.menuSprite = sprites.create(image.create(this.width, 7 * this.options.length), SpriteKind.Menu)
+        this.menuSprite = sprites.create(image.create(this.width, this.itemHeight * this.options.length), SpriteKind.Menu)
         this.menuSprite.left = this.left
         this.menuSprite.top = this.top
         this.menuSprite.z = 100
-        this.fullMenuImg = image.create(this.width, this.options.length * 7)
+        this.fullMenuImg = image.create(this.width, this.options.length * this.itemHeight)
         this.startUpdater()
         this.buildMenu(true)
+        this.menuSprite.onDestroyed(() => {
+            this.destroy()
+        })
     }
     protected startUpdater() {
         this.updateLoop = game.currentScene().eventContext.registerFrameHandler(18, () => {
@@ -302,12 +309,18 @@ class Menu {
     }
     protected buildMenu(smooth: boolean) {
         this.fullMenuImg.fill(1)
-        this.fullMenuImg.fillRect(0, this.selectedIdx * 7, this.fullMenuImg.width, 7, 3)
+        this.fullMenuImg.fillRect(0, this.selectedIdx * this.itemHeight, this.fullMenuImg.width, this.itemHeight, 3)
+        let sideCounter: number
         for (let i = 0; i < this.options.length; i++) {
-            let sideCounter = 1
+            sideCounter = 1
             for (let j = 0; j < this.options[i].length; j++) {
-                this.fullMenuImg.drawTransparentImage(this.font[this.fontNames.indexOf(this.options[i].charAt(j).toUpperCase())], sideCounter, i * 7 + 1)
-                sideCounter += this.font[this.fontNames.indexOf(this.options[i].charAt(j).toUpperCase())].width + 1
+                if (this.oppositeAlign) {
+                    this.fullMenuImg.drawTransparentImage(this.font[this.fontNames.indexOf(this.options[i].charAt(this.options[i].length - 1 - j).toUpperCase())], this.width - sideCounter - this.font[this.fontNames.indexOf(this.options[i].charAt(this.options[i].length - 1 - j).toUpperCase())].width, i * this.itemHeight + 1)
+                    sideCounter += this.font[this.fontNames.indexOf(this.options[i].charAt(this.options[i].length - 1 - j).toUpperCase())].width + 1
+                } else {
+                    this.fullMenuImg.drawTransparentImage(this.font[this.fontNames.indexOf(this.options[i].charAt(j).toUpperCase())], sideCounter, i * this.itemHeight + 1)
+                    sideCounter += this.font[this.fontNames.indexOf(this.options[i].charAt(j).toUpperCase())].width + 1
+                }
             }
         }
         if (smooth) {
@@ -330,18 +343,48 @@ class Menu {
     onButtonPressed(button: controller.Button, handler: (selection: string, selectedIndex: number) => void) {
         
     }
+    public onMenuButton(button: controller.Button, run: (idx: number) => void) {
+        button.onEvent(ControllerButtonEvent.Pressed, () => {
+            run(this.selectedIdx)
+        })
+    }
     public destroy() {
         this.updateLoop.destroy()
         this.menuSprite.destroy()
-        this.font = this.fontNames = this.fullMenuImg = this.left = this.options = this.top = this.updater = this.width = null
+        this.font = this.itemHeight = this.fontNames = this.fullMenuImg = this.left = this.options = this.top = this.updater = this.width = null
     }
     
 }
-
+editMode()
+function editMode() {
+    scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
+        let test = new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])
+        test.renderPath(image)
+    })
+    let cursor = sprites.create(img`
+        d . . . d
+        . d . d .
+        . . . . .
+        . d . d .
+        d . . . d
+    `, SpriteKind.Player)
     
+    controller.moveSprite(cursor)
+    controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+        let test = new Menu(4, 4, 80, ["test", "test", "hi", "><~`", "0123"])
+        controller.moveSprite(cursor, 0, 0)
+    })
+}
+let test: Menu
+game.onUpdate(function () {
+    if (test) {
+        test.onMenuButton(controller.B, (idx) => {
+            test.destroy()
+        })
+        test.onMenuButton(controller.A, (idx) => {
+            console.log(idx)
+            test.destroy()
+        })
 
-controller.A.onEvent(ControllerButtonEvent.Pressed, function() {
-    
-    let test = new Menu(4, 4, 80, ["test", "test", "hi", "~`<>"])
-
+    }
 })

@@ -36,18 +36,3 @@ class Path {
         }
     }
 }
-editMode()
-function editMode() {
-    scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
-        let test = new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])
-        test.renderPath(image)
-    })
-    let cursor = sprites.create(img`
-        d . . . d
-        . d . d .
-        . . . . .
-        . d . d .
-        d . . . d
-    `, SpriteKind.Player)
-    controller.moveSprite(cursor)
-}
