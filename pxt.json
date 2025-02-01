@@ -13,7 +13,8 @@
         "paths.ts",
         "shadersettings.ts",
         "images.g.jres",
-        "images.g.ts"
+        "images.g.ts",
+        "ui.ts"
     ],
     "testFiles": [
         "test.ts"

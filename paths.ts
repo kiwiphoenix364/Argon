@@ -3,14 +3,16 @@ class PathPoint {
     public x: number
     public y: number
     public id: number
+    public curveAngle = 0
+    public cureDis = 0
     constructor(x: number, y: number, id: number) {
         this.x = x
         this.y = y
         this.id = id
     }
     public renderPoint(image: Image) {
-        image.drawCircle(this.x, this.y, 1, 1)
         image.drawCircle(this.x, this.y, 3, 1)
+        image.setPixel(this.x, this.y, 1)
     }
 }
 class Path {
@@ -27,14 +29,25 @@ class Path {
         let prevItem: PathPoint
         for (let item of this.pointArray) {
             if (prevItem) {
-                image.drawLine(item.x, item.y, prevItem.x, prevItem.y, 6)
+                image.drawLine(item.x, item.y, prevItem.x, prevItem.y, 2)
             }
             item.renderPoint(image)
             prevItem = item
         }
     }
 }
-scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
-    let test = new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])
-    test.renderPath(image)
-})
+editMode()
+function editMode() {
+    scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
+        let test = new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])
+        test.renderPath(image)
+    })
+    let cursor = sprites.create(img`
+        d . . . d
+        . d . d .
+        . . . . .
+        . d . d .
+        d . . . d
+    `, SpriteKind.Player)
+    controller.moveSprite(cursor)
+}
