@@ -1,0 +1,47 @@
+{
+    "name": "Argon",
+    "description": "",
+    "dependencies": {
+        "device": "*",
+        "simple shader": "github:kiwiphoenix364/simple-shader#v3.0.3"
+    },
+    "files": [
+        "main.blocks",
+        "main.ts",
+        "README.md",
+        "assets.json",
+        "paths.ts",
+        "shadersettings.ts",
+        "images.g.jres",
+        "images.g.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "1.12.58",
+        "targetId": "arcade"
+    },
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "tsprj",
+    "palette": [
+        "#000000",
+        "#F4F8FA",
+        "#AAFFD7",
+        "#1ED7CD",
+        "#4747EB",
+        "#9D3ACB",
+        "#E571D0",
+        "#FF94A9",
+        "#F23831",
+        "#AF1D1D",
+        "#F07A51",
+        "#9DE26E",
+        "#2EDC41",
+        "#17822B",
+        "#1E325A",
+        "#202020"
+    ]
+}
