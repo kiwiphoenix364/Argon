@@ -3,7 +3,8 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "simple shader": "github:kiwiphoenix364/simple-shader#v3.0.3"
+        "simple shader": "github:kiwiphoenix364/simple-shader#v3.0.3",
+        "arcade-mini-menu": "github:riknoll/arcade-mini-menu#v0.0.1"
     },
     "files": [
         "main.blocks",

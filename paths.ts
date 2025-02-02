@@ -14,6 +14,9 @@ class PathPoint {
         image.drawCircle(this.x, this.y, 3, 1)
         image.setPixel(this.x, this.y, 1)
     }
+    public findDist(sprite: Sprite) {
+        return Math.sqrt((this.x - sprite.x) ** 2 + (this.y - sprite.y) ** 2)
+    }
 }
 class Path {
     public id: number
