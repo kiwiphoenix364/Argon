@@ -272,8 +272,20 @@ class Menu {
         . . .
         . . .
         . . .
+    `, img`
+        . . e
+        . e .
+        e . .
+        . e .
+        . . e
+    `, img`
+        e . .
+        . e .
+        . . e
+        . e .
+        e . .
     `]
-    public fontNames = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "<", ">", " "]
+    public fontNames = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "{", "}", " ", "<", ">"]
     constructor(left: number, top: number, width: number, options: string[], itemheight = 7, oppositeAlign = false) {
         this.left = left
         this.top = top
@@ -365,9 +377,10 @@ function editMode() {
         d . . . d
     `, SpriteKind.Player)
     let test: Menu
+    let scrlMenu = new Menu(0,0,20,[""])
     controller.moveSprite(cursor)
     controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-        test = new Menu(4, 4, 80, ["test test", "test", "hi", "><~`", "0123"])
+        test = new Menu(4, 4, 80, ["test test", "test", "hi", "{}~`", "0123"])
         controller.moveSprite(cursor, 0, 0)
     })    
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
