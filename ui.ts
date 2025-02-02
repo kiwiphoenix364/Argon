@@ -6,6 +6,7 @@ function editMode() {
     let inPointMenu = false
     let inPathMenu = false
     let currentIdx = 0
+    let scrollMenu: miniMenu.MenuSprite
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
         let test = new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])
         test.renderPath(image)
@@ -20,29 +21,32 @@ function editMode() {
     controller.moveSprite(cursor)
     controller.B.onEvent(ControllerButtonEvent.Pressed, function() {
         if (!inPointMenu && !inPathMenu) {
-            let scrollMenu = buildScrollMenu(pathTimesArray[0])
-            controller.moveSprite(cursor, 0, 0)
             inPathMenu = true
+            scrollMenu = buildScrollMenu(pathTimesArray[currentIdx])
+            controller.moveSprite(cursor, 0, 0)
             scrollMenu.onButtonPressed(controller.A, function (selection: string, selectedIndex: number) {
                 if (selection == "+") {
                     pathTimesArray.push(game.askForNumber("enter seconds"))
                     scrollMenu.close()
+                    scrollMenu = buildScrollMenu(pathTimesArray[currentIdx])
                 } else if (selection == "<") {
                     currentIdx--
                     currentIdx = Math.max(currentIdx, 0)
                     scrollMenu.close()
+                    scrollMenu = buildScrollMenu(pathTimesArray[currentIdx])
+                    scrollMenu.selectedIndex = selectedIndex
                 } else if (selection == ">") {
                     currentIdx++
-                    currentIdx = Math.min(currentIdx, pathTimesArray.length)
+                    currentIdx = Math.min(currentIdx, pathTimesArray.length - 1)
                     scrollMenu.close()
+                    scrollMenu = buildScrollMenu(pathTimesArray[currentIdx])
+                    scrollMenu.selectedIndex = selectedIndex
                 }
 
             })
-            scrollMenu.onButtonPressed(controller.B, function (selection: string, selectedIndex: number) {
-                scrollMenu.close()
-                inPathMenu = false
-                controller.moveSprite(cursor)
-            })
+        } else {
+            scrollMenu.close()
+            inPathMenu = false
         }
     })
 }
