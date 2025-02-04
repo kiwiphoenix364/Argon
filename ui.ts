@@ -1,12 +1,10 @@
-let pathTimesArray = [0]
-let pathArray: Path[]
+let pathArray = [new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])]
 editMode()
-
 function editMode() {
     let currentSelection = 0
+    let menu = -1
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
-        let test = new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])
-        test.renderPath(image)
+        pathArray[currentSelection].renderPath(image)
     })
     let cursor = sprites.create(img`
         d . . . d
@@ -61,6 +59,7 @@ function editMode() {
     `, SpriteKind.Player)
     menuPlusButton.left = menuRightButton.right + 1
     menuPlusButton.top = 0
+    //make top menu
     let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton], 
     [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image], [img`
         . 4 4 4 4 4 .
@@ -112,24 +111,28 @@ function editMode() {
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                `, 1, pathTimesArray[currentSelection].toString())
+                `, 1, pathArray[currentSelection].time.toString())
+    //controller events for top menu
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function() {
         if (controller.B.isPressed()) {
             if (topMenu.active) {
+                menu = -1
                 topMenu.hide()
                 controller.moveSprite(cursor)
             } else {
-                topMenu.show()
-                controller.moveSprite(cursor, 0, 0)
+                if (menu == -1) {
+                    menu = 0
+                    topMenu.show()
+                    controller.moveSprite(cursor, 0, 0)
+                }
             }
-        }
-        if (controller.A.isPressed() && topMenu.active) {
+        } else if (controller.A.isPressed() && menu == 0) {
             if (topMenu.selectedIdx == 3) {
-                pathTimesArray.push(game.askForNumber("Add Number"))
+                pathArray.push(new Path(game.askForNumber("ENTER TIME"), 0, []))
             } else if (topMenu.selectedIdx == 0) {
                 currentSelection -= 1
                 if (currentSelection < 0) {
-                    currentSelection = pathTimesArray.length - 1
+                    currentSelection = pathArray.length - 1
                 }
                 topMenu.drawOnBoth(img`
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
@@ -149,10 +152,10 @@ function editMode() {
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `,
-                    1, pathTimesArray[currentSelection].toString())
+                    1, pathArray[currentSelection].time.toString())
             } else if (topMenu.selectedIdx == 2) {
                 currentSelection += 1
-                currentSelection = currentSelection % pathTimesArray.length
+                currentSelection = currentSelection % pathArray.length
                 topMenu.drawOnBoth(img`
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
                     22222222222222222222222222222222222222222222222222222222222222222222222222222222
@@ -171,10 +174,10 @@ function editMode() {
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `,
-                    1, pathTimesArray[currentSelection].toString())
+                    1, pathArray[currentSelection].time.toString())
                 
             } else if (topMenu.selectedIdx == 1) {
-                pathTimesArray[currentSelection] = game.askForNumber("Edit")
+                pathArray[currentSelection].time = game.askForNumber("EDIT")
                 topMenu.drawOnBoth(img`
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
                     22222222222222222222222222222222222222222222222222222222222222222222222222222222
@@ -193,8 +196,10 @@ function editMode() {
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `,
-                    1, pathTimesArray[currentSelection].toString())
+                    1, pathArray[currentSelection].time.toString())
             }
+        } else if (controller.A.isPressed() && menu == -1) {
+
         }
         topMenu.checkDirections()
     })
@@ -204,12 +209,13 @@ class SpriteMenu {
     public spriteArray: Sprite[]
     public highlightedImages: Image[]
     public spriteImages: Image[]
-    public active = true
+    public active = false
     constructor(spriteArray: Sprite[], spriteImages: Image[], highlightedImages: Image[]) {
         this.spriteArray = spriteArray
         this.highlightedImages = highlightedImages
         this.spriteImages = spriteImages
         this.refresh()
+        this.hide()
     }
     public refresh() {
         this.selectedIdx = this.selectedIdx % this.spriteArray.length
@@ -238,12 +244,14 @@ class SpriteMenu {
         for (let i = 0; i < this.spriteArray.length; i++) {
             this.spriteArray[i].setFlag(SpriteFlag.Invisible, true)
             this.active = false
+            this.refresh()
         }
     }
     public show() {
         for (let i = 0; i < this.spriteArray.length; i++) {
             this.spriteArray[i].setFlag(SpriteFlag.Invisible, false)
             this.active = true
+            this.refresh()
         }
     }
     public drawOnBoth(img1: Image, img2: Image, index: number, text: string, offsetX = 2, offsetY = 1) {
@@ -252,6 +260,12 @@ class SpriteMenu {
         this.spriteImages[index] = img1
         this.highlightedImages[index] = img2
         this.refresh()
+    }
+    public destroy() {
+        for (let i = 0; i < this.spriteArray.length; i++) {
+            this.spriteArray[i].destroy()
+        }
+        this.selectedIdx = this.spriteArray = this.highlightedImages = this.spriteImages = this.active = null
     }
     public static drawOnImage(drawImage: Image, text: string, offsetX = 1, offsetY = 1, maxWidth = 160, heightSpace = 7) {
         let sideCounter: number
