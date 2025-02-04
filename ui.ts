@@ -1,4 +1,6 @@
-let pathArray = [new Path(0, 0, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])]
+let idCounter = 0
+let idCache = 0
+let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])]
 editMode()
 function editMode() {
     let currentSelection = 0
@@ -128,7 +130,8 @@ function editMode() {
             }
         } else if (controller.A.isPressed() && menu == 0) {
             if (topMenu.selectedIdx == 3) {
-                pathArray.push(new Path(game.askForNumber("ENTER TIME"), 0, []))
+                pathArray.push(new Path(game.askForNumber("ENTER TIME"), idCounter++, []))
+                pathArray = Path.pathArraySortByTime(pathArray)
             } else if (topMenu.selectedIdx == 0) {
                 currentSelection -= 1
                 if (currentSelection < 0) {
@@ -178,6 +181,14 @@ function editMode() {
                 
             } else if (topMenu.selectedIdx == 1) {
                 pathArray[currentSelection].time = game.askForNumber("EDIT")
+                idCache = pathArray[currentSelection].id
+                pathArray = Path.pathArraySortByTime(pathArray)
+                for (let i = 0; i < pathArray.length; i++) {
+                    if (pathArray[i].id == idCache) {
+                        currentSelection = i
+                        break
+                    }
+                }
                 topMenu.drawOnBoth(img`
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
                     22222222222222222222222222222222222222222222222222222222222222222222222222222222

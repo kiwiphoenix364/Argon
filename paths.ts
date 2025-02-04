@@ -38,4 +38,13 @@ class Path {
             prevItem = item
         }
     }
+    public static pathArraySortByTime(pathArray: Path[]) {
+        let finalArray: Path[]
+        for (let i = 0; i < pathArray.length; i++) {
+            for (let j = 0; j < pathArray.length; j++) {
+                
+            }
+        }
+        return finalArray
+    }
 }
