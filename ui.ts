@@ -117,8 +117,10 @@ function editMode() {
         if (controller.B.isPressed()) {
             if (topMenu.active) {
                 topMenu.hide()
+                controller.moveSprite(cursor)
             } else {
                 topMenu.show()
+                controller.moveSprite(cursor, 0, 0)
             }
         }
         if (controller.A.isPressed() && topMenu.active) {
