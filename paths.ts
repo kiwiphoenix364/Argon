@@ -46,10 +46,7 @@ class Path {
                 continue
             }
             for (let j = 0; j < finalArray.length; j++) {
-                if (pathArray[i].time < finalArray[j].time) {
-                    finalArray.insertAt(j, pathArray[i])
-                    break
-                } else if (pathArray[i].id < finalArray[j].id) {
+                if (pathArray[i].time < finalArray[j].time || pathArray[i].time === pathArray[j].time && pathArray[i].id < finalArray[j].id) {
                     finalArray.insertAt(j, pathArray[i])
                     break
                 }
