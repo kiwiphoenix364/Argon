@@ -39,12 +39,27 @@ class Path {
         }
     }
     public static pathArraySortByTime(pathArray: Path[]) {
-        let finalArray: Path[]
+        let finalArray = []
         for (let i = 0; i < pathArray.length; i++) {
-            for (let j = 0; j < pathArray.length; j++) {
-                
+            if (finalArray.length === 0) {
+                finalArray[0] = pathArray[0]
+                continue
+            }
+            for (let j = 0; j < finalArray.length; j++) {
+                if (pathArray[i].time < finalArray[j].time) {
+                    finalArray.insertAt(j, pathArray[i])
+                    break
+                } else if (pathArray[i].id < finalArray[j].id) {
+                    finalArray.insertAt(j, pathArray[i])
+                    break
+                }
+                if (j === finalArray.length - 1) {
+                    finalArray.push(pathArray[i])
+                    break
+                }
             }
         }
         return finalArray
+
     }
 }
