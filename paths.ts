@@ -60,6 +60,5 @@ class Path {
             }
         }
         return finalArray
-
     }
 }
