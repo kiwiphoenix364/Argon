@@ -5,6 +5,7 @@ editMode()
 function editMode() {
     let currentSelection = 0
     let menu = -1
+    let pointIdxSelected = -1
     let selectMenu: SpriteMenu
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
         pathArray[currentSelection].renderPath(image)
@@ -212,8 +213,9 @@ function editMode() {
                 `,
                     1, pathArray[currentSelection].time.toString())
             }
-        } else if (controller.A.isPressed() && menu == -1) {
-            if (pathArray[currentSelection].checkOverlap(cursor, 5) != null) {
+        } else if (controller.A.isPressed() && menu === -1) {
+            pointIdxSelected = pathArray[currentSelection].checkOverlap(cursor, 5)
+            if (pointIdxSelected != null) {
                 menu = 1
                 let editSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
@@ -224,8 +226,8 @@ function editMode() {
                     2 2 e e e 2 e e 2 2 e e e 2 2 e 2 2 2 2
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                 `, SpriteKind.Player)
-                editSprite.left = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].x
-                editSprite.top = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].y
+                editSprite.left = pathArray[currentSelection].pointArray[pointIdxSelected].x
+                editSprite.top = pathArray[currentSelection].pointArray[pointIdxSelected].y
                 let spinSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                     2 2 e e e 2 e e e 2 e e e 2 e 2 2 e 2 2
@@ -235,8 +237,8 @@ function editMode() {
                     2 2 e e e 2 e 2 2 2 e e e 2 e 2 2 e 2 2
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                 `, SpriteKind.Player)
-                spinSprite.left = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].x
-                spinSprite.top = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].y + 8
+                spinSprite.left = pathArray[currentSelection].pointArray[pointIdxSelected].x
+                spinSprite.top = pathArray[currentSelection].pointArray[pointIdxSelected].y + 8
                 selectMenu = new SpriteMenu([editSprite, spinSprite], [editSprite.image, spinSprite.image], [img`
                     . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
                     4 4 e e e 4 e e 4 4 e e e 4 e e e 4 4 4
@@ -256,6 +258,18 @@ function editMode() {
                 `])
                 selectMenu.show()
                 controller.moveSprite(cursor, 0, 0)
+            }
+        } else if (controller.A.isPressed() && menu === 1) {
+            if (selectMenu.selectedIdx == 0) {
+                selectMenu.hide()
+                controller.moveSprite(cursor)
+                pauseUntil(() => !controller.A.isPressed())
+                while (!controller.A.isPressed()) {
+                    pathArray[currentSelection].pointArray[pointIdxSelected].x = cursor.x
+                    pathArray[currentSelection].pointArray[pointIdxSelected].y = cursor.y
+                    pause(0)
+                }
+                menu = -1
             }
         }
         if (menu == 1 && selectMenu != null) {
