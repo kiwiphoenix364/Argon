@@ -5,6 +5,7 @@ editMode()
 function editMode() {
     let currentSelection = 0
     let menu = -1
+    let selectMenu: SpriteMenu
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
         pathArray[currentSelection].renderPath(image)
     })
@@ -117,18 +118,20 @@ function editMode() {
     //controller events for top menu
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function() {
         if (controller.B.isPressed()) {
-            if (topMenu.active) {
+            if (menu === 0) {
                 menu = -1
                 topMenu.hide()
                 controller.moveSprite(cursor)
-            } else {
-                if (menu == -1) {
-                    menu = 0
-                    topMenu.show()
-                    controller.moveSprite(cursor, 0, 0)
-                }
+            } else if (menu === 1) {
+                menu = -1
+                selectMenu.hide()
+                controller.moveSprite(cursor)
+            } else if (menu === -1) {
+                menu = 0
+                topMenu.show()
+                controller.moveSprite(cursor, 0, 0)
             }
-        } else if (controller.A.isPressed() && menu == 0) {
+        } else if (controller.A.isPressed() && menu === 0) {
             if (topMenu.selectedIdx == 3) {
                 pathArray.push(new Path(game.askForNumber("ENTER TIME"), idCounter++, []))
                 pathArray = Path.pathArraySortByTime(pathArray)
@@ -210,7 +213,53 @@ function editMode() {
                     1, pathArray[currentSelection].time.toString())
             }
         } else if (controller.A.isPressed() && menu == -1) {
-
+            if (pathArray[currentSelection].checkOverlap(cursor, 5) != null) {
+                menu = 1
+                let editSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e e e 2 e e 2 2 e e e 2 e e e 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e e 2 e e 2 2 e e e 2 2 e 2 2 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                editSprite.left = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].x
+                editSprite.top = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].y
+                let spinSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e e e 2 e e e 2 e e e 2 e 2 2 e 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 e e 2 e 2 2
+                    2 2 e e e 2 e e e 2 2 e 2 2 e 2 e e 2 2
+                    2 2 2 2 e 2 e 2 2 2 2 e 2 2 e 2 2 e 2 2
+                    2 2 e e e 2 e 2 2 2 e e e 2 e 2 2 e 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                spinSprite.left = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].x
+                spinSprite.top = pathArray[currentSelection].pointArray[pathArray[currentSelection].checkOverlap(cursor, 5)].y + 8
+                selectMenu = new SpriteMenu([editSprite, spinSprite], [editSprite.image, spinSprite.image], [img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e e e 4 e e 4 4 e e e 4 e e e 4 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e e 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e e e 4 e e 4 4 e e e 4 4 e 4 4 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e e e 4 e e e 4 e e e 4 e 4 4 e 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 e e 4 e 4 4
+                    4 4 e e e 4 e e e 4 4 e 4 4 e 4 e e 4 4
+                    4 4 4 4 e 4 e 4 4 4 4 e 4 4 e 4 4 e 4 4
+                    4 4 e e e 4 e 4 4 4 e e e 4 e 4 4 e 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `])
+                selectMenu.show()
+                controller.moveSprite(cursor, 0, 0)
+            }
+        }
+        if (menu == 1 && selectMenu != null) {
+            selectMenu.checkDirections(true)
         }
         topMenu.checkDirections()
     })
@@ -240,14 +289,26 @@ class SpriteMenu {
             this.spriteArray[this.selectedIdx].setImage(this.highlightedImages[this.selectedIdx])
         }
     }
-    public checkDirections() {
-        if (this.active) {
-            if (controller.left.isPressed()) {
-                this.selectedIdx -= 1
-                this.refresh()
-            } else if (controller.right.isPressed()) {
-                this.selectedIdx += 1
-                this.refresh()
+    public checkDirections(alt = false) {
+        if (alt) {
+            if (this.active) {
+                if (controller.up.isPressed()) {
+                    this.selectedIdx -= 1
+                    this.refresh()
+                } else if (controller.down.isPressed()) {
+                    this.selectedIdx += 1
+                    this.refresh()
+                }
+            }
+        } else {
+            if (this.active) {
+                if (controller.left.isPressed()) {
+                    this.selectedIdx -= 1
+                    this.refresh()
+                } else if (controller.right.isPressed()) {
+                    this.selectedIdx += 1
+                    this.refresh()
+                }
             }
         }
     }

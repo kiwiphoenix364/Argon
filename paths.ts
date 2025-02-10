@@ -58,4 +58,12 @@ class Path {
         }
         return finalArray
     }
+    public checkOverlap(sprite: Sprite, radius: number) {
+        for (let i = 0; i < this.pointArray.length; i++) {
+            if (Math.sqrt((sprite.x - this.pointArray[i].x) ** 2 + (sprite.y - this.pointArray[i].y) ** 2) <= radius) {
+                return i
+            }
+        }
+        return null
+    }
 }
