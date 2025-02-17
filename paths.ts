@@ -39,6 +39,7 @@ class Path {
         let py2: number
         let intpx2: number
         let intpy2: number
+        let currentPos: number
         /*
         for (let item of this.pointArray) {
             if (prevItem) {
@@ -52,15 +53,6 @@ class Path {
             if (prevItem) {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i < dist; i++) {
-                    px = Path.disCos(prevItem)
-                    py = Path.disSin(prevItem)
-                    intpx = ((prevItem.x - px) / dist) * i + prevItem.x
-                    intpy = ((prevItem.x - px) / dist) * i + prevItem.y
-                    px2 = Path.disCos(item)
-                    py2 = Path.disSin(item)
-                    intpx2 = ((item.x - px) / dist) * i + item.x
-                    intpy2 = ((item.x - px) / dist) * i + item.y
-                    image.setPixel(((intpx - intpx2) / dist) * i, ((intpy - intpy2) / dist) * i, 2)
                 }
                 console.log(Path.disCos(prevItem))
             }
