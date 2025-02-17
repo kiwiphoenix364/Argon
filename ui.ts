@@ -1,6 +1,6 @@
 let idCounter = 0
 let idCache = 0
-let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])]
+let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1), new PathPoint(90, 50, 2)])]
 editMode()
 function editMode() {
     let currentSelection = 0
