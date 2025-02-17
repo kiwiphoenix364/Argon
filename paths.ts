@@ -31,15 +31,9 @@ class Path {
     public renderPath(image: Image) {
         let prevItem: PathPoint
         let dist: number
-        let px: number
-        let py: number
-        let intpx: number
-        let intpy: number
-        let px2: number
-        let py2: number
-        let intpx2: number
-        let intpy2: number
         let currentPos: number
+        let pixelX: number
+        let pixelY: number
         /*
         for (let item of this.pointArray) {
             if (prevItem) {
@@ -53,12 +47,19 @@ class Path {
             if (prevItem) {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i < dist; i++) {
+                    currentPos = i / dist
+                    pixelX = Path.interpolate(currentPos, prevItem.x, item.x)
+                    pixelY = Path.interpolate(currentPos, prevItem.y, item.y)
+                    image.setPixel(pixelX, pixelY, 2)
                 }
                 console.log(Path.disCos(prevItem))
             }
             item.renderPoint(image)
             prevItem = item
         }
+    }
+    public static interpolate(mid: number, start: number, end: number) {
+        return start + (end - start) * mid
     }
     public static disCos(item: PathPoint) {
         let mag = item.curveDis
