@@ -641,4 +641,157 @@ class SpriteMenu {
         e . .
     `]
     }
+    public static returnKichi() {
+        return [img`
+            . e e e .
+            e . e . e
+            e . e . e
+            e . e . e
+            e . e . e
+        `, img`
+            e e . e e e .
+            e . e . . . e
+            . . e . . . e
+            . . e . . . e
+            . . e . . . e
+        `, img`
+            . e e e . . .
+            e . . . e . .
+            e . . . e . .
+            e . . . e . e
+            e . . . e e e
+        `, img`
+            . e e e .
+            e . . . e
+            e e e e e
+            e . . . e
+            e . . . e
+        `, img`
+            e e e e .
+            e e . . e
+            e . e . e
+            e . e . e
+            e . . e e
+        `, img`
+            e e e e e
+            . e e . .
+            . . e . .
+            . e e e .
+            . . e . .
+        `, img`
+            e e e e e e e
+            e . . e . . .
+            . . . . e . .
+            . . . e . e .
+            . . . . e . .
+        `, img`
+            e e e e e . .
+            . e . . . . .
+            . . e . . . .
+            . e . e . . e
+            . . e . . e e
+        `, img`
+            e e e e e
+            . e . . .
+            e e e e e
+            . e . e .
+            . . e . .
+        `, img`
+            e e e e e
+            . e e . .
+            . . e e .
+            . e . e e
+            . . e . e
+        `, img`
+            e . e . .
+            e e e e .
+            e . e . e
+            e e e e .
+            e . e . .
+        `, img`
+            e e e . e . .
+            e . e e . e .
+            . . e . . . e
+            . . e e . e .
+            . . e . e . .
+        `, img`
+            e . e . . . .
+            e e . e . . .
+            e . . . e . .
+            e e . e . . e
+            e . e . . e e
+        `, img`
+            e . e . .
+            e e . e .
+            e e e e e
+            e e . e .
+            e . e . .
+        `, img`
+            e . e . .
+            e e . e .
+            e . e . e
+            e e . e .
+            e . e . e
+        `, img`
+            . e e e .
+            e . e . e
+            e . e . e
+            . e e e .
+            e e e e e
+        `, img`
+            e e . e e e .
+            e . e . . . e
+            . . e . . . e
+            . . . e . e .
+            . . e e . e e
+        `, img`
+            . e e e . . .
+            e . . . e . .
+            e . . . e . .
+            . e . e . . e
+            e e . e e e e
+        `, img`
+            . e e e .
+            e . . . e
+            e e e e e
+            . e . e .
+            e e . e e
+        `, img`
+            e e e e .
+            e e . . e
+            e . e . e
+            . e . e .
+            e e . e e
+        `, img`
+            . . e . .
+            e . e e .
+            e . e . e
+            . e e e .
+            . . e . .
+        `, img`
+            e e . . . . .
+            e . e . e e .
+            . . e . e . e
+            . . . e e e .
+            . . . . e . .
+        `, img`
+            . . . . . . .
+            e . e e . . .
+            e . e . e . .
+            . e e e . . e
+            . . e . . e e
+        `, img`
+            . . . . .
+            e . e e .
+            e e e e e
+            . e e e .
+            . . e . .
+        `, img`
+            e . . . .
+            e e e e .
+            e . e . e
+            . e e e .
+            . . e . e
+        `]
+    }
 }
