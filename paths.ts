@@ -52,7 +52,7 @@ class Path {
             if (prevItem) {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i <= dist; i++) {
-                    currentPos = i / dist
+                    currentPos = i / (dist)
                     //Angles
                     modPrevItemX = prevItem.x - Math.cos(prevItem.curveAngle) * prevItem.curveDis
                     modPrevItemY = prevItem.y - Math.sin(prevItem.curveAngle) * prevItem.curveDis
