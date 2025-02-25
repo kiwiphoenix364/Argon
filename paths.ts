@@ -39,6 +39,8 @@ class Path {
         let modPrevItemY: number
         let modItemX: number
         let modItemY: number
+        let midIntX: number
+        let midIntY: number
         /*
         for (let item of this.pointArray) {
             if (prevItem) {
@@ -54,13 +56,13 @@ class Path {
                 for (let i = 0; i <= dist; i++) {
                     currentPos = i / (dist)
                     //Angles
+                    //Proper bezier curve implementation within makecode
                     modPrevItemX = prevItem.x - Math.cos(prevItem.curveAngle) * prevItem.curveDis
                     modPrevItemY = prevItem.y - Math.sin(prevItem.curveAngle) * prevItem.curveDis
                     modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
                     modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
-                    //Double interpolate with curve for x and y
-                    let midIntX = Path.interpolate(currentPos, modPrevItemX, modItemX)
-                    let midIntY = Path.interpolate(currentPos, modPrevItemY, modItemY)
+                    midIntX = Path.interpolate(currentPos, modPrevItemX, modItemX)
+                    midIntY = Path.interpolate(currentPos, modPrevItemY, modItemY)
                     pixelX = Path.interpolate(
                     currentPos, 
                         Path.interpolate(currentPos, prevItem.x, midIntX),
@@ -73,7 +75,7 @@ class Path {
                     )
                     //Render lines?
                     if (lines) {
-                        image.setPixel(pixelX, pixelY, 2)
+                        image.setPixel(Math.round(pixelX), Math.round(pixelY), 2)
                     }
                     //Render angles?
                     if (angles) {
@@ -91,12 +93,6 @@ class Path {
     }
     public static interpolate(mid: number, start: number, end: number) {
         return start + (end - start) * mid
-    }
-    public static interpolateTopHeavy1(mid: number, start: number, end: number) {
-        return start + (end - start) * Math.sqrt(mid)
-    }
-    public static interpolateTopHeavy2(mid: number, start: number, end: number) {
-        return start + (end - start) * (1 - Math.sqrt(1 - mid))
     }
     public static pathArraySortByTime(pathArray: Path[]) {
         let finalArray = []
