@@ -34,6 +34,10 @@ class Path {
         let currentPos: number
         let pixelX: number
         let pixelY: number
+        let modPrevItemX: number
+        let modPrevItemY: number
+        let modItemX: number
+        let modItemY: number
         /*
         for (let item of this.pointArray) {
             if (prevItem) {
@@ -48,23 +52,25 @@ class Path {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i < dist; i++) {
                     currentPos = i / dist
-                    let modPrevItemX = prevItem.x + Math.cos(prevItem.curveAngle) * prevItem.curveDis
-                    let modPrevItemY = prevItem.y + Math.sin(prevItem.curveAngle) * prevItem.curveDis
-                    let modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
-                    let modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
+                    modPrevItemX = prevItem.x + Math.cos(prevItem.curveAngle) * prevItem.curveDis
+                    modPrevItemY = prevItem.y + Math.sin(prevItem.curveAngle) * prevItem.curveDis
+                    modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
+                    modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
                     pixelX = Path.interpolate(
                     currentPos, 
-                    Path.interpolate(currentPos, prevItem.x, modPrevItemX), 
-                    Path.interpolate(currentPos, modItemX, item.x)
+                        Path.interpolateTopHeavy(currentPos, prevItem.x, modPrevItemX),
+                        Path.interpolateTopHeavy(currentPos, modItemX, item.x)
                     )
                     pixelY = Path.interpolate(
                         currentPos,
-                        Path.interpolate(currentPos, prevItem.y, modPrevItemY),
-                        Path.interpolate(currentPos, modItemY, item.y)
+                        Path.interpolateTopHeavy(currentPos, prevItem.y, modPrevItemY),
+                        Path.interpolateTopHeavy(currentPos, modItemY, item.y)
                     )
                     image.setPixel(pixelX, pixelY, 2)
+
+                    image.setPixel(modItemX, modItemY, 5)
+                    image.setPixel(modPrevItemX, modPrevItemY, 5)
                 }
-                console.log(Path.disCos(prevItem))
             }
             item.renderPoint(image)
             prevItem = item
@@ -73,23 +79,8 @@ class Path {
     public static interpolate(mid: number, start: number, end: number) {
         return start + (end - start) * mid
     }
-    public static disCos(item: PathPoint) {
-        let mag = item.curveDis
-        let angle = item.curveAngle
-        let returnValue = ((mag * Math.cos(angle)))
-        if (returnValue === null) {
-            return 0
-        }
-        return returnValue
-    }
-    public static disSin(item: PathPoint) {
-        let mag = item.curveDis
-        let angle = item.curveAngle
-        let returnValue = ((mag * Math.sin(angle)))
-        if (returnValue === null) {
-            return 0
-        }
-        return returnValue
+    public static interpolateTopHeavy(mid: number, start: number, end: number) {
+        return start + (end - start) * mid
     }
     public static pathArraySortByTime(pathArray: Path[]) {
         let finalArray = []

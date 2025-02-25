@@ -1,6 +1,10 @@
 let idCounter = 0
 let idCache = 0
-let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1), new PathPoint(90, 40, 2)])]
+let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1)])]
+pathArray[0].pointArray[0].curveAngle = 0 * Math.PI / 180
+pathArray[0].pointArray[0].curveDis = 20
+pathArray[0].pointArray[1].curveAngle = 0 * Math.PI / 180
+pathArray[0].pointArray[1].curveDis = -20
 editMode()
 function editMode() {
     let currentSelection = 0
