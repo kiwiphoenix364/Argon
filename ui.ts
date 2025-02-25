@@ -641,6 +641,7 @@ class SpriteMenu {
         e . .
     `]
     }
+    //https://docs.google.com/spreadsheets/d/11-zCEaOKTSJYAaF32aLZPCeWq6aYrdwU_0B-Ay_yfno/edit?usp=sharing
     public static returnKichi() {
         return [img`
             . e e e .
