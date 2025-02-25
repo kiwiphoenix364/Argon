@@ -13,9 +13,7 @@ function editMode() {
     let menu = -1
     let pointIdxSelected = -1
     let selectMenu: SpriteMenu
-    scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
-        pathArray[currentSelection].renderPath(image)
-    })
+    let maxDist = 50
     let cursor = sprites.create(img`
         d . . . d
         . d . d .
@@ -264,26 +262,79 @@ function editMode() {
                 `])
                 selectMenu.show()
                 controller.moveSprite(cursor, 0, 0)
+                cursor.x = pathArray[currentSelection].pointArray[pointIdxSelected].x + 0.5
+                cursor.y = pathArray[currentSelection].pointArray[pointIdxSelected].y + 0.5
             }
         } else if (controller.A.isPressed() && menu === 1) {
             if (selectMenu.selectedIdx == 0) {
+                menu = 2
                 selectMenu.hide()
                 controller.moveSprite(cursor)
-                pauseUntil(() => !controller.A.isPressed())
-                while (!controller.A.isPressed()) {
-                    pathArray[currentSelection].pointArray[pointIdxSelected].x = cursor.x
-                    pathArray[currentSelection].pointArray[pointIdxSelected].y = cursor.y
-                    pause(0)
-                }
-                menu = -1
+            } else if (selectMenu.selectedIdx == 1) {
+                menu = 3
+                selectMenu.hide()
             }
+        } else if (controller.A.isPressed() && (menu === 2 || menu === 3)) {
+            menu = -1
+            controller.moveSprite(cursor)
         }
-        if (menu == 1 && selectMenu != null) {
+        if (menu === 1 && selectMenu != null) {
             selectMenu.checkDirections(true)
         }
         topMenu.checkDirections()
     })
+    scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
+        if (menu === 3) {
+            //Special case for when changing angles
+            //May be a bit messier than running twice but I prefer not to calculate paths twice
+            pathArray[currentSelection].renderPath(image, true, true, true)
+        } else {
+            //Normal case
+            pathArray[currentSelection].renderPath(image)
+        }
+        if (cursor.x < 1) {
+            cursor.x = 1
+        }
+        if (cursor.y < 1) {
+            cursor.y = 1
+        }
+        if (cursor.x > screen.width) {
+            cursor.x = screen.width
+        }
+        if (cursor.y > screen.height) {
+            cursor.y = screen.height
+        }
+        //for dragging stuff lel
+        if (menu === 2) {
+            pathArray[currentSelection].pointArray[pointIdxSelected].x = cursor.x - 0.5
+            pathArray[currentSelection].pointArray[pointIdxSelected].y = cursor.y - 0.5
+        }
+        //for spinny stuff
+        if (menu === 3) {
+            if (controller.right.isPressed()) {
+                pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle += Math.PI / 180
+                pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle = pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle % (Math.PI * 2)
+            }
+            if (controller.left.isPressed()) {
+                pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle -= Math.PI / 180
+                pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle = (pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle + Math.PI * 2) % (Math.PI * 2)
+            }
+            if (controller.up.isPressed()) {
+                pathArray[currentSelection].pointArray[pointIdxSelected].curveDis++
+                if (pathArray[currentSelection].pointArray[pointIdxSelected].curveDis > Math.abs(maxDist)) {
+                    pathArray[currentSelection].pointArray[pointIdxSelected].curveDis--
+                }
+            } 
+            if (controller.down.isPressed()) {
+                pathArray[currentSelection].pointArray[pointIdxSelected].curveDis--
+                if (pathArray[currentSelection].pointArray[pointIdxSelected].curveDis < 0 - Math.abs(maxDist)) {
+                    pathArray[currentSelection].pointArray[pointIdxSelected].curveDis++
+                }
+            }
+        }
+    })
 }
+
 class SpriteMenu {
     public selectedIdx = 0
     public spriteArray: Sprite[]

@@ -28,7 +28,8 @@ class Path {
         this.id = id
         this.pointArray = pointArray
     }
-    public renderPath(image: Image) {
+    public renderPath(image: Image, points = true, lines = true, angles = false) {
+        //Does all calculations regardless, but options to not display certain parts
         let prevItem: PathPoint
         let dist: number
         let currentPos: number
@@ -52,10 +53,12 @@ class Path {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i <= dist; i++) {
                     currentPos = i / dist
+                    //Angles
                     modPrevItemX = prevItem.x - Math.cos(prevItem.curveAngle) * prevItem.curveDis
                     modPrevItemY = prevItem.y - Math.sin(prevItem.curveAngle) * prevItem.curveDis
                     modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
                     modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
+                    //Double interpolate with curve for x and y
                     pixelX = Path.interpolate(
                     currentPos, 
                         Path.interpolateTopHeavy1(currentPos, prevItem.x, modPrevItemX),
@@ -66,13 +69,21 @@ class Path {
                         Path.interpolateTopHeavy1(currentPos, prevItem.y, modPrevItemY),
                         Path.interpolateTopHeavy2(currentPos, modItemY, item.y)
                     )
-                    image.setPixel(pixelX, pixelY, 2)
-
-                    image.setPixel(modItemX, modItemY, 5)
-                    image.setPixel(modPrevItemX, modPrevItemY, 5)
+                    //Render lines?
+                    if (lines) {
+                        image.setPixel(pixelX, pixelY, 2)
+                    }
+                    //Render angles?
+                    if (angles) {
+                        image.drawLine(prevItem.x, prevItem.y, modPrevItemX, modPrevItemY, 5)
+                        image.drawLine(item.x, item.y, modItemX, modItemY, 5)
+                    }
                 }
             }
-            item.renderPoint(image)
+            //Render points?
+            if (points) {
+                item.renderPoint(image)
+            }
             prevItem = item
         }
     }
