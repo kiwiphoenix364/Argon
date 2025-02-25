@@ -59,15 +59,17 @@ class Path {
                     modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
                     modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
                     //Double interpolate with curve for x and y
+                    let midIntX = Path.interpolate(currentPos, modPrevItemX, modItemX)
+                    let midIntY = Path.interpolate(currentPos, modPrevItemY, modItemY)
                     pixelX = Path.interpolate(
                     currentPos, 
-                        Path.interpolateTopHeavy1(currentPos, prevItem.x, modPrevItemX),
-                        Path.interpolateTopHeavy2(currentPos, modItemX, item.x)
+                        Path.interpolate(currentPos, prevItem.x, midIntX),
+                        Path.interpolate(currentPos, midIntX, item.x)
                     )
                     pixelY = Path.interpolate(
                         currentPos,
-                        Path.interpolateTopHeavy1(currentPos, prevItem.y, modPrevItemY),
-                        Path.interpolateTopHeavy2(currentPos, modItemY, item.y)
+                        Path.interpolate(currentPos, prevItem.y, midIntY),
+                        Path.interpolate(currentPos, midIntY, item.y)
                     )
                     //Render lines?
                     if (lines) {
