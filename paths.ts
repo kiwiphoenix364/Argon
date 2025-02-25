@@ -48,8 +48,20 @@ class Path {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i < dist; i++) {
                     currentPos = i / dist
-                    pixelX = Path.interpolate(currentPos, prevItem.x, item.x)
-                    pixelY = Path.interpolate(currentPos, prevItem.y, item.y)
+                    let modPrevItemX = prevItem.x + Math.cos(prevItem.curveAngle) * prevItem.curveDis
+                    let modPrevItemY = prevItem.y + Math.sin(prevItem.curveAngle) * prevItem.curveDis
+                    let modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
+                    let modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
+                    pixelX = Path.interpolate(
+                    currentPos, 
+                    Path.interpolate(currentPos, prevItem.x, modPrevItemX), 
+                    Path.interpolate(currentPos, modItemX, item.x)
+                    )
+                    pixelY = Path.interpolate(
+                        currentPos,
+                        Path.interpolate(currentPos, prevItem.y, modPrevItemY),
+                        Path.interpolate(currentPos, modItemY, item.y)
+                    )
                     image.setPixel(pixelX, pixelY, 2)
                 }
                 console.log(Path.disCos(prevItem))
