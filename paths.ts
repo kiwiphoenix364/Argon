@@ -52,8 +52,8 @@ class Path {
                 dist = Math.sqrt((item.x - prevItem.x) ** 2 + (item.y - prevItem.y) ** 2)
                 for (let i = 0; i <= dist; i++) {
                     currentPos = i / dist
-                    modPrevItemX = prevItem.x + Math.cos(prevItem.curveAngle) * prevItem.curveDis
-                    modPrevItemY = prevItem.y + Math.sin(prevItem.curveAngle) * prevItem.curveDis
+                    modPrevItemX = prevItem.x - Math.cos(prevItem.curveAngle) * prevItem.curveDis
+                    modPrevItemY = prevItem.y - Math.sin(prevItem.curveAngle) * prevItem.curveDis
                     modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
                     modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
                     pixelX = Path.interpolate(
