@@ -592,14 +592,17 @@ class SpriteMenu {
     public static returnFontNames() {
         return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "{", "}", " ", "<", ">"]
     }
+    public static returnKichiFontNames() {
+        return ["NI", "NU", "NO", "NE", "NA", "ZI", "ZU", "ZO", "ZE", "ZA", "KI", "KU", "KO", "KE", "KA", "TI", "TU", "TO", "TE", "TA", "CHI", "CHU", "CHO", "CHE", "CHA", ]
+    }
     public static returnFonts() {
         return [img`
-        . e .
-        e . e
-        e e e
-        e . e
-        e . e
-    `, img`
+            . e .
+            e . e
+            e e e
+            e . e
+            e . e
+        `, img`
         e e .
         e . e
         e e .
