@@ -1,6 +1,6 @@
 let idCounter = 0
 let idCache = 0
-let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10, 0), new PathPoint(40, 40, 1), new PathPoint(90, 100, 1)])]
+let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10), new PathPoint(40, 40), new PathPoint(90, 100)])]
 pathArray[0].pointArray[0].curveAngle = 135 * Math.PI / 180
 pathArray[0].pointArray[0].curveDis = 40
 pathArray[0].pointArray[1].curveAngle = 135 * Math.PI / 180
@@ -13,7 +13,12 @@ function editMode() {
     let menu = -1
     let pointIdxSelected = -1
     let selectMenu: SpriteMenu
-    let maxDist = 50
+    let maxDist = 150
+    let editSprite: Sprite
+    let spinSprite: Sprite
+    let delSprite: Sprite
+    let exitSprite: Sprite
+    let insSprite: Sprite
     let cursor = sprites.create(img`
         d . . . d
         . d . d .
@@ -122,12 +127,16 @@ function editMode() {
                 `, 1, pathArray[currentSelection].time.toString())
     //controller events for top menu
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function() {
+        if (menu === 1 || menu === 4 && selectMenu != null) {
+            selectMenu.checkDirections(true)
+        }
+        topMenu.checkDirections()
         if (controller.B.isPressed()) {
             if (menu === 0) {
                 menu = -1
                 topMenu.hide()
                 controller.moveSprite(cursor)
-            } else if (menu === 1) {
+            } else if (menu === 1 || menu === 4) {
                 menu = -1
                 selectMenu.hide()
                 controller.moveSprite(cursor)
@@ -137,10 +146,11 @@ function editMode() {
                 controller.moveSprite(cursor, 0, 0)
             }
         } else if (controller.A.isPressed() && menu === 0) {
+
             if (topMenu.selectedIdx == 3) {
                 pathArray.push(new Path(game.askForNumber("ENTER TIME"), idCounter++, []))
                 pathArray = Path.pathArraySortByTime(pathArray)
-            } else if (topMenu.selectedIdx == 0) {
+            } else if (topMenu.selectedIdx === 0) {
                 currentSelection -= 1
                 if (currentSelection < 0) {
                     currentSelection = pathArray.length - 1
@@ -164,7 +174,7 @@ function editMode() {
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `,
                     1, pathArray[currentSelection].time.toString())
-            } else if (topMenu.selectedIdx == 2) {
+            } else if (topMenu.selectedIdx === 2) {
                 currentSelection += 1
                 currentSelection = currentSelection % pathArray.length
                 topMenu.drawOnBoth(img`
@@ -187,7 +197,7 @@ function editMode() {
                 `,
                     1, pathArray[currentSelection].time.toString())
                 
-            } else if (topMenu.selectedIdx == 1) {
+            } else if (topMenu.selectedIdx === 1) {
                 pathArray[currentSelection].time = game.askForNumber("EDIT")
                 idCache = pathArray[currentSelection].id
                 pathArray = Path.pathArraySortByTime(pathArray)
@@ -217,11 +227,86 @@ function editMode() {
                 `,
                     1, pathArray[currentSelection].time.toString())
             }
+
         } else if (controller.A.isPressed() && menu === -1) {
+            cursor.setPosition(Math.round(cursor.x), Math.round(cursor.y))
             pointIdxSelected = pathArray[currentSelection].checkOverlap(cursor, 5)
-            if (pointIdxSelected != null) {
+            if (pointIdxSelected === null) {
+                menu = 4
+                editSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e 2 2 e 2 e e e 2 e 2 e 2 e 2 2 2 2
+                    2 2 e e 2 e 2 e 2 2 2 e 2 e 2 e 2 2 2 2
+                    2 2 e 2 e e 2 e e 2 2 e 2 e 2 e 2 2 2 2
+                    2 2 e 2 2 e 2 e 2 2 2 e 2 e 2 e 2 2 2 2
+                    2 2 e 2 2 e 2 e e e 2 2 e 2 e 2 2 2 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                editSprite.left = cursor.x - 1
+                editSprite.top = cursor.y - 1
+                if (editSprite.right > scene.screenWidth()) {
+                    editSprite.right = scene.screenWidth()
+                }
+                if (editSprite.top > scene.screenHeight() / 2) {
+                    editSprite.top = cursor.y - 23
+                }
+                editSprite.z = 2
+                insSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e e e 2 e 2 2 e 2 e e e 2 2 2 2 2 2
+                    2 2 2 e 2 2 e e 2 e 2 e 2 2 2 2 2 2 2 2
+                    2 2 2 e 2 2 e 2 e e 2 e e e 2 2 2 2 2 2
+                    2 2 2 e 2 2 e 2 2 e 2 2 2 e 2 2 2 2 2 2
+                    2 2 e e e 2 e 2 2 e 2 e e e 2 2 2 2 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                insSprite.left = editSprite.left
+                insSprite.top = editSprite.bottom + 1
+                insSprite.z = 2
+                exitSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e e e 2 e 2 e 2 e e e 2 e e e 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e 2 2 2 e 2 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e e 2 e 2 e 2 e e e 2 2 e 2 2 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                exitSprite.left = insSprite.left
+                exitSprite.top = insSprite.bottom + 1
+                exitSprite.z = 2
+                selectMenu = new SpriteMenu([editSprite, insSprite, exitSprite], [editSprite.image, insSprite.image, exitSprite.image], [img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e 4 4 e 4 e e e 4 e 4 e 4 e 4 4 4 4
+                    4 4 e e 4 e 4 e 4 4 4 e 4 e 4 e 4 4 4 4
+                    4 4 e 4 e e 4 e e 4 4 e 4 e 4 e 4 4 4 4
+                    4 4 e 4 4 e 4 e 4 4 4 e 4 e 4 e 4 4 4 4
+                    4 4 e 4 4 e 4 e e e 4 4 e 4 e 4 4 4 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e e e 4 e 4 4 e 4 e e e 4 4 4 4 4 4
+                    4 4 4 e 4 4 e e 4 e 4 e 4 4 4 4 4 4 4 4
+                    4 4 4 e 4 4 e 4 e e 4 e e e 4 4 4 4 4 4
+                    4 4 4 e 4 4 e 4 4 e 4 4 4 e 4 4 4 4 4 4
+                    4 4 e e e 4 e 4 4 e 4 e e e 4 4 4 4 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e e e 4 e 4 e 4 e e e 4 e e e 4 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e e 4 4 4 e 4 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e e e 4 e 4 e 4 e e e 4 4 e 4 4 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `])
+                selectMenu.show()
+                controller.moveSprite(cursor, 0, 0)
+            } else {
                 menu = 1
-                let editSprite = sprites.create(img`
+                cursor.x = pathArray[currentSelection].pointArray[pointIdxSelected].x + 0.5
+                cursor.y = pathArray[currentSelection].pointArray[pointIdxSelected].y + 0.5
+                editSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                     2 2 e e e 2 e e 2 2 e e e 2 e e e 2 2 2
                     2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
@@ -230,9 +315,16 @@ function editMode() {
                     2 2 e e e 2 e e 2 2 e e e 2 2 e 2 2 2 2
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                 `, SpriteKind.Player)
-                editSprite.left = pathArray[currentSelection].pointArray[pointIdxSelected].x
-                editSprite.top = pathArray[currentSelection].pointArray[pointIdxSelected].y
-                let spinSprite = sprites.create(img`
+                editSprite.left = cursor.x
+                editSprite.top = cursor.y
+                if (editSprite.right > scene.screenWidth()) {
+                    editSprite.right = scene.screenWidth()
+                }
+                if (editSprite.top > scene.screenHeight() / 2) {
+                    editSprite.top = cursor.y - 30
+                }
+                editSprite.z = 2
+                spinSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                     2 2 e e e 2 e e e 2 e e e 2 e 2 2 e 2 2
                     2 2 e 2 2 2 e 2 e 2 2 e 2 2 e e 2 e 2 2
@@ -241,9 +333,34 @@ function editMode() {
                     2 2 e e e 2 e 2 2 2 e e e 2 e 2 2 e 2 2
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                 `, SpriteKind.Player)
-                spinSprite.left = pathArray[currentSelection].pointArray[pointIdxSelected].x
-                spinSprite.top = pathArray[currentSelection].pointArray[pointIdxSelected].y + 8
-                selectMenu = new SpriteMenu([editSprite, spinSprite], [editSprite.image, spinSprite.image], [img`
+                spinSprite.left = editSprite.left
+                spinSprite.top = editSprite.bottom + 1
+                spinSprite.z = 2
+                delSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e e 2 2 e e e 2 e 2 2 2 2 2 2 2 2 2
+                    2 2 e 2 e 2 e 2 2 2 e 2 2 2 2 2 2 2 2 2
+                    2 2 e 2 e 2 e e 2 2 e 2 2 2 2 2 2 2 2 2
+                    2 2 e 2 e 2 e 2 2 2 e 2 2 2 2 2 2 2 2 2
+                    2 2 e e 2 2 e e e 2 e e e 2 2 2 2 2 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                delSprite.left = spinSprite.left
+                delSprite.top = spinSprite.bottom + 1
+                delSprite.z = 2
+                exitSprite = sprites.create(img`
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                    2 2 e e e 2 e 2 e 2 e e e 2 e e e 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e 2 2 2 e 2 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e e 2 e 2 e 2 e e e 2 2 e 2 2 2 2
+                    . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, SpriteKind.Player)
+                exitSprite.left = delSprite.left
+                exitSprite.top = delSprite.bottom + 1
+                exitSprite.z = 2
+                selectMenu = new SpriteMenu([editSprite, spinSprite, delSprite, exitSprite], [editSprite.image, spinSprite.image, delSprite.image, exitSprite.image], [img`
                     . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
                     4 4 e e e 4 e e 4 4 e e e 4 e e e 4 4 4
                     4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
@@ -259,29 +376,70 @@ function editMode() {
                     4 4 4 4 e 4 e 4 4 4 4 e 4 4 e 4 4 e 4 4
                     4 4 e e e 4 e 4 4 4 e e e 4 e 4 4 e 4 4
                     . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e e 4 4 e e e 4 e 4 4 4 4 4 4 4 4 4
+                    4 4 e 4 e 4 e 4 4 4 e 4 4 4 4 4 4 4 4 4
+                    4 4 e 4 e 4 e e 4 4 e 4 4 4 4 4 4 4 4 4
+                    4 4 e 4 e 4 e 4 4 4 e 4 4 4 4 4 4 4 4 4
+                    4 4 e e 4 4 e e e 4 e e e 4 4 4 4 4 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, img`
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                    4 4 e e e 4 e 4 e 4 e e e 4 e e e 4 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e e 4 4 4 e 4 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e 4 4 4 e 4 e 4 4 e 4 4 4 e 4 4 4 4
+                    4 4 e e e 4 e 4 e 4 e e e 4 4 e 4 4 4 4
+                    . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
                 `])
                 selectMenu.show()
                 controller.moveSprite(cursor, 0, 0)
-                cursor.x = pathArray[currentSelection].pointArray[pointIdxSelected].x + 0.5
-                cursor.y = pathArray[currentSelection].pointArray[pointIdxSelected].y + 0.5
             }
+
         } else if (controller.A.isPressed() && menu === 1) {
-            if (selectMenu.selectedIdx == 0) {
+            if (selectMenu.selectedIdx === 0) {
                 menu = 2
                 selectMenu.hide()
                 controller.moveSprite(cursor)
-            } else if (selectMenu.selectedIdx == 1) {
+            } else if (selectMenu.selectedIdx === 1) {
                 menu = 3
                 selectMenu.hide()
+            } else if (selectMenu.selectedIdx === 2) {
+                menu = -1
+                pathArray[currentSelection].pointArray.removeAt(pointIdxSelected)
+                selectMenu.hide()
+                controller.moveSprite(cursor)
+            } else if (selectMenu.selectedIdx === 3) {
+                menu = -1
+                selectMenu.hide()
+                controller.moveSprite(cursor)
             }
+
+        } else if (controller.A.isPressed() && menu === 4) {
+            if (selectMenu.selectedIdx === 0) {
+                menu = 2
+                pathArray[currentSelection].pointArray.push(new PathPoint(cursor.x, cursor.y))
+                pointIdxSelected = pathArray[currentSelection].pointArray.length - 1
+                selectMenu.hide()
+                controller.moveSprite(cursor)
+            } else if (selectMenu.selectedIdx === 1) {
+                menu = 2
+                pointIdxSelected = Math.min(game.askForNumber("Index to insert"), pathArray[currentSelection].pointArray.length)
+                pathArray[currentSelection].pointArray.insertAt(pointIdxSelected, new PathPoint(cursor.x, cursor.y))
+                selectMenu.hide()
+                controller.moveSprite(cursor)
+            } else if (selectMenu.selectedIdx === 2) {
+                menu = -1
+                selectMenu.hide()
+                controller.moveSprite(cursor)
+            }
+
         } else if (controller.A.isPressed() && (menu === 2 || menu === 3)) {
             menu = -1
             controller.moveSprite(cursor)
         }
-        if (menu === 1 && selectMenu != null) {
-            selectMenu.checkDirections(true)
-        }
-        topMenu.checkDirections()
+        
     })
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
         if (menu === 3) {
@@ -298,11 +456,11 @@ function editMode() {
         if (cursor.y < 1) {
             cursor.y = 1
         }
-        if (cursor.x > screen.width) {
-            cursor.x = screen.width
+        if (cursor.x > scene.screenWidth()) {
+            cursor.x = scene.screenWidth()
         }
-        if (cursor.y > screen.height) {
-            cursor.y = screen.height
+        if (cursor.y > scene.screenHeight()) {
+            cursor.y = scene.screenHeight()
         }
         //for dragging stuff lel
         if (menu === 2) {
@@ -330,6 +488,14 @@ function editMode() {
                 if (pathArray[currentSelection].pointArray[pointIdxSelected].curveDis < 0 - Math.abs(maxDist)) {
                     pathArray[currentSelection].pointArray[pointIdxSelected].curveDis++
                 }
+            }
+        }
+        //Render ids
+        for (let i = 0; i < pathArray[currentSelection].pointArray.length; i++) {
+            if (pathArray[currentSelection].pointArray[i].y > 60) {
+                SpriteMenu.drawOnImage(image, i.toString(), pathArray[currentSelection].pointArray[i].x - 1, pathArray[currentSelection].pointArray[i].y - 9)
+            } else {
+                SpriteMenu.drawOnImage(image, i.toString(), pathArray[currentSelection].pointArray[i].x - 1, pathArray[currentSelection].pointArray[i].y + 5)
             }
         }
     })
@@ -387,6 +553,7 @@ class SpriteMenu {
         for (let i = 0; i < this.spriteArray.length; i++) {
             this.spriteArray[i].setFlag(SpriteFlag.Invisible, true)
             this.active = false
+            this.selectedIdx = 0
             this.refresh()
         }
     }
