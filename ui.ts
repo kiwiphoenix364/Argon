@@ -138,7 +138,7 @@ function editMode() {
                 controller.moveSprite(cursor)
             } else if (menu === 1 || menu === 4) {
                 menu = -1
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (menu === -1) {
                 menu = 0
@@ -400,19 +400,19 @@ function editMode() {
         } else if (controller.A.isPressed() && menu === 1) {
             if (selectMenu.selectedIdx === 0) {
                 menu = 2
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (selectMenu.selectedIdx === 1) {
                 menu = 3
-                selectMenu.hide()
+                selectMenu.destroy()
             } else if (selectMenu.selectedIdx === 2) {
                 menu = -1
                 pathArray[currentSelection].pointArray.removeAt(pointIdxSelected)
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (selectMenu.selectedIdx === 3) {
                 menu = -1
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             }
 
@@ -421,17 +421,17 @@ function editMode() {
                 menu = 2
                 pathArray[currentSelection].pointArray.push(new PathPoint(cursor.x, cursor.y))
                 pointIdxSelected = pathArray[currentSelection].pointArray.length - 1
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (selectMenu.selectedIdx === 1) {
                 menu = 2
                 pointIdxSelected = Math.min(game.askForNumber("Index to insert"), pathArray[currentSelection].pointArray.length)
                 pathArray[currentSelection].pointArray.insertAt(pointIdxSelected, new PathPoint(cursor.x, cursor.y))
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (selectMenu.selectedIdx === 2) {
                 menu = -1
-                selectMenu.hide()
+                selectMenu.destroy()
                 controller.moveSprite(cursor)
             }
 
