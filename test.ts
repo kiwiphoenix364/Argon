@@ -1,2 +1,2 @@
 // tests go here; this will not be compiled when this package is used as an extension.
-new PathFollower(new PathFollowObject, pathArray[0], 2, 1)
+new PathFollower(pathArray[0], 1, 5)

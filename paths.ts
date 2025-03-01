@@ -185,16 +185,16 @@ class PathFollower {
     public spacing: number
     public segmentLengths: number[]
     private updater: control.FrameCallback
-    constructor(followObject: PathFollowObject, path: Path, speed = 2, count = 1, spacing = 5) {
+    constructor(path: Path, speed = 2, count = 1, spacing = 50) {
         this.followObjectArray = []
-        PathFollower.fillFollowObjectArray(this.followObjectArray, followObject, count, spacing)
+        PathFollower.fillFollowObjectArray(this.followObjectArray, count, spacing)
         this.path = path
         this.speed = speed
         this.startPathFollow()
     }
-    public static fillFollowObjectArray(followObjectArray: PathFollowObject[], followObject: PathFollowObject, count: number, space: number) {
+    public static fillFollowObjectArray(followObjectArray: PathFollowObject[], count: number, space: number) {
         for (let i = 0; i < count; i++) {
-            followObjectArray.push(followObject)
+            followObjectArray.push(new PathFollowObject)
             followObjectArray[i].disPixels -= i * space
         }
     }
@@ -202,13 +202,9 @@ class PathFollower {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             for (let obj of this.followObjectArray) {
                 obj.disPixels = this.speed + obj.disPixels
-                if (obj.disPixels > this.path.lengthArray[obj.currentPoint]) {
-                    obj.disPixels = obj.disPixels % this.path.lengthArray[obj.currentPoint]
+                if (obj.disPixels > this.path.lengthArray[obj.currentPoint] && obj.currentPoint < this.path.pointArray.length - 2) {
+                    obj.disPixels = obj.disPixels - this.path.lengthArray[obj.currentPoint]
                     obj.currentPoint++
-                    if (obj.currentPoint > this.path.pointArray.length - 2) {
-                        obj.currentPoint--
-                        obj.disPixels = this.path.lengthArray[obj.currentPoint]
-                    }
                 }
                 obj.setPosPoint(this.path.findPoint(obj.currentPoint, obj.disPixels / this.path.lengthArray[obj.currentPoint]))
             }
@@ -223,7 +219,7 @@ class PathFollowObject {
     public y: number
     public currentPoint = 0
     public disPixels = 0
-    public mySprite = sprites.create(img`
+    public sprite = sprites.create(img`
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
@@ -247,6 +243,6 @@ class PathFollowObject {
     public setPosPoint(point: SimplePoint) {
         this.x = point.x
         this.y = point.y
-        this.mySprite.setPosition(this.x, this.y)
+        this.sprite.setPosition(this.x, this.y)
     }
 }
