@@ -442,6 +442,8 @@ function editMode() {
         
     })
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
+        console.log(pathArray[0].distBetweenIdx(1))
+        console.log(Path.distBetweenPoints(pathArray[0].pointArray[1], pathArray[0].pointArray[2]))
         if (menu === 3) {
             //Special case for when changing angles
             //May be a bit messier than running twice but I prefer not to calculate paths twice
