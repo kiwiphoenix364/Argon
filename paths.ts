@@ -88,6 +88,37 @@ class Path {
             prevItem = item
         }
     }
+    public findPoint(point: number, dist: number) {
+        //Does all calculations regardless, but options to not display certain parts
+        let item1 = this.pointArray[point]
+        let item2 = this.pointArray[point + 1]
+        let pixelX: number
+        let pixelY: number
+        let modItem1X: number
+        let modItem1Y: number
+        let modItem2X: number
+        let modItem2Y: number
+        let midIntX: number
+        let midIntY: number
+        //Angles
+        //Proper bezier curve implementation within makecode
+        modItem1X = item1.x - Math.cos(item1.curveAngle) * item1.curveDis
+        modItem1Y = item1.y - Math.sin(item1.curveAngle) * item1.curveDis
+        modItem2X = item2.x + Math.cos(item2.curveAngle) * item2.curveDis
+        modItem2Y = item2.y + Math.sin(item2.curveAngle) * item2.curveDis
+        midIntX = Path.interpolate(dist, modItem1X, modItem2X)
+        midIntY = Path.interpolate(dist, modItem1Y, modItem2Y)
+        pixelX = Path.interpolate(
+            dist,
+            Path.interpolate(dist, item1.x, midIntX),
+            Path.interpolate(dist, midIntX, item2.x)
+        )
+        pixelY = Path.interpolate(
+            dist,
+            Path.interpolate(dist, item1.y, midIntY),
+            Path.interpolate(dist, midIntY, item2.y)
+        )
+    }
     public static interpolate(mid: number, start: number, end: number) {
         return start + (end - start) * mid
     }
@@ -118,5 +149,8 @@ class Path {
             }
         }
         return null
+    }
+    public findDistBetweenPoints(firstPointIndex: number) {
+        
     }
 }

@@ -10,4 +10,4 @@ let shaderPack = new ShaderPack(
         [0, 10, 7, 6, 5, 9, 8, 10, 8, 8, 8, 10, 8, 9, 4, 9]
     ]
 )
-let shader = new Shader(shaderPack, true, 50)
+//let shader = new Shader(shaderPack, true, 50)
