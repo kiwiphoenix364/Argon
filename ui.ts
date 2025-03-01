@@ -438,6 +438,8 @@ function editMode() {
         } else if (controller.A.isPressed() && (menu === 2 || menu === 3)) {
             menu = -1
             controller.moveSprite(cursor)
+            pathArray[currentSelection].fillSegmentLengths()
+            console.log(pathArray[currentSelection].lengthArray.length)
         }
         
     })

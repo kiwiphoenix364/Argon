@@ -1,3 +1,11 @@
+class SimplePoint {
+    public x: number
+    public y: number
+    constructor(x: number, y: number) {
+        this.x = x
+        this.y = y
+    }
+}
 class PathPoint {
     public connectedPoint: PathPoint
     public x: number
@@ -20,10 +28,12 @@ class Path {
     public id: number
     public time: number
     public pointArray: PathPoint[]
+    public lengthArray: number[]
     constructor(time: number, id: number, pointArray: PathPoint[]) {
         this.time = time
         this.id = id
         this.pointArray = pointArray
+        this.fillSegmentLengths()
     }
     public renderPath(image: Image, points = true, lines = true, angles = false) {
         //Does all calculations regardless, but options to not display certain parts
@@ -117,7 +127,7 @@ class Path {
             Path.interpolate(dist, item1.y, midIntY),
             Path.interpolate(dist, midIntY, item2.y)
         )
-        return(new PathPoint(pixelX, pixelY))
+        return(new SimplePoint(pixelX, pixelY))
     }
     public distBetweenIdx(pointIndex: number, precision = 10) {
         let totalDist = 0
@@ -126,7 +136,7 @@ class Path {
         }
         return totalDist
     }
-    public static distBetweenPoints(p1: PathPoint, p2: PathPoint) {
+    public static distBetweenPoints(p1: SimplePoint, p2: SimplePoint) {
         return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
     }
     public static interpolate(mid: number, start: number, end: number) {
@@ -159,5 +169,84 @@ class Path {
             }
         }
         return null
+    }
+    public fillSegmentLengths() {
+        this.lengthArray = []
+        for (let i = 0; i < this.pointArray.length - 1; i++) {
+            this.lengthArray.push(this.distBetweenIdx(i))
+        }
+    }
+}
+class PathFollower {
+    public followObjectArray: PathFollowObject[]
+    public path: Path
+    public speed: number
+    public count: number
+    public spacing: number
+    public segmentLengths: number[]
+    private updater: control.FrameCallback
+    constructor(followObject: PathFollowObject, path: Path, speed = 2, count = 1, spacing = 5) {
+        this.followObjectArray = []
+        PathFollower.fillFollowObjectArray(this.followObjectArray, followObject, count, spacing)
+        this.path = path
+        this.speed = speed
+        this.startPathFollow()
+    }
+    public static fillFollowObjectArray(followObjectArray: PathFollowObject[], followObject: PathFollowObject, count: number, space: number) {
+        for (let i = 0; i < count; i++) {
+            followObjectArray.push(followObject)
+            followObjectArray[i].disPixels -= i * space
+        }
+    }
+    public startPathFollow() {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
+            for (let obj of this.followObjectArray) {
+                obj.disPixels = this.speed + obj.disPixels
+                if (obj.disPixels > this.path.lengthArray[obj.currentPoint]) {
+                    obj.disPixels = obj.disPixels % this.path.lengthArray[obj.currentPoint]
+                    obj.currentPoint++
+                    if (obj.currentPoint > this.path.pointArray.length - 2) {
+                        obj.currentPoint--
+                        obj.disPixels = this.path.lengthArray[obj.currentPoint]
+                    }
+                }
+                obj.setPosPoint(this.path.findPoint(obj.currentPoint, obj.disPixels / this.path.lengthArray[obj.currentPoint]))
+            }
+        })
+    }
+    public destroy() {
+        game.currentScene().eventContext.unregisterFrameHandler(this.updater)
+    }
+}
+class PathFollowObject {
+    public x: number
+    public y: number
+    public currentPoint = 0
+    public disPixels = 0
+    public mySprite = sprites.create(img`
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        `, SpriteKind.Player)
+    constructor() {
+
+    }
+    public setPosPoint(point: SimplePoint) {
+        this.x = point.x
+        this.y = point.y
+        this.mySprite.setPosition(this.x, this.y)
     }
 }
