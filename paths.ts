@@ -59,7 +59,7 @@ class Path {
         */
         for (let item of this.pointArray) {
             if (prevItem) {
-                dist = Path.distBetweenPoints(prevItem, item)
+                dist = Path.distBetweenPathPoints(prevItem, item)
                 for (let i = 0; i <= dist; i++) {
                     currentPos = i / (dist)
                     //Angles
@@ -132,11 +132,14 @@ class Path {
     public distBetweenIdx(pointIndex: number, precision = 10) {
         let totalDist = 0
         for (let i = 0; i < precision; i++) {
-            totalDist += Path.distBetweenPoints(this.findPoint(pointIndex, i / precision), this.findPoint(pointIndex, (i + 1) / precision))
+            totalDist += Path.distBetweenSimplePoints(this.findPoint(pointIndex, i / precision), this.findPoint(pointIndex, (i + 1) / precision))
         }
         return totalDist
     }
-    public static distBetweenPoints(p1: SimplePoint, p2: SimplePoint) {
+    public static distBetweenSimplePoints(p1: SimplePoint, p2: SimplePoint) {
+        return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
+    }
+    public static distBetweenPathPoints(p1: PathPoint, p2: PathPoint) {
         return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
     }
     public static interpolate(mid: number, start: number, end: number) {
