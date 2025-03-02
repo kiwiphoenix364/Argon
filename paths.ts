@@ -35,10 +35,9 @@ class Path {
         this.pointArray = pointArray
         this.fillSegmentLengths()
     }
-    public renderPath(image: Image, points = true, lines = true, angles = false) {
+    public renderPath(image: Image, points = true, lines = true, angles = false, smoothness = 10) {
         //Does all calculations regardless, but options to not display certain parts
         let prevItem: PathPoint
-        let dist: number
         let currentPos: number
         let pixelX: number
         let pixelY: number
@@ -48,6 +47,8 @@ class Path {
         let modItemY: number
         let midIntX: number
         let midIntY: number
+        let pxp: number
+        let pyp: number
         /*
         for (let item of this.pointArray) {
             if (prevItem) {
@@ -59,9 +60,8 @@ class Path {
         */
         for (let item of this.pointArray) {
             if (prevItem) {
-                dist = Path.distBetweenPathPoints(prevItem, item)
-                for (let i = 0; i <= dist; i++) {
-                    currentPos = i / (dist)
+                for (let i = 0; i <= smoothness; i++) {
+                    currentPos = i / (smoothness)
                     //Angles
                     //Proper bezier curve implementation within makecode
                     modPrevItemX = prevItem.x - Math.cos(prevItem.curveAngle) * prevItem.curveDis
@@ -82,7 +82,11 @@ class Path {
                     )
                     //Render lines?
                     if (lines) {
-                        image.setPixel(Math.round(pixelX), Math.round(pixelY), 2)
+                        if (pxp) {
+                            image.drawLine(Math.round(pixelX), Math.round(pixelY), Math.round(pxp), Math.round(pyp), 2)
+                        }
+                        pxp = Math.round(pixelX)
+                        pyp = Math.round(pixelY)
                     }
                     //Render angles?
                     if (angles) {
@@ -252,7 +256,7 @@ class PathFollowObject {
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
         `, SpriteKind.Player)
     constructor() {
-
+        
     }
     public setPosPoint(point: SimplePoint) {
         this.x = point.x
