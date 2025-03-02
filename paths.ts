@@ -184,35 +184,46 @@ class PathFollower {
     public count: number
     public spacing: number
     public segmentLengths: number[]
+    public frameCounter = 0
     private updater: control.FrameCallback
-    constructor(path: Path, speed = 2, count = 1, spacing = 50) {
+    constructor(path: Path, speed = 2, count = 1, spacing = 5) {
         this.followObjectArray = []
-        PathFollower.fillFollowObjectArray(this.followObjectArray, count, spacing)
         this.path = path
         this.speed = speed
+        this.spacing = spacing
+        this.count = count
         this.startPathFollow()
-    }
-    public static fillFollowObjectArray(followObjectArray: PathFollowObject[], count: number, space: number) {
-        for (let i = 0; i < count; i++) {
-            followObjectArray.push(new PathFollowObject)
-            followObjectArray[i].disPixels -= i * space
-        }
     }
     public startPathFollow() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
-            for (let obj of this.followObjectArray) {
-                obj.disPixels = this.speed + obj.disPixels
-                if (obj.disPixels > this.path.lengthArray[obj.currentPoint] && obj.currentPoint < this.path.pointArray.length - 2) {
-                    obj.disPixels = obj.disPixels - this.path.lengthArray[obj.currentPoint]
-                    obj.currentPoint++
+            if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
+                this.followObjectArray.push(new PathFollowObject())
+            }
+            for (let i = 0; i < this.followObjectArray.length; i++) {
+                this.followObjectArray[i].disPixels += this.speed
+                if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 2) {
+                    this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.lengthArray[this.followObjectArray[i].currentPoint]
+                    this.followObjectArray[i].currentPoint++
                 }
-                obj.setPosPoint(this.path.findPoint(obj.currentPoint, obj.disPixels / this.path.lengthArray[obj.currentPoint]))
+                this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.lengthArray[this.followObjectArray[i].currentPoint]))
+                if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
+                    this.followObjectArray[i].destroy()
+                    this.followObjectArray.removeAt(i)
+                }
+            }
+            if (this.followObjectArray.length === 0) {
+                this.destroy()
             }
         })
     }
     public destroy() {
         game.currentScene().eventContext.unregisterFrameHandler(this.updater)
+        for (let obj of this.followObjectArray) {
+            obj.destroy()
+        }
+        this.followObjectArray = this.path = this.speed = this.count = this.spacing = this.segmentLengths = this.updater = this.frameCounter = null
     }
+
 }
 class PathFollowObject {
     public x: number
@@ -244,5 +255,9 @@ class PathFollowObject {
         this.x = point.x
         this.y = point.y
         this.sprite.setPosition(this.x, this.y)
+    }
+    public destroy() {
+        this.sprite.destroy()
+        this.x = this.y = this.currentPoint = this.disPixels = this.sprite = null
     }
 }
