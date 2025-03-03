@@ -192,8 +192,10 @@ class PathFollower {
     public spacing: number
     public segmentLengths: number[]
     public frameCounter = 0
+    public enemyType = 0
+    public enemyPattern = 0
     private updater: control.FrameCallback
-    constructor(path: Path, speed = 2, count = 1, spacing = 5) {
+    constructor(path: Path, enemyType = 0, enemyPattern = 0, speed = 2, count = 1, spacing = 5) {
         this.followObjectArray = []
         this.path = path
         this.speed = speed
@@ -201,10 +203,10 @@ class PathFollower {
         this.count = count
         this.startPathFollow()
     }
-    public startPathFollow() {
+    private startPathFollow() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
-                this.followObjectArray.push(new PathFollowObject())
+                this.followObjectArray.push(new PathFollowObject(this.enemyType, this.enemyPattern))
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
                 this.followObjectArray[i].disPixels += this.speed
@@ -233,38 +235,120 @@ class PathFollower {
 
 }
 class PathFollowObject {
-    public x: number
-    public y: number
+    private x: number
+    private y: number
     public currentPoint = 0
     public disPixels = 0
-    public sprite = sprites.create(img`
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-        `, SpriteKind.Player)
-    constructor() {
-        
+    public enemyType: number
+    public enemyPattern: number
+    public enemy: Enemy[]
+    private updater: control.FrameCallback
+    public animationFrame = 0
+    constructor(enemyType = 0, enemyPattern = 0) {
+        this.enemyType = enemyType
+        this.enemyPattern = enemyPattern
+        this.enemy = []
+        this.createEnemies()
+        this.update()
+    }
+    private createEnemies() {
+        if (this.enemyPattern === 0) {
+            this.enemy.push(new Enemy(this.enemyType))
+        }
+    }
+    private update() {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
+            this.animationFrame++
+            this.runAnimation()
+        })
+    }
+    private runAnimation() {
+        if (this.enemyPattern === 0) {
+            this.enemy[0].sprite.x = this.x
+            this.enemy[0].sprite.y = this.y
+        }
     }
     public setPosPoint(point: SimplePoint) {
         this.x = point.x
         this.y = point.y
-        this.sprite.setPosition(this.x, this.y)
+    }
+    public setX(point: SimplePoint) {
+        this.x = point.x
+    }
+    public setY(point: SimplePoint) {
+        this.y = point.y
+    }
+    public destroy() {
+        game.currentScene().eventContext.unregisterFrameHandler(this.updater)
+        for (let e of this.enemy) {
+            e.destroy()
+        }
+        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.enemyPattern = null
+    }
+}
+class Enemy {
+    public enemyType: number
+    public sprite: Sprite
+    constructor(enemyType = 0) {
+        this.enemyType = enemyType
+        if (enemyType === 0) {
+            this.sprite = sprites.create(img`
+                . . . . . . . 8 . . . . . . . .
+                . . . . . . 8 8 8 . . . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . 3 2 2 2 2 2 2 2 2 2 2 2 2 3 .
+                3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3
+                . . 3 3 2 2 2 2 2 2 2 3 3 . . .
+                . . . 3 2 2 2 2 2 2 2 3 . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . . c c c c c . . . . . .
+                . . . . . c c c c c . . . . . .
+                . . . . . . c c c . . . . . . .
+                . . . . . . . . . . . . . . . .
+            `, SpriteKind.Player)
+            animation.runImageAnimation(this.sprite, [img`
+                . . . . . . . 8 . . . . . . . .
+                . . . . . . 8 8 8 . . . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . 3 2 2 2 2 2 2 2 2 2 2 2 2 3 .
+                3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3
+                . . 3 3 2 2 2 2 2 2 2 3 3 . . .
+                . . . 3 2 2 2 2 2 2 2 3 . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . . c c c c c . . . . . .
+                . . . . . c c c c c . . . . . .
+                . . . . . . c c c . . . . . . .
+                . . . . . . . . . . . . . . . .
+            `, img`
+                . . . . . . . a . . . . . . . .
+                . . . . . . a a a . . . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . 3 2 2 2 2 2 2 2 2 2 2 2 2 3 .
+                3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3
+                . . 3 3 2 2 2 2 2 2 2 3 3 . . .
+                . . . 3 2 2 2 2 2 2 2 3 . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . 2 2 2 2 2 2 2 . . . . .
+                . . . . . c c c c c . . . . . .
+                . . . . . c c c c c . . . . . .
+                . . . . . . c c c . . . . . . .
+                . . . . . . . . . . . . . . . .
+            `], 100, true)
+        } 
     }
     public destroy() {
         this.sprite.destroy()
-        this.x = this.y = this.currentPoint = this.disPixels = this.sprite = null
+        this.enemyType = this.sprite = null
     }
 }
