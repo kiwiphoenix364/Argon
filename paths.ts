@@ -29,7 +29,17 @@ class Path {
     public time: number
     public pointArray: PathPoint[]
     public lengthArray: number[]
-    constructor(time: number, id: number, pointArray: PathPoint[]) {
+    public enemyType: number
+    public enemyPattern: number
+    public speed: number
+    public count: number
+    public spacing: number
+    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, enemyPattern = 0, speed = 2, count = 1, spacing = 5) {
+        this.enemyType = enemyType
+        this.enemyPattern = enemyPattern
+        this.speed = speed
+        this.count = count
+        this.spacing = spacing
         this.time = time
         this.id = id
         this.pointArray = pointArray
@@ -192,15 +202,17 @@ class PathFollower {
     public spacing: number
     public segmentLengths: number[]
     public frameCounter = 0
-    public enemyType = 0
-    public enemyPattern = 0
+    public enemyType: number
+    public enemyPattern: number
     private updater: control.FrameCallback
-    constructor(path: Path, enemyType = 0, enemyPattern = 0, speed = 2, count = 1, spacing = 5) {
+    constructor(path: Path) {
+        this.enemyType = path.enemyType
+        this.enemyPattern = path.enemyPattern
+        this.speed = path.speed
+        this.count = path.count
+        this.spacing = path.spacing
         this.followObjectArray = []
         this.path = path
-        this.speed = speed
-        this.spacing = spacing
-        this.count = count
         this.startPathFollow()
     }
     private startPathFollow() {

@@ -72,9 +72,20 @@ function editMode() {
     `, SpriteKind.Player)
     menuPlusButton.left = menuRightButton.right + 1
     menuPlusButton.top = 0
+    let menuRunButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 e e 2 2 e 2 e 2 e 2 2 e 2 2
+        2 2 e 2 e 2 e 2 e 2 e e 2 e 2 2
+        2 2 e e 2 2 e 2 e 2 e 2 e e 2 2
+        2 2 e 2 e 2 e 2 e 2 e 2 2 e 2 2
+        2 2 e 2 e 2 2 e 2 2 e 2 2 e 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    menuRunButton.left = menuPlusButton.right + 1
+    menuRunButton.top = 0
     //make top menu
-    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton], 
-    [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image], [img`
+    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton], 
+    [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image], [img`
         . 4 4 4 4 4 .
         4 4 4 4 e 4 4
         4 4 4 e 4 4 4
@@ -106,6 +117,14 @@ function editMode() {
         4 4 4 e 4 4 4
         4 4 4 e 4 4 4
         . 4 4 4 4 4 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 e e 4 4 e 4 e 4 e 4 4 e 4 4
+        4 4 e 4 e 4 e 4 e 4 e e 4 e 4 4
+        4 4 e e 4 4 e 4 e 4 e 4 e e 4 4
+        4 4 e 4 e 4 e 4 e 4 e 4 4 e 4 4
+        4 4 e 4 e 4 4 e 4 4 e 4 4 e 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
     `])
     topMenu.drawOnBoth(img`
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
@@ -226,6 +245,8 @@ function editMode() {
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `,
                     1, pathArray[currentSelection].time.toString())
+            } else if (topMenu.selectedIdx === 4) {
+                new PathFollower(pathArray[currentSelection])
             }
 
         } else if (controller.A.isPressed() && menu === -1) {
