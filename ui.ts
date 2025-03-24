@@ -39,6 +39,7 @@ function editMode() {
     `, SpriteKind.Player)
     menuLeftButton.left = 0
     menuLeftButton.top = 0
+    menuLeftButton.z = 5
     let menuMiddleButton = sprites.create(img`
         .222222222222222222222222222222222222222222222222222222222222222222222222222222.
         22222222222222222222222222222222222222222222222222222222222222222222222222222222
@@ -50,6 +51,7 @@ function editMode() {
     `, SpriteKind.Player)
     menuMiddleButton.left = menuLeftButton.right + 1
     menuMiddleButton.top = 0
+    menuMiddleButton.z = 5
     let menuRightButton = sprites.create(img`
         . 2 2 2 2 2 .
         2 2 e 2 2 2 2
@@ -61,6 +63,7 @@ function editMode() {
     `, SpriteKind.Player)
     menuRightButton.left = menuMiddleButton.right + 1
     menuRightButton.top = 0
+    menuRightButton.z = 5
     let menuPlusButton = sprites.create(img`
         . 2 2 2 2 2 .
         2 2 2 e 2 2 2
@@ -72,6 +75,7 @@ function editMode() {
     `, SpriteKind.Player)
     menuPlusButton.left = menuRightButton.right + 1
     menuPlusButton.top = 0
+    menuPlusButton.z = 5
     let menuRunButton = sprites.create(img`
         . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
         2 2 e e 2 2 e 2 e 2 e 2 2 e 2 2
@@ -83,9 +87,58 @@ function editMode() {
     `, SpriteKind.Player)
     menuRunButton.left = menuPlusButton.right + 1
     menuRunButton.top = 0
+    menuRunButton.z = 5
+    let menuSpeedButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    menuSpeedButton.left = 0
+    menuSpeedButton.top = 8
+    menuSpeedButton.z = 5
+    let menuSpacingButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    menuSpacingButton.left = menuSpeedButton.right + 1
+    menuSpacingButton.top = 8
+    menuSpacingButton.z = 5
+    let menuCountButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    menuCountButton.left = menuSpacingButton.right + 1
+    menuCountButton.top = 8
+    menuCountButton.z = 5
+    let menuTypeButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    menuTypeButton.left = menuCountButton.right + 1
+    menuTypeButton.top = 8
+    menuTypeButton.z = 5
     //make top menu
-    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton], 
-    [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image], [img`
+    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton],
+        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image], [img`
         . 4 4 4 4 4 .
         4 4 4 4 e 4 4
         4 4 4 e 4 4 4
@@ -125,8 +178,52 @@ function editMode() {
         4 4 e 4 e 4 e 4 e 4 e 4 4 e 4 4
         4 4 e 4 e 4 4 e 4 4 e 4 4 e 4 4
         . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+    `, img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
     `])
-    topMenu.drawOnBoth(img`
+    //controller events for menus
+    const click = function () {
+        //Draws text to menus
+        function refreshMenus() {
+            topMenu.drawOnBoth(img`
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
                     22222222222222222222222222222222222222222222222222222222222222222222222222222222
                     22222222222222222222222222222222222222222222222222222222222222222222222222222222
@@ -135,7 +232,7 @@ function editMode() {
                     22222222222222222222222222222222222222222222222222222222222222222222222222222222
                     .222222222222222222222222222222222222222222222222222222222222222222222222222222.
                 `,
-        img`
+                img`
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
@@ -144,9 +241,75 @@ function editMode() {
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `, 1, pathArray[currentSelection].time.toString())
-
-    //controller events for menus
-    const click = function () {
+            topMenu.drawOnBoth(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, 5, "S:" + pathArray[currentSelection].speed.toString())
+            topMenu.drawOnBoth(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, 6, "D:" + pathArray[currentSelection].spacing.toString())
+            topMenu.drawOnBoth(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, 7, "C:" + pathArray[currentSelection].count.toString())
+            topMenu.drawOnBoth(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                `, 8, "T:" + pathArray[currentSelection].enemyType.toString())
+        }
         if (menu === 1 || menu === 4 && selectMenu != null) {
             selectMenu.checkDirections(true)
         }
@@ -163,6 +326,7 @@ function editMode() {
             } else if (menu === -1) {
                 menu = 0
                 topMenu.show()
+                refreshMenus()
                 controller.moveSprite(cursor, 0, 0)
             }
         } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === 0) {
@@ -175,47 +339,11 @@ function editMode() {
                 if (currentSelection < 0) {
                     currentSelection = pathArray.length - 1
                 }
-                topMenu.drawOnBoth(img`
-                    .222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    .222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                `,
-                    img`
-                    .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                `,
-                    1, pathArray[currentSelection].time.toString())
+                refreshMenus()
             } else if (topMenu.selectedIdx === 2) {
                 currentSelection += 1
                 currentSelection = currentSelection % pathArray.length
-                topMenu.drawOnBoth(img`
-                    .222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    .222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                `,
-                    img`
-                    .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                `,
-                    1, pathArray[currentSelection].time.toString())
+                refreshMenus()
                 
             } else if (topMenu.selectedIdx === 1) {
                 pathArray[currentSelection].time = game.askForNumber("EDIT")
@@ -227,27 +355,21 @@ function editMode() {
                         break
                     }
                 }
-                topMenu.drawOnBoth(img`
-                    .222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    22222222222222222222222222222222222222222222222222222222222222222222222222222222
-                    .222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                `,
-                    img`
-                    .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    44444444444444444444444444444444444444444444444444444444444444444444444444444444
-                    .444444444444444444444444444444444444444444444444444444444444444444444444444444.
-                `,
-                    1, pathArray[currentSelection].time.toString())
+                refreshMenus()
             } else if (topMenu.selectedIdx === 4) {
                 new PathFollower(pathArray[currentSelection])
+            } else if (topMenu.selectedIdx === 5) {
+                pathArray[currentSelection].speed = game.askForNumber("EDIT")
+                refreshMenus()
+            } else if (topMenu.selectedIdx === 6) {
+                pathArray[currentSelection].spacing = game.askForNumber("EDIT")
+                refreshMenus()
+            } else if (topMenu.selectedIdx === 7) {
+                pathArray[currentSelection].count = game.askForNumber("EDIT")
+                refreshMenus()
+            } else if (topMenu.selectedIdx === 8) {
+                pathArray[currentSelection].enemyType = game.askForNumber("EDIT")
+                refreshMenus()
             }
 
         } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === -1) {
@@ -631,10 +753,10 @@ class SpriteMenu {
         }
     }
     public static returnFontNames() {
-        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "{", "}", " ", "<", ">"]
+        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "{", "}", " ", "<", ">", ":"]
     }
     public static returnKichiFontNames() {
-        return ["NI", "NU", "NO", "NE", "NA", "ZI", "ZU", "ZO", "ZE", "ZA", "KI", "KU", "KO", "KE", "KA", "TI", "TU", "TO", "TE", "TA", "CHI", "CHU", "CHO", "CHE", "CHA", ]
+        return ["NI", "NU", "NO", "NE", "NA", "ZI", "ZU", "ZO", "ZE", "ZA", "KI", "KU", "KO", "KE", "KA", "TI", "TU", "TO", "TE", "TA", "GI", "GU", "GO", "GE", "GA", ]
     }
     public static returnFonts() {
         return [img`
@@ -907,6 +1029,12 @@ class SpriteMenu {
         . . e
         . e .
         e . .
+    `, img`
+        .
+        e
+        .
+        .
+        e
     `]
     }
     //https://docs.google.com/spreadsheets/d/11-zCEaOKTSJYAaF32aLZPCeWq6aYrdwU_0B-Ay_yfno/edit?usp=sharing
