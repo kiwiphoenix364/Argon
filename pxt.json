@@ -3,7 +3,8 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "simple shader": "github:kiwiphoenix364/simple-shader#v3.0.3"
+        "simple shader": "github:kiwiphoenix364/simple-shader#v3.0.3",
+        "browser-events": "*"
     },
     "files": [
         "main.blocks",
