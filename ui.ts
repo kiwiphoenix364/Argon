@@ -467,6 +467,9 @@ function editMode() {
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, click)
     browserEvents.MouseLeft.onEvent(browserEvents.MouseButtonEvent.Pressed, click)
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
+        if (browserEvents.MouseLeft.isPressed()) {
+            browserEvents.MouseLeft.setPressed(false)
+        }
         cursor.x = browserEvents.mouseX() + 0.5
         cursor.y = browserEvents.mouseY() + 0.5
         //console.log(pathArray[0].distBetweenIdx(1))
