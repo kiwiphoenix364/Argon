@@ -221,13 +221,18 @@ class PathFollower {
                 this.followObjectArray.push(new PathFollowObject(this.enemyType, this.enemyPattern))
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
-                this.followObjectArray[i].disPixels += this.speed
-                if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 2) {
-                    this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.lengthArray[this.followObjectArray[i].currentPoint]
-                    this.followObjectArray[i].currentPoint++
-                }
-                this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.lengthArray[this.followObjectArray[i].currentPoint]))
-                if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
+                if (this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
+                    this.followObjectArray[i].disPixels += this.speed
+                    if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 2) {
+                        this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.lengthArray[this.followObjectArray[i].currentPoint]
+                        this.followObjectArray[i].currentPoint++
+                    }
+                    this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.lengthArray[this.followObjectArray[i].currentPoint]))
+                    if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
+                        this.followObjectArray[i].destroy()
+                        this.followObjectArray.removeAt(i)
+                    }
+                } else {
                     this.followObjectArray[i].destroy()
                     this.followObjectArray.removeAt(i)
                 }

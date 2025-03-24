@@ -144,8 +144,9 @@ function editMode() {
                     44444444444444444444444444444444444444444444444444444444444444444444444444444444
                     .444444444444444444444444444444444444444444444444444444444444444444444444444444.
                 `, 1, pathArray[currentSelection].time.toString())
-    //controller events for top menu
-    controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function() {
+
+    //controller events for menus
+    const click = function () {
         if (menu === 1 || menu === 4 && selectMenu != null) {
             selectMenu.checkDirections(true)
         }
@@ -164,7 +165,7 @@ function editMode() {
                 topMenu.show()
                 controller.moveSprite(cursor, 0, 0)
             }
-        } else if (controller.A.isPressed() && menu === 0) {
+        } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === 0) {
 
             if (topMenu.selectedIdx == 3) {
                 pathArray.push(new Path(game.askForNumber("ENTER TIME"), idCounter++, []))
@@ -249,7 +250,7 @@ function editMode() {
                 new PathFollower(pathArray[currentSelection])
             }
 
-        } else if (controller.A.isPressed() && menu === -1) {
+        } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === -1) {
             cursor.setPosition(Math.round(cursor.x), Math.round(cursor.y))
             pointIdxSelected = pathArray[currentSelection].checkOverlap(cursor, 5)
             if (pointIdxSelected === null) {
@@ -418,7 +419,7 @@ function editMode() {
                 controller.moveSprite(cursor, 0, 0)
             }
 
-        } else if (controller.A.isPressed() && menu === 1) {
+        } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === 1) {
             if (selectMenu.selectedIdx === 0) {
                 menu = 2
                 selectMenu.destroy()
@@ -437,7 +438,7 @@ function editMode() {
                 controller.moveSprite(cursor)
             }
 
-        } else if (controller.A.isPressed() && menu === 4) {
+        } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === 4) {
             if (selectMenu.selectedIdx === 0) {
                 menu = 2
                 pathArray[currentSelection].pointArray.push(new PathPoint(cursor.x, cursor.y))
@@ -456,15 +457,18 @@ function editMode() {
                 controller.moveSprite(cursor)
             }
 
-        } else if (controller.A.isPressed() && (menu === 2 || menu === 3)) {
+        } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && (menu === 2 || menu === 3)) {
             menu = -1
             controller.moveSprite(cursor)
             pathArray[currentSelection].fillSegmentLengths()
             console.log(pathArray[currentSelection].lengthArray.length)
         }
-        
-    })
+    }
+    controller.anyButton.onEvent(ControllerButtonEvent.Pressed, click)
+    browserEvents.MouseLeft.onEvent(browserEvents.MouseButtonEvent.Pressed, click)
     scene.createRenderable(1, (image: Image, camera: scene.Camera) => {
+        cursor.x = browserEvents.mouseX() + 0.5
+        cursor.y = browserEvents.mouseY() + 0.5
         //console.log(pathArray[0].distBetweenIdx(1))
         //console.log(Path.distBetweenPoints(pathArray[0].pointArray[1], pathArray[0].pointArray[2]))
         if (menu === 3) {
@@ -552,8 +556,8 @@ class SpriteMenu {
         }
     }
     public checkDirections(alt = false) {
-        if (alt) {
-            if (this.active) {
+        if (this.active) {
+            if (alt) {
                 if (controller.up.isPressed()) {
                     this.selectedIdx -= 1
                     this.refresh()
@@ -561,9 +565,7 @@ class SpriteMenu {
                     this.selectedIdx += 1
                     this.refresh()
                 }
-            }
-        } else {
-            if (this.active) {
+            } else {
                 if (controller.left.isPressed()) {
                     this.selectedIdx -= 1
                     this.refresh()
@@ -572,6 +574,16 @@ class SpriteMenu {
                     this.refresh()
                 }
             }
+            let mouseDetect = sprites.create(img`
+                    3
+            `, SpriteKind.Player)
+            mouseDetect.setPosition(browserEvents.mouseX() + 0.5, browserEvents.mouseY() + 0.5)
+            for (let i = 0; i < this.spriteArray.length; i++) {
+                if (mouseDetect.overlapsWith(this.spriteArray[i])) {
+                    this.selectedIdx = i
+                }
+            }
+            mouseDetect.destroy()
         }
     }
     public hide() {
