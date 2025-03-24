@@ -587,6 +587,7 @@ class SpriteMenu {
                 }
             }
             mouseDetect.destroy()
+            this.refresh()
         }
     }
     public hide() {
