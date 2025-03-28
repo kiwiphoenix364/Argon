@@ -592,8 +592,10 @@ function editMode() {
         if (browserEvents.MouseLeft.isPressed()) {
             browserEvents.MouseLeft.setPressed(false)
         }
-        cursor.x = browserEvents.mouseX() + 0.5
-        cursor.y = browserEvents.mouseY() + 0.5
+        if (browserEvents.mouseX() > 0 && browserEvents.mouseY() > 0) {
+            cursor.x = browserEvents.mouseX() + 0.5
+            cursor.y = browserEvents.mouseY() + 0.5
+        }
         //console.log(pathArray[0].distBetweenIdx(1))
         //console.log(Path.distBetweenPoints(pathArray[0].pointArray[1], pathArray[0].pointArray[2]))
         if (menu === 3) {
