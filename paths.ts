@@ -30,13 +30,11 @@ class Path {
     public pointArray: PathPoint[]
     public lengthArray: number[]
     public enemyType: number
-    public enemyPattern: number
     public speed: number
     public count: number
     public spacing: number
-    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, enemyPattern = 0, speed = 2, count = 1, spacing = 5) {
+    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, speed = 2, count = 1, spacing = 5) {
         this.enemyType = enemyType
-        this.enemyPattern = enemyPattern
         this.speed = speed
         this.count = count
         this.spacing = spacing
@@ -203,11 +201,9 @@ class PathFollower {
     public segmentLengths: number[]
     public frameCounter = 0
     public enemyType: number
-    public enemyPattern: number
     private updater: control.FrameCallback
     constructor(path: Path) {
         this.enemyType = path.enemyType
-        this.enemyPattern = path.enemyPattern
         this.speed = path.speed
         this.count = path.count
         this.spacing = path.spacing
@@ -218,7 +214,7 @@ class PathFollower {
     private startPathFollow() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
-                this.followObjectArray.push(new PathFollowObject(this.enemyType, this.enemyPattern))
+                this.followObjectArray.push(new PathFollowObject(this.enemyType))
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
                 if (this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
@@ -252,26 +248,25 @@ class PathFollower {
 
 }
 class PathFollowObject {
+    public angle: number
     private x: number
     private y: number
     public currentPoint = 0
     public disPixels = 0
     public enemyType: number
-    public enemyPattern: number
     public enemy: Enemy[]
     private updater: control.FrameCallback
     public animationFrame = 0
-    constructor(enemyType = 0, enemyPattern = 0) {
+    constructor(enemyType = 0) {
         this.enemyType = enemyType
-        this.enemyPattern = enemyPattern
         this.enemy = []
         this.createEnemies()
         this.update()
     }
     private createEnemies() {
-        if (this.enemyPattern === 0) {
+        for (let i = 0; i < [1,1,2][this.enemyType]; i++) {
             this.enemy.push(new Enemy(this.enemyType))
-        }
+        }    
     }
     private update() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
@@ -280,8 +275,17 @@ class PathFollowObject {
         })
     }
     private runAnimation() {
-        if (this.enemyPattern === 0) {
+        //ANIMATION/POSITION MODS
+        if (this.enemyType === 0) {
             this.enemy[0].sprite.x = this.x
+            this.enemy[0].sprite.y = this.y
+        } else if (this.enemyType === 1) {
+            this.enemy[0].sprite.x = this.x + Math.sin(this.animationFrame) * 5
+            this.enemy[0].sprite.y = this.y
+        } else if (this.enemyType === 2) {
+            this.enemy[0].sprite.x = this.x
+            this.enemy[0].sprite.y = this.y + Math.sin(this.animationFrame) * 5
+            this.enemy[0].sprite.x = this.x + Math.sin(this.animationFrame) * 5
             this.enemy[0].sprite.y = this.y
         }
     }
@@ -300,7 +304,7 @@ class PathFollowObject {
         for (let e of this.enemy) {
             e.destroy()
         }
-        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.enemyPattern = null
+        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = null
     }
 }
 class Enemy {
@@ -308,6 +312,7 @@ class Enemy {
     public sprite: Sprite
     constructor(enemyType = 0) {
         this.enemyType = enemyType
+        //ENEMY SPRITE TYPES
         if (enemyType === 0) {
             this.sprite = sprites.create(img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -327,7 +332,45 @@ class Enemy {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
             `, SpriteKind.Player)
-        } 
+        } else if (enemyType === 1) {
+            this.sprite = sprites.create(img`
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+            `, SpriteKind.Player)
+        } else if (enemyType === 2) {
+            this.sprite = sprites.create(img`
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+            `, SpriteKind.Player)
+        }
     }
     public destroy() {
         this.sprite.destroy()
