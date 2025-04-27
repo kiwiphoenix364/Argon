@@ -377,3 +377,12 @@ class Enemy {
         this.enemyType = this.sprite = null
     }
 }
+class EnemyArray {
+    public xSeparate = 16
+    public ySeparate = 16
+    public xShift = 0
+    public yShift = 0
+    constructor() {
+
+    }
+}
