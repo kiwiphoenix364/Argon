@@ -7,7 +7,6 @@ class SimplePoint {
     }
 }
 class PathPoint {
-    public connectedPoint: PathPoint
     public x: number
     public y: number
     public curveAngle = 1
@@ -22,6 +21,9 @@ class PathPoint {
     }
     public findDist(sprite: Sprite) {
         return Math.sqrt((this.x - sprite.x) ** 2 + (this.y - sprite.y) ** 2)
+    }
+    public print() {
+        return "[" + this.x + "," + this.y + "," + this.curveAngle + "," + this.curveDis + "]"
     }
 }
 class Path {
@@ -190,6 +192,28 @@ class Path {
         for (let i = 0; i < this.pointArray.length - 1; i++) {
             this.lengthArray.push(this.distBetweenIdx(i))
         }
+    }
+    public print() {
+        let string= ""
+        string = string.concat("{")
+        string = string.concat(this.id + ",")
+        string = string.concat(this.time + ",")
+        string = string.concat("(")
+        for (let i = 0; i < this.pointArray.length; i++) {
+            string = string.concat(this.pointArray[i].print())
+        }
+        string = string.concat("),")
+        string = string.concat("(")
+        for (let i = 0; i < this.lengthArray.length; i++) {
+            string = string.concat(this.lengthArray[i] + "")
+        }
+        string = string.concat("),")
+        string = string.concat(this.enemyType + ",")
+        string = string.concat(this.speed + ",")
+        string = string.concat(this.count + ",")
+        string = string.concat(this.spacing + "")
+        string = string.concat("}")
+        return string
     }
 }
 class PathFollower {

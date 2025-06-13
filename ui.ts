@@ -20,11 +20,11 @@ function editMode() {
     let exitSprite: Sprite
     let insSprite: Sprite
     let cursor = sprites.create(img`
-        d . . . d
         . d . d .
+        d d . d d
         . . . . .
+        d d . d d
         . d . d .
-        d . . . d
     `, SpriteKind.Player)
     cursor.z = 100
     controller.moveSprite(cursor)
@@ -136,9 +136,21 @@ function editMode() {
     menuTypeButton.left = menuCountButton.right + 1
     menuTypeButton.top = 8
     menuTypeButton.z = 5
+    let saveButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 e e 2 2 e 2 2 e 2 e 2 e e e 2 2
+        2 2 e 2 2 2 e 2 e 2 e 2 e 2 e 2 2 2 2
+        2 2 2 e 2 2 e e e 2 e 2 e 2 e e 2 2 2
+        2 2 2 2 e 2 e 2 e 2 e 2 e 2 e 2 2 2 2
+        2 2 e e 2 2 e 2 e 2 2 e 2 2 e e e 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    saveButton.left = menuTypeButton.right + 1
+    saveButton.top = 8
+    saveButton.z = 5
     //make top menu
-    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton],
-        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image], [img`
+    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton, saveButton],
+        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image, saveButton.image], [img`
         . 4 4 4 4 4 .
         4 4 4 4 e 4 4
         4 4 4 e 4 4 4
@@ -211,13 +223,13 @@ function editMode() {
         4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
         . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
     `, img`
-        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
-        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 e e 4 4 e 4 4 e 4 e 4 e e e 4 4
+        4 4 e 4 4 4 e 4 e 4 e 4 e 4 e 4 4 4 4
+        4 4 4 e 4 4 e e e 4 e 4 e 4 e e 4 4 4
+        4 4 4 4 e 4 e 4 e 4 e 4 e 4 e 4 4 4 4
+        4 4 e e 4 4 e 4 e 4 4 e 4 4 e e e 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
     `])
     //controller events for menus
     const click = function () {
@@ -369,6 +381,13 @@ function editMode() {
                 refreshMenus()
             } else if (topMenu.selectedIdx === 8) {
                 pathArray[currentSelection].enemyType = game.askForNumber("EDIT")
+                refreshMenus()
+            } else if (topMenu.selectedIdx === 9) {
+                let string = ""
+                for (let i = 0; i < pathArray.length; i++) {
+                    string = string.concat(pathArray[i].print())
+                }
+                console.log(string)
                 refreshMenus()
             }
 
@@ -583,7 +602,7 @@ function editMode() {
             menu = -1
             controller.moveSprite(cursor)
             pathArray[currentSelection].fillSegmentLengths()
-            console.log(pathArray[currentSelection].lengthArray.length)
+            //console.log(pathArray[currentSelection].lengthArray.length)
         }
     }
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, click)
