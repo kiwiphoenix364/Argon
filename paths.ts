@@ -203,11 +203,11 @@ class Path {
             string = string.concat(this.pointArray[i].print())
         }
         string = string.concat("),")
-        string = string.concat("(")
+        string = string.concat("[")
         for (let i = 0; i < this.lengthArray.length; i++) {
-            string = string.concat(this.lengthArray[i] + "")
+            string = string.concat(this.lengthArray[i] + ",")
         }
-        string = string.concat("),")
+        string = string.concat("],")
         string = string.concat(this.enemyType + ",")
         string = string.concat(this.speed + ",")
         string = string.concat(this.count + ",")

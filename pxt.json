@@ -16,7 +16,8 @@
         "shadersettings.ts",
         "images.g.jres",
         "images.g.ts",
-        "ui.ts"
+        "ui.ts",
+        "pathArrayDecomp.ts"
     ],
     "testFiles": [
         "test.ts"
