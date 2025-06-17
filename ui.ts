@@ -1,5 +1,11 @@
+let levelData = "{0,0,([10,10,2.356194490192345,40][40,40,2.356194490192345,40][90,100,0,-40]),[66.6541302488668,98.15508250730261,],0,2,1,5}"
 let idCounter = 0
 let idCache = 0
+let pathArray: Path[]
+pathArray = []
+decompString(levelData)
+console.log("loaded")
+/*
 let pathArray = [new Path(0, idCounter++, [new PathPoint(10, 10), new PathPoint(40, 40), new PathPoint(90, 100)])]
 pathArray[0].pointArray[0].curveAngle = 135 * Math.PI / 180
 pathArray[0].pointArray[0].curveDis = 40
@@ -7,6 +13,7 @@ pathArray[0].pointArray[1].curveAngle = 135 * Math.PI / 180
 pathArray[0].pointArray[1].curveDis = 40
 pathArray[0].pointArray[2].curveAngle = 0 * Math.PI / 180
 pathArray[0].pointArray[2].curveDis = -40
+*/
 editMode()
 function editMode() {
     let currentSelection = 0

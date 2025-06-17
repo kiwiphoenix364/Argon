@@ -196,8 +196,8 @@ class Path {
     public print() {
         let string= ""
         string = string.concat("{")
-        string = string.concat(this.id + ",")
         string = string.concat(this.time + ",")
+        string = string.concat(this.id + ",")
         string = string.concat("(")
         for (let i = 0; i < this.pointArray.length; i++) {
             string = string.concat(this.pointArray[i].print())
