@@ -32,11 +32,13 @@ class Path {
     public pointArray: PathPoint[]
     public lengthArray: number[]
     public enemyType: number
+    public enemyAnimation: number
     public speed: number
     public count: number
     public spacing: number
-    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, speed = 2, count = 1, spacing = 5) {
+    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, enemyAnimation = 0, speed = 2, count = 1, spacing = 5) {
         this.enemyType = enemyType
+        this.enemyAnimation = enemyAnimation
         this.speed = speed
         this.count = count
         this.spacing = spacing
@@ -209,6 +211,7 @@ class Path {
         }
         string = string.concat("],")
         string = string.concat(this.enemyType + ",")
+        string = string.concat(this.enemyAnimation + ",")
         string = string.concat(this.speed + ",")
         string = string.concat(this.count + ",")
         string = string.concat(this.spacing + "")
@@ -225,9 +228,11 @@ class PathFollower {
     public segmentLengths: number[]
     public frameCounter = 0
     public enemyType: number
+    public enemyAnimation: number
     private updater: control.FrameCallback
     constructor(path: Path) {
         this.enemyType = path.enemyType
+        this.enemyAnimation = path.enemyAnimation
         this.speed = path.speed
         this.count = path.count
         this.spacing = path.spacing
@@ -238,7 +243,7 @@ class PathFollower {
     private startPathFollow() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
-                this.followObjectArray.push(new PathFollowObject(this.enemyType))
+                this.followObjectArray.push(new PathFollowObject(this.path))
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
                 if (this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
@@ -272,23 +277,29 @@ class PathFollower {
 
 }
 class PathFollowObject {
+    public path: Path
     public angle: number
     private x: number
     private y: number
     public currentPoint = 0
     public disPixels = 0
     public enemyType: number
+    public enemyAnimation: number
     public enemy: Enemy[]
     private updater: control.FrameCallback
     public animationFrame = 0
-    constructor(enemyType = 0) {
-        this.enemyType = enemyType
+    constructor(path: Path) {
+        this.enemyType = path.enemyType
+        this.enemyAnimation = path.enemyAnimation
+        this.path = path
         this.enemy = []
         this.createEnemies()
         this.update()
     }
     private createEnemies() {
-        for (let i = 0; i < [1,1,2][this.enemyType]; i++) {
+        //ENEMY AMOUNT PER TYPE IN ORDER
+        let enemiesPerType = [1,1,2]
+        for (let i = 0; i < enemiesPerType[this.enemyType]; i++) {
             this.enemy.push(new Enemy(this.enemyType))
         }    
     }
@@ -299,7 +310,10 @@ class PathFollowObject {
         })
     }
     private runAnimation() {
-        //ANIMATION/POSITION MODS
+        //ENEMY ANIMATIONS
+        //TYPE 0 - BASE ENEMY
+        //TYPE 1 - BASE ENEMY + LEFT/RIGHT MOVEMENT
+        //TYPE 2 - BASE ENEMY + UP/DOWN MOVEMENT
         if (this.enemyType === 0) {
             this.enemy[0].sprite.x = this.x
             this.enemy[0].sprite.y = this.y
@@ -309,8 +323,8 @@ class PathFollowObject {
         } else if (this.enemyType === 2) {
             this.enemy[0].sprite.x = this.x
             this.enemy[0].sprite.y = this.y + Math.sin(this.animationFrame) * 5
-            this.enemy[0].sprite.x = this.x + Math.sin(this.animationFrame) * 5
-            this.enemy[0].sprite.y = this.y
+            this.enemy[1].sprite.x = this.x + Math.sin(this.animationFrame) * 5
+            this.enemy[1].sprite.y = this.y
         }
     }
     public setPosPoint(point: SimplePoint) {
@@ -337,7 +351,7 @@ class Enemy {
     constructor(enemyType = 0) {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
-        if (enemyType === 0) {
+        if (enemyType >= 0 && enemyType <= 4) {
             this.sprite = sprites.create(img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -401,7 +415,7 @@ class Enemy {
         this.enemyType = this.sprite = null
     }
 }
-class EnemyArray {
+class EnemyArrayGen {
     public xSeparate = 16
     public ySeparate = 16
     public xShift = 0

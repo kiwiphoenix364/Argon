@@ -11,6 +11,7 @@ function decompString(data: string) {
     let disCache: number[]
     disCache = []
     let tValue: number
+    let aValue: number
     let sValue: number
     let cValue: number
     let dValue: number
@@ -60,18 +61,20 @@ function decompString(data: string) {
             } else if (dataType == 4) {
                 tValue = parseInt(data.substr(i, numCounter))
             } else if (dataType == 5) {
-                sValue = parseFloat(data.substr(i, numCounter))
+                aValue = parseInt(data.substr(i, numCounter))
             } else if (dataType == 6) {
-                cValue = parseInt(data.substr(i, numCounter))
+                sValue = parseFloat(data.substr(i, numCounter))
             } else if (dataType == 7) {
+                cValue = parseInt(data.substr(i, numCounter))
+            } else if (dataType == 8) {
                 dValue = parseFloat(data.substr(i, numCounter))
             }
             dataType++
             i += numCounter
         }
-        if (data.charAt(i) == "}" && dataType == 8) {
+        if (data.charAt(i) == "}" && dataType == 9) {
             //Push to path array and move on to next
-            pathArray.push(new Path(timeValue, idValue, pathCache, tValue, sValue, cValue, dValue))
+            pathArray.push(new Path(timeValue, idValue, pathCache, tValue, aValue, sValue, cValue, dValue))
             pathArray[pathArray.length - 1].lengthArray = disCache
             pathCache = []
             dataType = 0

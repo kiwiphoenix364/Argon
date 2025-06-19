@@ -1,4 +1,4 @@
-let levelData = "{0,0,([10,10,2.356194490192345,40][40,40,2.356194490192345,40][90,100,0,-40]),[66.6541302488668,98.15508250730261,150.41705496210992,],0,2,1,5}{2,0,([34.9140625,41.31640625,1,50][128.63671875,58.39453125,0.9301868299202365,150]),[66.6541302488668,98.15508250730261,150.41705496210992,],1,10,3,5}"
+let levelData = "{0,0,([10,10,2.356194490192345,40][40,40,2.356194490192345,40][90,100,0,-40]),[66.6541302488668,98.15508250730261,150.41705496210992,66.6541302488668,98.15508250730261,150.41705496210992,],2,0,1,1,5}{1,0,([56.58203125,39.703125,1,50][139.7578125,12.7265625, 1, 50][38.88671875,96.51953125,1,50]),[103.5951813645658,143.37883496603308,],0,0,2,1,5}"
 //let levelData = "{0,0,([10,10,2.356194490192345,40][40,40,2.356194490192345,40][90,100,0,-40]),[66.6541302488668,98.15508250730261,],0,2,1,5}"
 let idCounter = 0
 let idCache = 0
@@ -144,6 +144,18 @@ function editMode() {
     menuTypeButton.left = menuCountButton.right + 1
     menuTypeButton.top = 8
     menuTypeButton.z = 5
+    let menuAnimationButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    menuAnimationButton.left = menuTypeButton.right + 1
+    menuAnimationButton.top = 8
+    menuAnimationButton.z = 5
     let saveButton = sprites.create(img`
         . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
         2 2 2 e e 2 2 e 2 2 e 2 e 2 e e e 2 2
@@ -153,12 +165,12 @@ function editMode() {
         2 2 e e 2 2 e 2 e 2 2 e 2 2 e e e 2 2
         . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
     `, SpriteKind.Player)
-    saveButton.left = menuTypeButton.right + 1
+    saveButton.left = menuAnimationButton.right + 1
     saveButton.top = 8
     saveButton.z = 5
     //make top menu
-    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton, saveButton],
-        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image, saveButton.image], [img`
+    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton, menuAnimationButton, saveButton],
+        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image, menuAnimationButton.image, saveButton.image], [img`
         . 4 4 4 4 4 .
         4 4 4 4 e 4 4
         4 4 4 e 4 4 4
@@ -206,6 +218,14 @@ function editMode() {
         2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
         2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
         . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
     `, img`
         . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
         4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
@@ -329,7 +349,24 @@ function editMode() {
         4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
         . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
                 `, 8, "T:" + pathArray[currentSelection].enemyType.toString())
-        }
+            topMenu.drawOnBoth(img`
+                . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+            `, img`
+                . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+            `, 9, "A:" + pathArray[currentSelection].enemyAnimation.toString())
+        }   
         if (menu === 1 || menu === 4 && selectMenu != null) {
             selectMenu.checkDirections(true)
         }
@@ -391,6 +428,9 @@ function editMode() {
                 pathArray[currentSelection].enemyType = game.askForNumber("EDIT")
                 refreshMenus()
             } else if (topMenu.selectedIdx === 9) {
+                pathArray[currentSelection].enemyAnimation = game.askForNumber("EDIT")
+                refreshMenus()
+            } else if (topMenu.selectedIdx === 10) {
                 let string = ""
                 for (let i = 0; i < pathArray.length; i++) {
                     string = string.concat(pathArray[i].print())
