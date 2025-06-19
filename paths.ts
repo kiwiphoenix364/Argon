@@ -298,8 +298,13 @@ class PathFollowObject {
     }
     private createEnemies() {
         //ENEMY AMOUNT PER TYPE IN ORDER
-        let enemiesPerType = [1,1,2]
-        for (let i = 0; i < enemiesPerType[this.enemyType]; i++) {
+        let enemiesPerAnimation = [
+            1, //1
+            1, //2
+            1, //3
+            2 //4
+        ]
+        for (let i = 0; i < enemiesPerAnimation[this.enemyAnimation]; i++) {
             this.enemy.push(new Enemy(this.enemyType))
         }    
     }
@@ -311,20 +316,36 @@ class PathFollowObject {
     }
     private runAnimation() {
         //ENEMY ANIMATIONS
-        //TYPE 0 - BASE ENEMY
-        //TYPE 1 - BASE ENEMY + LEFT/RIGHT MOVEMENT
-        //TYPE 2 - BASE ENEMY + UP/DOWN MOVEMENT
-        if (this.enemyType === 0) {
-            this.enemy[0].sprite.x = this.x
-            this.enemy[0].sprite.y = this.y
-        } else if (this.enemyType === 1) {
-            this.enemy[0].sprite.x = this.x + Math.sin(this.animationFrame) * 5
-            this.enemy[0].sprite.y = this.y
-        } else if (this.enemyType === 2) {
-            this.enemy[0].sprite.x = this.x
-            this.enemy[0].sprite.y = this.y + Math.sin(this.animationFrame) * 5
-            this.enemy[1].sprite.x = this.x + Math.sin(this.animationFrame) * 5
-            this.enemy[1].sprite.y = this.y
+        //SPECIFY HOW MANY ANIMATIONS IN createEnemies()
+        //IF MULTIPLE ENEMIES INCLUDED IMPLEMENT POSITIONING FOR ALL
+        //TYPE 0 - NONE
+        //TYPE 1 - LEFT/RIGHT MOVEMENT
+        //TYPE 2 - UP/DOWN MOVEMENT
+        //TYPE 3 - DUAL OSCILLATING
+        if (this.enemyAnimation === 0) {
+            this.enemy[0].setPos(
+                this.x, 
+                this.y
+            )
+        } else if (this.enemyAnimation === 1) {
+            this.enemy[0].setPos(
+                this.x + Math.sin(this.animationFrame) * 10, 
+                this.y
+            )
+        } else if (this.enemyAnimation === 2) {
+            this.enemy[0].setPos(
+                this.x,
+                this.y + Math.sin(this.animationFrame) * 10
+            )
+        } else if (this.enemyAnimation === 3) {
+            this.enemy[0].setPos(
+                this.x,
+                this.y + Math.sin(this.animationFrame / 4) * 10
+            )
+            this.enemy[1].setPos(
+                this.x + Math.sin(this.animationFrame / 3) * 10,
+                this.y
+            )
         }
     }
     public setPosPoint(point: SimplePoint) {
@@ -348,10 +369,14 @@ class PathFollowObject {
 class Enemy {
     public enemyType: number
     public sprite: Sprite
+    public array: EnemyArray
     constructor(enemyType = 0) {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
-        if (enemyType >= 0 && enemyType <= 4) {
+        //NEGATIVE TYPES ARE FOR ARRAYS
+        if (enemyType < 0) {
+            this.array = new EnemyArray(Math.abs(enemyType))
+        } else if(enemyType >= 0 && enemyType <= 4) {
             this.sprite = sprites.create(img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -410,17 +435,28 @@ class Enemy {
             `, SpriteKind.Player)
         }
     }
+    public setPos(x: number, y: number) {
+        if (this.sprite != undefined) {
+            this.sprite.x = x
+            this.sprite.y = y
+        } else {
+            this.array.setPos(x, y)
+        }
+    }
     public destroy() {
         this.sprite.destroy()
         this.enemyType = this.sprite = null
     }
 }
-class EnemyArrayGen {
-    public xSeparate = 16
-    public ySeparate = 16
-    public xShift = 0
-    public yShift = 0
-    constructor() {
+class EnemyArray {
+    public xSeparate: number
+    public ySeparate: number
+    public xShift: number
+    public yShift: number
+    constructor(arraySprite: number) {
 
+    }
+    public setPos(x: number, y: number) {
+        
     }
 }
