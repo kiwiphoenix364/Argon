@@ -244,6 +244,9 @@ class PathFollower {
         this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
                 this.followObjectArray.push(new PathFollowObject(this.path))
+                if (this.enemyType >= 1000) {
+                    this.followObjectArray[this.followObjectArray.length - 1].disPixels -= this.followObjectArray[this.followObjectArray.length - 1].enemy[0].array.extLength
+                }
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
                 if (this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
@@ -253,7 +256,7 @@ class PathFollower {
                         this.followObjectArray[i].currentPoint++
                     }
                     this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.lengthArray[this.followObjectArray[i].currentPoint]))
-                    if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
+                    if (this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 || this.enemyType >= 1000 && this.followObjectArray[i].disPixels - this.followObjectArray[i].enemy[0].array.extLength > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
                         this.followObjectArray[i].destroy()
                         this.followObjectArray.removeAt(i)
                     }
@@ -375,8 +378,8 @@ class Enemy {
         this.path = path
         this.enemyType = path.enemyType
         //ENEMY SPRITE TYPES
-        //NEGATIVE TYPES ARE FOR ARRAYS
-        if (this.enemyType  == 4) {
+        //TYPES IN THOUSANDS ARE FOR ARRAYS
+        if (this.enemyType  == 1000) {
             this.array = new EnemyArray(this.path)
         } else if (this.enemyType >= 0 && this.enemyType <= 4) {
             this.sprite = sprites.create(img`
@@ -468,17 +471,18 @@ class EnemyArray {
     public arrayType = 1
     public anchorX = 0
     public anchorY = 0
+    public extLength = 0
     public spriteArray: Sprite[]
     public path: Path
     constructor(path: Path) {
         //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
-        this.setAnchor()
         this.path = path
-        this.arrayType = (this.path.enemyType)
+        this.setAnchor()
+        this.arrayType = (this.path.enemyType - 1000)
         this.spriteArray = []
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
-        if (this.arrayType === 4) {
+        if (this.arrayType === 0) {
             for (let i = 0; i < this.xNum * this.yNum; i++) {
                 this.spriteArray.push(sprites.create(img`
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
@@ -527,8 +531,14 @@ class EnemyArray {
             this.anchorX = 0
         }
         */
-        //this.anchorX = Math.map(this.path.pointArray[0].x, scene.screenWidth(), 0, 0 - Math.min(this.xShift, 0), 0 - (this.xNum * this.xSeparate + Math.max(this.xShift, 0)))
-        //this.anchorY = Math.map(this.path.pointArray[0].y, scene.screenHeight(), 0, 0 - Math.min(this.yShift, 0), 0 - (this.yNum * this.ySeparate + Math.max(this.yShift, 0)))
+        /*
+        this.anchorX = Math.map(this.path.pointArray[0].x, scene.screenWidth(), 0, 0 - Math.min(this.xShift, 0), 0 - ((this.xNum - 1) * this.xSeparate + Math.max(this.xShift, 0)))
+        this.anchorY = Math.map(this.path.pointArray[0].y, scene.screenHeight(), 0, 0 - Math.min(this.yShift, 0), 0 - ((this.yNum - 1) * this.ySeparate + Math.max(this.yShift, 0)))
+        */
+        this.anchorX = 0 - ((this.xNum - 1) * this.xSeparate + this.xShift) / 2
+        this.anchorY = 0 - ((this.yNum - 1) * this.ySeparate + this.yShift) / 2
+        this.extLength = Math.sqrt(((this.xNum - 1) * this.xSeparate + Math.abs(this.xShift)) ** 2 + ((this.yNum - 1) * this.ySeparate + Math.abs(this.yShift)) ** 2) / 2
+
     }
     public updatePos() {
         for (let i = 0; i < this.xNum; i++) {
@@ -539,19 +549,9 @@ class EnemyArray {
         }
     }
     public destroy() {
-        /*
-        for (let e in this.spriteArray) {
+        for (let e of this.spriteArray) {
             e.destroy()
         }
-        this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x
-        this.y
-        this.relX
-        this.relY
-this.arrayType
-        this.anchorX
-        this.anchorY
-        this.spriteArray
-        this.path
-        */
+        this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.arrayType = this.anchorX = this.anchorY = this.spriteArray = this.path = null
     }
 }
