@@ -305,7 +305,7 @@ class PathFollowObject {
             2 //4
         ]
         for (let i = 0; i < enemiesPerAnimation[this.enemyAnimation]; i++) {
-            this.enemy.push(new Enemy(this.enemyType))
+            this.enemy.push(new Enemy(this.path))
         }    
     }
     private update() {
@@ -370,13 +370,15 @@ class Enemy {
     public enemyType: number
     public sprite: Sprite
     public array: EnemyArray
-    constructor(enemyType = 0) {
-        this.enemyType = enemyType
+    public path: Path
+    constructor(path: Path) {
+        this.path = path
+        this.enemyType = path.enemyType
         //ENEMY SPRITE TYPES
         //NEGATIVE TYPES ARE FOR ARRAYS
-        if (enemyType < 0) {
-            this.array = new EnemyArray(Math.abs(enemyType))
-        } else if(enemyType >= 0 && enemyType <= 4) {
+        if (this.enemyType  == 4) {
+            this.array = new EnemyArray(this.path)
+        } else if (this.enemyType >= 0 && this.enemyType <= 4) {
             this.sprite = sprites.create(img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -395,7 +397,7 @@ class Enemy {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
             `, SpriteKind.Player)
-        } else if (enemyType === 1) {
+        } else if (this.enemyType === 1) {
             this.sprite = sprites.create(img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -414,7 +416,7 @@ class Enemy {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
             `, SpriteKind.Player)
-        } else if (enemyType === 2) {
+        } else if (this.enemyType === 2) {
             this.sprite = sprites.create(img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -444,19 +446,112 @@ class Enemy {
         }
     }
     public destroy() {
-        this.sprite.destroy()
-        this.enemyType = this.sprite = null
+        if (this.sprite != undefined) {
+            this.sprite.destroy()
+        } else {
+            this.array.destroy()
+        }
+        this.enemyType = this.sprite = this.array = null
     }
 }
 class EnemyArray {
-    public xSeparate: number
-    public ySeparate: number
-    public xShift: number
-    public yShift: number
-    constructor(arraySprite: number) {
+    public xNum = 4
+    public yNum = 4
+    public xSeparate = 32
+    public ySeparate = 32
+    public xShift = 16
+    public yShift = 0
+    private x = 0
+    private y = 0
+    private relX = 0
+    private relY = 0
+    public arrayType = 1
+    public anchorX = 0
+    public anchorY = 0
+    public spriteArray: Sprite[]
+    public path: Path
+    constructor(path: Path) {
+        //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
+        this.setAnchor()
+        this.path = path
+        this.arrayType = (this.path.enemyType)
+        this.spriteArray = []
+        //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
+        //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
+        if (this.arrayType === 4) {
+            for (let i = 0; i < this.xNum * this.yNum; i++) {
+                this.spriteArray.push(sprites.create(img`
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            `, SpriteKind.Player))
+            }
+        }
 
+        this.updatePos()
     }
     public setPos(x: number, y: number) {
-        
+        this.x = x
+        this.y = y
+        this.updatePos()
+    }
+    public setRelPos(x: number, y: number) {
+        this.relX = x
+        this.relY = y
+        this.updatePos()
+    }
+    public setAnchor() {
+        /*
+        let xSector: number
+        let ySector: number
+        xSector = Math.imul((this.path.pointArray[0].x / scene.screenWidth()), 3)
+        ySector = Math.imul((this.path.pointArray[0].y / scene.screenHeight()), 3)
+        if (xSector === 0) {
+            this.anchorX = this.xSeparate * this.xNum + Math.max(this.xShift, 0)
+        } else if (xSector === 1) {
+            this.anchorX = (this.xSeparate * this.xNum - this.xShift) / 2
+        } else {
+            this.anchorX = 0
+        }
+        */
+        //this.anchorX = Math.map(this.path.pointArray[0].x, scene.screenWidth(), 0, 0 - Math.min(this.xShift, 0), 0 - (this.xNum * this.xSeparate + Math.max(this.xShift, 0)))
+        //this.anchorY = Math.map(this.path.pointArray[0].y, scene.screenHeight(), 0, 0 - Math.min(this.yShift, 0), 0 - (this.yNum * this.ySeparate + Math.max(this.yShift, 0)))
+    }
+    public updatePos() {
+        for (let i = 0; i < this.xNum; i++) {
+            for (let j = 0; j < this.yNum; j++) {
+                this.spriteArray[i + j * this.xNum].x = this.x + this.anchorX + (j % 2) * this.xShift + this.relX + this.xSeparate * i
+                this.spriteArray[i + j * this.xNum].y = this.y + this.anchorY + (i % 2) * this.yShift + this.relY + this.ySeparate * j
+            }
+        }
+    }
+    public destroy() {
+        /*
+        for (let e in this.spriteArray) {
+            e.destroy()
+        }
+        this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x
+        this.y
+        this.relX
+        this.relY
+this.arrayType
+        this.anchorX
+        this.anchorY
+        this.spriteArray
+        this.path
+        */
     }
 }
