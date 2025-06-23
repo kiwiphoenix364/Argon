@@ -118,6 +118,9 @@ class Path {
     public findPoint(point: number, dist: number) {
         let item1 = this.pointArray[point]
         let item2 = this.pointArray[Math.min(point + 1, this.pointArray.length - 1)]
+        if (isNaN(dist) || dist === Infinity) {
+            dist = 0
+        }
         /*
         if (item2 === this.pointArray[this.pointArray.length]) {
             return new SimplePoint(item1.x, item1.y)
@@ -139,7 +142,6 @@ class Path {
         modItem2Y = item2.y + Math.sin(item2.curveAngle) * item2.curveDis
         midIntX = Path.interpolate(dist, modItem1X, modItem2X)
         midIntY = Path.interpolate(dist, modItem1Y, modItem2Y)
-        console.log(modItem1X + "," + modItem1Y + "," + modItem2X + "," + modItem2Y + "," + midIntX + "," + midIntY)
         pixelX = Path.interpolate(
             dist,
             Path.interpolate(dist, item1.x, midIntX),
@@ -263,6 +265,8 @@ class PathFollower {
                 this.followObjectArray[i].disPixels += this.speed
                 // Dis pixels is past the length of the point array
                 // Current point is not the last point or later
+                console.log(this.followObjectArray[i].disPixels)
+                console.log(this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength)
                 if (this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
                     if (this.path.pointArray[this.followObjectArray[i].currentPoint + 1].delay > 0) {
                         this.followObjectArray[i].currentPoint++
@@ -275,7 +279,6 @@ class PathFollower {
                         this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
                     }
                 }
-                console.log("moved")
                 this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength))
                 if (((this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.speed) || (this.enemyType >= 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.speed + this.followObjectArray[i].enemy[0].array.extLength)) && this.followObjectArray[i].currentPoint >= this.path.pointArray.length - 2) {
                     this.followObjectArray[i].destroy()
