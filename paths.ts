@@ -268,7 +268,7 @@ class PathFollower {
                         }
                     }
                     this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength))
-                    if (this.followObjectArray[i].delay === 0 && (this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 || this.enemyType >= 1000 && this.followObjectArray[i].disPixels - this.followObjectArray[i].enemy[0].array.extLength > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2)) {
+                    if (this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 || this.enemyType >= 1000 && this.followObjectArray[i].disPixels - this.followObjectArray[i].enemy[0].array.extLength > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
                         this.followObjectArray[i].destroy()
                         this.followObjectArray.removeAt(i)
                     }
