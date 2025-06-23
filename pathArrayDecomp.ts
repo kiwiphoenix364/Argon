@@ -28,6 +28,7 @@ function decompString(data: string) {
                     pathCache.push(new PathPoint(pointCache[0], pointCache[1]))
                     pathCache[pathCache.length - 1].curveAngle = pointCache[2]
                     pathCache[pathCache.length - 1].curveDis = pointCache[3]
+                    pathCache[pathCache.length - 1].delay = pointCache[4]
                     pointCache = []
                 } else if (data.charAt(i) != "[" && data.charAt(i) != ",") {
                     getLastIdx()
@@ -38,7 +39,8 @@ function decompString(data: string) {
                 i++
             }
             dataType++
-        } else if (data.charAt(i) == "[" && dataType == 3) {
+        } 
+        /*else if (data.charAt(i) == "[" && dataType == 3) {
             //Handle dis array
             i++
             while (data.charAt(i) != "]") {
@@ -51,31 +53,31 @@ function decompString(data: string) {
                 i++
             }
             dataType++
-        } else {
+        } */
+        else {
             getLastIdx()
             //Handle number data types
             if (dataType == 0) {
                 timeValue = parseFloat(data.substr(i, numCounter))
             } else if (dataType == 1) {
                 idValue = parseInt(data.substr(i, numCounter))
-            } else if (dataType == 4) {
+            } else if (dataType == 3) {
                 tValue = parseInt(data.substr(i, numCounter))
-            } else if (dataType == 5) {
+            } else if (dataType == 4) {
                 aValue = parseInt(data.substr(i, numCounter))
-            } else if (dataType == 6) {
+            } else if (dataType == 5) {
                 sValue = parseFloat(data.substr(i, numCounter))
-            } else if (dataType == 7) {
+            } else if (dataType == 6) {
                 cValue = parseInt(data.substr(i, numCounter))
-            } else if (dataType == 8) {
+            } else if (dataType == 7) {
                 dValue = parseFloat(data.substr(i, numCounter))
             }
             dataType++
             i += numCounter
         }
-        if (data.charAt(i) == "}" && dataType == 9) {
+        if (data.charAt(i) == "}" && dataType == 8) {
             //Push to path array and move on to next
             pathArray.push(new Path(timeValue, idValue, pathCache, tValue, aValue, sValue, cValue, dValue))
-            pathArray[pathArray.length - 1].lengthArray = disCache
             pathCache = []
             dataType = 0
         }
