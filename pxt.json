@@ -18,7 +18,8 @@
         "images.g.ts",
         "ui.ts",
         "pathArrayDecomp.ts",
-        "gametimingengine.ts"
+        "gametimingengine.ts",
+        "spriteticker.ts"
     ],
     "testFiles": [
         "test.ts"
