@@ -243,7 +243,7 @@ class PathFollower {
         this.startPathFollow()
     }
     private startPathFollow() {
-        this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
                 this.followObjectArray.push(new PathFollowObject(this.path))
                 if (this.enemyType >= 1000) {
@@ -255,7 +255,7 @@ class PathFollower {
                     // Add 1 since will subtract this frame, others subtract next frame after initialized
                     this.followObjectArray[this.followObjectArray.length - 1].delay = this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay + 1
                 }
-                
+
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
                 // Do nothing since object is paused
@@ -349,10 +349,10 @@ class PathFollowObject {
         ]
         for (let i = 0; i < enemiesPerAnimation[this.enemyAnimation]; i++) {
             this.enemy.push(new Enemy(this.path))
-        }    
+        }
     }
     private update() {
-        this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
             this.animationFrame++
             this.runAnimation()
         })
@@ -367,12 +367,12 @@ class PathFollowObject {
         //TYPE 3 - DUAL OSCILLATING
         if (this.enemyAnimation === 0) {
             this.enemy[0].setPos(
-                this.x, 
+                this.x,
                 this.y
             )
         } else if (this.enemyAnimation === 1) {
             this.enemy[0].setPos(
-                this.x + Math.sin(this.animationFrame) * 10, 
+                this.x + Math.sin(this.animationFrame) * 10,
                 this.y
             )
         } else if (this.enemyAnimation === 2) {
@@ -419,7 +419,7 @@ class Enemy {
         this.enemyType = path.enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
-        if (this.enemyType  == 1000) {
+        if (this.enemyType == 1000) {
             this.array = new EnemyArray(this.path)
         } else if (this.enemyType >= 0 && this.enemyType <= 4) {
             this.sprite = sprites.create(img`

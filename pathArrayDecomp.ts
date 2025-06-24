@@ -89,4 +89,3 @@ function decompString(data: string) {
         }
     }
 }
-//pathArray = decompString(levelData)
