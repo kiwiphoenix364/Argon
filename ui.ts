@@ -1,4 +1,4 @@
-let levelData = "{0,0,([10,10,2.356194490192345,40,50][40,40,2.356194490192345,40,50][90,100,0,-40,50]),2,0,1,1,5}{1,0,([56.58203125,39.703125,1,50][139.7578125,12.7265625,1,50][38.88671875,96.51953125,1,50]),0,0,2,1,5}"
+let levelData = "{0,0,([10,10,2.356194490192345,40,0][40,40,2.356194490192345,40,0][90,100,0,-40,0]),0,3,2,5,20}{1,0,([81.3359375,119.5,1.5759586531581293,50,0][159.5,56.31640625,0.00516232636324343,50,0][81.3359375,56.31640625,0.00516232636324343,50,150][0.5,56.20703125,6.270894341022895,50,0][81.78125,0.7890625,1.5759586531581313,50,0]),1000,0,0.5,2,1000}"
 //let levelData = "{0,0,([10,10,2.356194490192345,40][40,40,2.356194490192345,40][90,100,0,-40]),[66.6541302488668,98.15508250730261,],0,2,1,5}"
 let idCounter = 0
 let idCache = 0
@@ -550,11 +550,11 @@ function editMode() {
                 spinSprite.z = 2
                 pauseSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
-                    2 2 e e 2 2 2 e 2 2 e 2 e 2 2 2 2 2 2 2
-                    2 2 e 2 e 2 e 2 e 2 e 2 e 2 2 2 2 2 2 2
-                    2 2 e e 2 2 e e e 2 e 2 e 2 2 2 2 2 2 2
-                    2 2 e 2 2 2 e 2 e 2 e 2 e 2 2 2 2 2 2 2
-                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 2 2 2 2 2
+                    2 2 e e 2 2 2 e 2 2 e 2 e 2 2 e e 2 2 2
+                    2 2 e 2 e 2 e 2 e 2 e 2 e 2 e 2 2 2 2 2
+                    2 2 e e 2 2 e e e 2 e 2 e 2 2 e 2 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 e 2 e 2 2 2 e 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 e e 2 2 2 2
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                 `, SpriteKind.Player)
                 pauseSprite.left = spinSprite.left
@@ -574,11 +574,11 @@ function editMode() {
                 delSprite.z = 2
                 exitSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
-                    2 2 e e 2 2 2 e 2 2 e 2 e 2 2 e e 2 2 2
-                    2 2 e 2 e 2 e 2 e 2 e 2 e 2 e 2 2 2 2 2
-                    2 2 e e 2 2 e e e 2 e 2 e 2 2 e 2 2 2 2
-                    2 2 e 2 2 2 e 2 e 2 e 2 e 2 2 2 e 2 2 2
-                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 e e 2 2 2 2
+                    2 2 e e e 2 e 2 e 2 e e e 2 e e e 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e 2 2 2 e 2 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e 2 2 2 e 2 e 2 2 e 2 2 2 e 2 2 2 2
+                    2 2 e e e 2 e 2 e 2 e e e 2 2 e 2 2 2 2
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                 `, SpriteKind.Player)
                 exitSprite.left = delSprite.left
@@ -639,6 +639,9 @@ function editMode() {
                 selectMenu.destroy()
             } else if (selectMenu.selectedIdx === 2) {
                 pathArray[currentSelection].pointArray[pointIdxSelected].delay = game.askForNumber("EDIT")
+                if (isNaN(pathArray[currentSelection].pointArray[pointIdxSelected].delay)) {
+                    pathArray[currentSelection].pointArray[pointIdxSelected].delay = 0
+                }
                 menu = -1
                 selectMenu.destroy()
                 controller.moveSprite(cursor)
