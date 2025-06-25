@@ -22,9 +22,10 @@ function RunLevel(levelData: string) {
     let idx = 0
     let updater: control.FrameCallback
     updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
-        time += 1 / 30
+        time += 1 / 50
         if (idx < pathArray.length && time >= pathArray[idx].time) {
             new PathFollower(pathArray[idx++])
+            info.changeScoreBy(1)
         }
         if (idx >= pathArray.length) {
             // Delete handler
