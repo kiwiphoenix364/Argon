@@ -393,13 +393,13 @@ class PathFollowObject {
             )
         } else if (this.enemyAnimation === 1) {
             this.enemy[0].setPos(
-                this.x + Math.sin(this.animationFrame) * 10,
+                this.x + Math.sin(this.animationFrame / 4) * 5,
                 this.y
             )
         } else if (this.enemyAnimation === 2) {
             this.enemy[0].setPos(
                 this.x,
-                this.y + Math.sin(this.animationFrame) * 10
+                this.y + Math.sin(this.animationFrame / 4) * 5
             )
         } else if (this.enemyAnimation === 3) {
             this.enemy[0].setPos(
