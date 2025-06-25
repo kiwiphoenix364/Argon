@@ -13,9 +13,21 @@ class PathPoint {
     public curveDis = 50
     public segmentLength = 0
     public delay = 0
+    public mxp: number
+    public myp: number
+    public mxn: number
+    public myn: number
     constructor(x: number, y: number) {
         this.x = x
         this.y = y
+    }
+    public genMX() {
+        let mx = Math.cos(this.curveAngle) * this.curveDis
+        let my = Math.sin(this.curveAngle) * this.curveDis
+        this.mxp = this.x + mx
+        this.myp = this.y + my
+        this.mxn = this.x - mx
+        this.myn = this.y - my
     }
     public renderPoint(image: Image) {
         image.drawCircle(this.x, this.y, 3, 1)
@@ -125,20 +137,27 @@ class Path {
         */
         let pixelX: number
         let pixelY: number
-        let modItem1X: number
-        let modItem1Y: number
-        let modItem2X: number
-        let modItem2Y: number
         let midIntX: number
         let midIntY: number
         //Angles
         //Proper bezier curve implementation within makecode
+        /*
+        // Implementation for realtime curves - depricated in favor of perf
+        let modItem1X: number
+        let modItem1Y: number
+        let modItem2X: number
+        let modItem2Y: number
         modItem1X = item1.x - Math.cos(item1.curveAngle) * item1.curveDis
         modItem1Y = item1.y - Math.sin(item1.curveAngle) * item1.curveDis
         modItem2X = item2.x + Math.cos(item2.curveAngle) * item2.curveDis
         modItem2Y = item2.y + Math.sin(item2.curveAngle) * item2.curveDis
-        midIntX = Path.interpolate(dist, modItem1X, modItem2X)
-        midIntY = Path.interpolate(dist, modItem1Y, modItem2Y)
+        midIntX = Path.interpolate(dist, modItem1X, modItem1Y)
+        midIntY = Path.interpolate(dist, modItem2X, modItem2Y)
+        */
+        
+        midIntX = Path.interpolate(dist, item1.mxn, item2.mxp)
+        midIntY = Path.interpolate(dist, item1.myn, item2.myp)
+        
         pixelX = Path.interpolate(
             dist,
             Path.interpolate(dist, item1.x, midIntX),
