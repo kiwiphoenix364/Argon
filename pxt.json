@@ -17,7 +17,8 @@
         "images.g.jres",
         "images.g.ts",
         "ui.ts",
-        "pathArrayDecomp.ts"
+        "pathArrayDecomp.ts",
+        "gametimingengine.ts"
     ],
     "testFiles": [
         "test.ts"
