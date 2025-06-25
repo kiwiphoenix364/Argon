@@ -20,6 +20,6 @@ namespace SpriteKind {
 // Shaders - init. at 17 ms and update attached sprites 23-24, renderable update
 // Game timing at 18
 // PathFollowObjects - Update pos at 19 and pos animations at 20
-//
-//
+// spritedamagetick at 21, SpriteTick at 22
+// 
 // 
