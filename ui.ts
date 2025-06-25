@@ -649,6 +649,9 @@ function editMode() {
                 menu = 2
                 pointIdxSelected = Math.min(game.askForNumber("Index to insert"), pathArray[currentSelection].pointArray.length)
                 pathArray[currentSelection].pointArray.insertAt(pointIdxSelected, new PathPoint(cursor.x, cursor.y))
+                pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
+                // Would replace with indiv. fill cmd for .pointArray[pointIdxSelected] and .pointArray[pointIdxSelected - 1]
+                pathArray[currentSelection].fillSegmentLengths()
                 selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (selectMenu.selectedIdx === 2) {
@@ -658,6 +661,9 @@ function editMode() {
             }
 
         } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && (menu === 2 || menu === 3)) {
+            pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
+            // Would replace with indiv. fill cmd for .pointArray[pointIdxSelected] and .pointArray[pointIdxSelected - 1]
+            pathArray[currentSelection].fillSegmentLengths()
             menu = -1
             controller.moveSprite(cursor)
             //console.log(pathArray[currentSelection].lengthArray.length)
@@ -699,8 +705,6 @@ function editMode() {
         if (menu === 2) {
             pathArray[currentSelection].pointArray[pointIdxSelected].x = cursor.x - 0.5
             pathArray[currentSelection].pointArray[pointIdxSelected].y = cursor.y - 0.5
-            pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
-            pathArray[currentSelection].fillSegmentLengths()
         }
         //for spinny stuff
         if (menu === 3) {
@@ -724,8 +728,6 @@ function editMode() {
                     pathArray[currentSelection].pointArray[pointIdxSelected].curveDis++
                 }
             }
-            pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
-            pathArray[currentSelection].fillSegmentLengths()
         }
         //Render ids
         for (let i = 0; i < pathArray[currentSelection].pointArray.length; i++) {

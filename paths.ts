@@ -214,6 +214,8 @@ class Path {
         }
         return null
     }
+    // Could allow for filling one segment but all instances where needed are in ui which is for debug
+    // Furthermore should be one-time actions so frametimes overall won't be worse just a few ms more when updating a path point, scales with path size
     public fillSegmentLengths() {
         for (let i = 0; i < this.pointArray.length - 1; i++) {
             this.pointArray[i].segmentLength = this.distBetweenIdx(i)
