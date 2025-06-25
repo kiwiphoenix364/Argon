@@ -11,23 +11,9 @@ class PathPoint {
     public y: number
     public curveAngle = 1
     public curveDis = 50
-    public segmentLength = 0
-    public delay = 0
-    public mxp: number
-    public myp: number
-    public mxn: number
-    public myn: number
     constructor(x: number, y: number) {
         this.x = x
         this.y = y
-    }
-    public genMX() {
-        let mx = Math.cos(this.curveAngle) * this.curveDis
-        let my = Math.sin(this.curveAngle) * this.curveDis
-        this.mxp = this.x + mx
-        this.myp = this.y + my
-        this.mxn = this.x - mx
-        this.myn = this.y - my
     }
     public renderPoint(image: Image) {
         image.drawCircle(this.x, this.y, 3, 1)
@@ -37,13 +23,14 @@ class PathPoint {
         return Math.sqrt((this.x - sprite.x) ** 2 + (this.y - sprite.y) ** 2)
     }
     public print() {
-        return "[" + this.x + "," + this.y + "," + this.curveAngle + "," + this.curveDis + "," + this.delay + "]"
+        return "[" + this.x + "," + this.y + "," + this.curveAngle + "," + this.curveDis + "]"
     }
 }
 class Path {
     public id: number
     public time: number
     public pointArray: PathPoint[]
+    public lengthArray: number[]
     public enemyType: number
     public enemyAnimation: number
     public speed: number
@@ -129,35 +116,23 @@ class Path {
     }
     public findPoint(point: number, dist: number) {
         let item1 = this.pointArray[point]
-        let item2 = this.pointArray[Math.min(point + 1, this.pointArray.length - 1)]
-        /*
-        if (item2 === this.pointArray[this.pointArray.length]) {
-            return new SimplePoint(item1.x, item1.y)
-        }
-        */
+        let item2 = this.pointArray[point + 1]
         let pixelX: number
         let pixelY: number
-        let midIntX: number
-        let midIntY: number
-        //Angles
-        //Proper bezier curve implementation within makecode
-        /*
-        // Implementation for realtime curves - depricated in favor of perf
         let modItem1X: number
         let modItem1Y: number
         let modItem2X: number
         let modItem2Y: number
+        let midIntX: number
+        let midIntY: number
+        //Angles
+        //Proper bezier curve implementation within makecode
         modItem1X = item1.x - Math.cos(item1.curveAngle) * item1.curveDis
         modItem1Y = item1.y - Math.sin(item1.curveAngle) * item1.curveDis
         modItem2X = item2.x + Math.cos(item2.curveAngle) * item2.curveDis
         modItem2Y = item2.y + Math.sin(item2.curveAngle) * item2.curveDis
-        midIntX = Path.interpolate(dist, modItem1X, modItem1Y)
-        midIntY = Path.interpolate(dist, modItem2X, modItem2Y)
-        */
-        
-        midIntX = Path.interpolate(dist, item1.mxn, item2.mxp)
-        midIntY = Path.interpolate(dist, item1.myn, item2.myp)
-        
+        midIntX = Path.interpolate(dist, modItem1X, modItem2X)
+        midIntY = Path.interpolate(dist, modItem1Y, modItem2Y)
         pixelX = Path.interpolate(
             dist,
             Path.interpolate(dist, item1.x, midIntX),
@@ -215,10 +190,10 @@ class Path {
         return null
     }
     public fillSegmentLengths() {
+        this.lengthArray = []
         for (let i = 0; i < this.pointArray.length - 1; i++) {
-            this.pointArray[i].segmentLength = this.distBetweenIdx(i)
+            this.lengthArray.push(this.distBetweenIdx(i))
         }
-        this.pointArray[this.pointArray.length - 1].segmentLength = 0
     }
     public print() {
         let string= ""
@@ -230,6 +205,11 @@ class Path {
             string = string.concat(this.pointArray[i].print())
         }
         string = string.concat("),")
+        string = string.concat("[")
+        for (let i = 0; i < this.lengthArray.length; i++) {
+            string = string.concat(this.lengthArray[i] + ",")
+        }
+        string = string.concat("],")
         string = string.concat(this.enemyType + ",")
         string = string.concat(this.enemyAnimation + ",")
         string = string.concat(this.speed + ",")
@@ -249,7 +229,6 @@ class PathFollower {
     public frameCounter = 0
     public enemyType: number
     public enemyAnimation: number
-    public pauseCounter: number
     private updater: control.FrameCallback
     constructor(path: Path) {
         this.enemyType = path.enemyType
@@ -262,67 +241,30 @@ class PathFollower {
         this.startPathFollow()
     }
     private startPathFollow() {
-        this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
                 this.followObjectArray.push(new PathFollowObject(this.path))
                 if (this.enemyType >= 1000) {
                     this.followObjectArray[this.followObjectArray.length - 1].disPixels -= this.followObjectArray[this.followObjectArray.length - 1].enemy[0].array.extLength
                 }
-                // Handle delay for first point
-                if (this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay > 0) {
-                    this.followObjectArray[this.followObjectArray.length - 1].setPosPoint(this.path.findPoint(this.followObjectArray[this.followObjectArray.length - 1].currentPoint, this.followObjectArray[this.followObjectArray.length - 1].disPixels / this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].segmentLength))
-                    // Add 1 since will subtract this frame, others subtract next frame after initialized
-                    this.followObjectArray[this.followObjectArray.length - 1].delay = this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay + 1
-                }
-
             }
             for (let i = 0; i < this.followObjectArray.length; i++) {
-                // Do nothing since object is paused
-                if (this.followObjectArray[i].delay-- > 0) {
-                    continue
-                }
-                // Add to distance
-                this.followObjectArray[i].disPixels += this.speed
-                // Update the current point if needed and handle regular delay
-                // Dis pixels is past the length of the point array
-                // Current point is not the last point or later
-                // Add case to make sure it is not an array at the end - this will be handled separately
-                if (this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1 && !(this.enemyType >= 1000 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2)) {
-                    // Handle pauses
-                    if (this.path.pointArray[this.followObjectArray[i].currentPoint + 1].delay > 0) {
-                        this.followObjectArray[i].disPixels = 0
-                        this.followObjectArray[i].currentPoint++
-                        this.followObjectArray[i].delay = this.path.pointArray[this.followObjectArray[i].currentPoint].delay
-                        // Last point length will always be zero
-                        this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, 0))
-                        continue
-                    } else {
-                        //If no pause
-                        this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
+                if (this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
+                    this.followObjectArray[i].disPixels += this.speed
+                    if (this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 2) {
+                        this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.lengthArray[this.followObjectArray[i].currentPoint]
                         this.followObjectArray[i].currentPoint++
                     }
-                }
-                // Main movement update code
-                this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength))
-                // Destroy cases for regular
-                if (this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength) {
+                    this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.lengthArray[this.followObjectArray[i].currentPoint]))
+                    if (this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 || this.enemyType >= 1000 && this.followObjectArray[i].disPixels - this.followObjectArray[i].enemy[0].array.extLength > this.path.lengthArray[this.followObjectArray[i].currentPoint] + this.speed && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2) {
+                        this.followObjectArray[i].destroy()
+                        this.followObjectArray.removeAt(i)
+                    }
+                } else {
                     this.followObjectArray[i].destroy()
                     this.followObjectArray.removeAt(i)
                 }
-                // Destroy case for array check and delay at end
-                if (this.enemyType >= 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.followObjectArray[i].enemy[0].array.extLength && this.followObjectArray[i].currentPoint >= this.path.pointArray.length - 2) {
-                    // Destroy if has gone through delay or no delay
-                    if (this.followObjectArray[i].currentPoint === this.path.pointArray.length - 1 || this.path.pointArray[this.followObjectArray[i].currentPoint].delay === 0) {
-                        this.followObjectArray[i].destroy()
-                        this.followObjectArray.removeAt(i)
-                    } else {
-                        // Else do not destroy and instead add delay
-                        this.followObjectArray[i].currentPoint++
-                        this.followObjectArray[i].delay = this.path.pointArray[this.followObjectArray[i].currentPoint].delay
-                    }
-                }
             }
-            // Destroy array if empty
             if (this.followObjectArray.length === 0) {
                 this.destroy()
             }
@@ -344,7 +286,6 @@ class PathFollowObject {
     private y: number
     public currentPoint = 0
     public disPixels = 0
-    public delay: number
     public enemyType: number
     public enemyAnimation: number
     public enemy: Enemy[]
@@ -368,10 +309,10 @@ class PathFollowObject {
         ]
         for (let i = 0; i < enemiesPerAnimation[this.enemyAnimation]; i++) {
             this.enemy.push(new Enemy(this.path))
-        }
+        }    
     }
     private update() {
-        this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
             this.animationFrame++
             this.runAnimation()
         })
@@ -386,12 +327,12 @@ class PathFollowObject {
         //TYPE 3 - DUAL OSCILLATING
         if (this.enemyAnimation === 0) {
             this.enemy[0].setPos(
-                this.x,
+                this.x, 
                 this.y
             )
         } else if (this.enemyAnimation === 1) {
             this.enemy[0].setPos(
-                this.x + Math.sin(this.animationFrame) * 10,
+                this.x + Math.sin(this.animationFrame) * 10, 
                 this.y
             )
         } else if (this.enemyAnimation === 2) {
@@ -438,7 +379,7 @@ class Enemy {
         this.enemyType = path.enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
-        if (this.enemyType == 1000) {
+        if (this.enemyType  == 1000) {
             this.array = new EnemyArray(this.path)
         } else if (this.enemyType >= 0 && this.enemyType <= 4) {
             this.sprite = sprites.create(img`
@@ -459,7 +400,44 @@ class Enemy {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
             `, SpriteKind.Player)
-            this.sprite.setFlag(SpriteFlag.Ghost, true)
+        } else if (this.enemyType === 1) {
+            this.sprite = sprites.create(img`
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+            `, SpriteKind.Player)
+        } else if (this.enemyType === 2) {
+            this.sprite = sprites.create(img`
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+            `, SpriteKind.Player)
         }
     }
     public setPos(x: number, y: number) {
