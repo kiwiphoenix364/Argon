@@ -29,6 +29,7 @@ function decompString(data: string) {
                     pathCache[pathCache.length - 1].curveAngle = pointCache[2]
                     pathCache[pathCache.length - 1].curveDis = pointCache[3]
                     pathCache[pathCache.length - 1].delay = pointCache[4]
+                    pathCache[pathCache.length - 1].genMX()
                     pointCache = []
                 } else if (data.charAt(i) != "[" && data.charAt(i) != ",") {
                     getLastIdx()

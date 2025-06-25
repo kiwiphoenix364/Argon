@@ -700,28 +700,33 @@ function editMode() {
         if (menu === 2) {
             pathArray[currentSelection].pointArray[pointIdxSelected].x = cursor.x - 0.5
             pathArray[currentSelection].pointArray[pointIdxSelected].y = cursor.y - 0.5
+            pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
         }
         //for spinny stuff
         if (menu === 3) {
             if (controller.right.isPressed()) {
                 pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle += Math.PI / 180
                 pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle = pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle % (Math.PI * 2)
+                pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
             }
             if (controller.left.isPressed()) {
                 pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle -= Math.PI / 180
                 pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle = (pathArray[currentSelection].pointArray[pointIdxSelected].curveAngle + Math.PI * 2) % (Math.PI * 2)
+                pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
             }
             if (controller.up.isPressed()) {
                 pathArray[currentSelection].pointArray[pointIdxSelected].curveDis++
                 if (pathArray[currentSelection].pointArray[pointIdxSelected].curveDis > Math.abs(maxDist)) {
                     pathArray[currentSelection].pointArray[pointIdxSelected].curveDis--
                 }
+                pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
             } 
             if (controller.down.isPressed()) {
                 pathArray[currentSelection].pointArray[pointIdxSelected].curveDis--
                 if (pathArray[currentSelection].pointArray[pointIdxSelected].curveDis < 0 - Math.abs(maxDist)) {
                     pathArray[currentSelection].pointArray[pointIdxSelected].curveDis++
                 }
+                pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
             }
         }
         //Render ids
