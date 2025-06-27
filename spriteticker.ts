@@ -7,7 +7,14 @@ class SpriteLayout {
         }
     }
 }
+class Machine {
+    constructor(id: number, t: number) {
+        
+    }
+}
 let spriteUpdater: control.FrameCallback
 spriteUpdater = game.currentScene().eventContext.registerFrameHandler(19, () => {
 
 })
+
+

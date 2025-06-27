@@ -25,7 +25,6 @@ function RunLevel(levelData: string) {
         time += 1 / 50
         if (idx < pathArray.length && time >= pathArray[idx].time) {
             new PathFollower(pathArray[idx++])
-            info.changeScoreBy(1)
         }
         if (idx >= pathArray.length) {
             // Delete handler
