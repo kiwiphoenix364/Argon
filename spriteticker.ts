@@ -1,20 +1,74 @@
 class SpriteLayout {
-    public layoutMatrix: Buffer[]
+    private layoutMatrix: MachineObj[][]
+    public id = 0
+    public width: number
+    public height: number
     constructor(w: number, h: number) {
-        this.layoutMatrix.fill(Buffer.create(w),0,h)
-        for (let x of this.layoutMatrix) {
-            x.fill(0,0,w)
+        this.width = w
+        this.height = h
+        this.layoutMatrix = []
+        for (let i = 0; i < w; i++) {
+            this.layoutMatrix.push([])
+            for (let j = 0; j < h; j++) {
+                this.layoutMatrix[i].push(new EmptyTile())
+            }
         }
     }
+    add(obj: MachineObj, x: number, y: number) {
+        obj.id = this.id++
+        this.layoutMatrix[x][y] = obj
+    }
+    addMult(obj: MachineObj, x: number, y: number, w: number, h: number) {
+        obj.id = this.id++
+        for (let i = 0; i < w; i++) {
+            for (let j = 0; j < h; j++) {
+                this.layoutMatrix[x + i][y + j] = obj
+            }
+        }
+    }
+    getOutputLocations(ofObject: MachineObj) {
+
+    }
+    // Make function that gets possible locations
+    // If finds another another location with same id, run recursion
+    // Array is added to when find new locations
 }
-class Machine {
-    constructor(id: number, t: number) {
-        
+class MachineObj {
+    public objType: string
+    public id = -1
+    constructor(objType: string) {
+        this.objType = objType
     }
 }
+class EmptyTile extends MachineObj {
+    constructor() {
+        super("null")
+    }
+}
+class ResourceGenerator extends MachineObj {
+    constructor() {
+        super("resourcegenerator")
+    }
+}
+class Belt extends MachineObj {
+    constructor(objType: number) {
+        super("belt")
+    }
+}
+class Factory extends MachineObj {
+    constructor(objType: number) {
+        super("factory")
+    }
+}
+class Turret extends MachineObj {
+    constructor(objType: number) {
+        super("turret")
+    }
+}
+let test = new SpriteLayout(5, 5)
 let spriteUpdater: control.FrameCallback
 spriteUpdater = game.currentScene().eventContext.registerFrameHandler(19, () => {
-
+    test.add(new EmptyTile(), 4, 4)
 })
 
 
