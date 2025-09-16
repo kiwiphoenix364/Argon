@@ -3,7 +3,12 @@ let levelData = "{0,0,([10,10,2.356194490192345,40,0][40,40,2.356194490192345,40
 let pathArray: Path[]
 let idCounter: number
 let idCache: number
-RunLevel(levelData)
+let debug = 1
+if (debug) {
+    EditLevel(levelData)
+} else {
+    RunLevel(levelData)
+}
 function EditLevel(levelData: string) {
     pathArray = []
     decompString(levelData)
