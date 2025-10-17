@@ -10,6 +10,7 @@ if (debug) {
     RunLevel(levelData)
 }
 function EditLevel(levelData: string) {
+    game.pushScene()
     pathArray = []
     decompString(levelData)
     idCounter = pathArray.length - 1
@@ -18,6 +19,7 @@ function EditLevel(levelData: string) {
     editMode()
 }
 function RunLevel(levelData: string) {
+    game.pushScene()
     pathArray = []
     decompString(levelData)
     idCounter = pathArray.length - 1

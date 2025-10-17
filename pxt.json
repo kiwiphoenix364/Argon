@@ -19,13 +19,15 @@
         "ui.ts",
         "pathArrayDecomp.ts",
         "gametimingengine.ts",
-        "spriteticker.ts"
+        "spriteticker.ts",
+        "mainmenu.ts",
+        "player.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
     "targetVersions": {
-        "target": "2.0.56",
+        "target": "2.0.59",
         "targetId": "arcade"
     },
     "supportedTargets": [
