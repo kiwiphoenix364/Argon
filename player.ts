@@ -42,4 +42,4 @@ class PlayerSprite {
         this.playerSprite.setPosition(x,y)
     }
 }
-new Player(controller.player1)
+//new Player(controller.player1)

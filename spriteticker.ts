@@ -1,3 +1,5 @@
+// Future project for factory-builder style spacecraft
+/*
 class SpriteLayout {
     private layoutMatrix: MachineObj[][]
     public id = 0
@@ -71,7 +73,7 @@ spriteUpdater = game.currentScene().eventContext.registerFrameHandler(19, () => 
     test.add(new EmptyTile(), 4, 4)
 })
 
-
+*/
 /*
 -----------------------
 ID SYSTEM
