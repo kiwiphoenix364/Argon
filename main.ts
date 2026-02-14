@@ -16,10 +16,8 @@ namespace SpriteKind {
 // MULTIPLAYER_SCREEN_PRIORITY = 190;
 // UPDATE_SCREEN_PRIORITY = 200;
 // MULTIPLAYER_POST_SCREEN_PRIORITY = 210;
-//
+// 
 // Shaders - init. at 17 ms and update attached sprites 23-24, renderable update
 // Game timing at 18
 // PathFollowObjects - Update pos at 19 and pos animations at 20
 // spritedamagetick at 21, SpriteTick at 22
-// 
-// 

@@ -1,1 +1,20 @@
-<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable type="KIND_SpriteKind" id="63!xoflZHjPIcJz#a0-e">Player</variable><variable type="KIND_SpriteKind" id="Pr3op$5+q^*7QS@C8RnE">Projectile</variable><variable type="KIND_SpriteKind" id="b7~qb|sNO//5^ga).K(g">Food</variable><variable type="KIND_SpriteKind" id="32_m!x,3A-lPwN)%,V9q">Enemy</variable><variable type="KIND_SpriteKind" id="{fM3.i(N1|n*JbM^edA9">MenuSprite</variable></variables><block type="pxt-on-start" id="}|?%at!y)?AWKJD#p:VP" x="0" y="0"></block></xml>
+<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable type="KIND_SpriteKind" id="peU5fRe!22M[7IPX,!WS">MenuSprite</variable></variables><block type="pxt-on-start" id="e)Dp?IpAmhK-fIz#VQEY" x="20" y="20"><statement name="HANDLER"><block type="music_playable_play" id="iFOCF-}f(Ws2-x:/eYdU"><field name="playbackMode">music.PlaybackMode.UntilDone</field><comment pinned="false" h="80" w="160">CONTROLLER_PRIORITY = 8;
+UPDATE_CONTROLLER_PRIORITY = 13;
+CONTROLLER_SPRITES_PRIORITY = 13;
+FOLLOW_SPRITE_PRIORITY = 14;
+PHYSICS_PRIORITY = 15;
+ANIMATION_UPDATE_PRIORITY = 15;
+UPDATE_INTERVAL_PRIORITY = 19;
+UPDATE_PRIORITY = 20;
+PRE_RENDER_UPDATE_PRIORITY = 55;
+RENDER_BACKGROUND_PRIORITY = 60;
+RENDER_SPRITES_PRIORITY = 90;
+RENDER_DIAGNOSTICS_PRIORITY = 150;
+MULTIPLAYER_SCREEN_PRIORITY = 190;
+UPDATE_SCREEN_PRIORITY = 200;
+MULTIPLAYER_POST_SCREEN_PRIORITY = 210;
+
+Shaders - init. at 17 ms and update attached sprites 23-24, renderable update
+Game timing at 18
+PathFollowObjects - Update pos at 19 and pos animations at 20
+spritedamagetick at 21, SpriteTick at 22</comment><value name="toPlay"><shadow type="music_melody_playable" id="e`+9pb[gb.VtCmFb2%LE"><field name="melody">music.baDing</field></shadow><block type="music_string_playable" id="6g;,hEJ]*mD;,yOPF4zg"><value name="melody"><shadow type="melody_editor" id="#ekH^AE@@tV2,8}3/G!6"><field name="melody">"- - - - - - - - "</field></shadow></value><value name="tempo"><shadow type="math_number_minmax" id="RZCT@=hYeg59;_NNy{^D"><mutation min="40" max="500" precision="0"></mutation><field name="SLIDER">120</field></shadow></value></block></value></block></statement></block></xml>
