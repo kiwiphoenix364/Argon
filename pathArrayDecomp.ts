@@ -25,7 +25,7 @@ function decompString(data: string) {
             while (data.charAt(i) != ")") {
                 if (data.charAt(i) == "]") {
                     //Handle array to point to pathCache
-                    pathCache.push(new PathPoint(pointCache[0], pointCache[1]))
+                    pathCache.push(new PathPoint(Fx8(pointCache[0]), Fx8(pointCache[1])))
                     pathCache[pathCache.length - 1].curveAngle = pointCache[2]
                     pathCache[pathCache.length - 1].curveDis = pointCache[3]
                     pathCache[pathCache.length - 1].delay = pointCache[4]

@@ -7,34 +7,36 @@ class SimplePoint {
     }
 }
 class PathPoint {
-    public x: number
-    public y: number
+    public x: Fx8
+    public y: Fx8
     public curveAngle = 1
     public curveDis = 50
-    public segmentLength = 0
+    public segmentLength: number
+    public segmentLengths: number[]
+    public segmentLengthPos: number
     public delay = 0
-    public mxp: number
-    public myp: number
-    public mxn: number
-    public myn: number
-    constructor(x: number, y: number) {
+    public mxp: Fx8
+    public myp: Fx8
+    public mxn: Fx8
+    public myn: Fx8
+    constructor(x: Fx8, y: Fx8) {
         this.x = x
         this.y = y
     }
     public genMX() {
-        let mx = Math.cos(this.curveAngle) * this.curveDis
-        let my = Math.sin(this.curveAngle) * this.curveDis
-        this.mxp = this.x + mx
-        this.myp = this.y + my
-        this.mxn = this.x - mx
-        this.myn = this.y - my
+        let mx = Fx8(Math.cos(this.curveAngle) * this.curveDis)
+        let my = Fx8(Math.sin(this.curveAngle) * this.curveDis)
+        this.mxp = Fx.add(this.x, mx)
+        this.myp = Fx.add(this.y, my)
+        this.mxn = Fx.sub(this.x, mx)
+        this.myn = Fx.sub(this.y, my)
     }
     public renderPoint(image: Image) {
-        image.drawCircle(this.x, this.y, 3, 1)
-        image.setPixel(this.x, this.y, 1)
+        image.drawCircle(Fx.toFloat(this.x), Fx.toFloat(this.y), 3, 1)
+        image.setPixel(Fx.toFloat(this.x), Fx.toFloat(this.y), 1)
     }
     public findDist(sprite: Sprite) {
-        return Math.sqrt((this.x - sprite.x) ** 2 + (this.y - sprite.y) ** 2)
+        return Math.sqrt((Fx.toFloat(this.x) - sprite.x) ** 2 + (Fx.toFloat(this.y) - sprite.y) ** 2)
     }
     public print() {
         return "[" + this.x + "," + this.y + "," + this.curveAngle + "," + this.curveDis + "," + this.delay + "]"
@@ -63,15 +65,15 @@ class Path {
     public renderPath(image: Image, points = true, lines = true, angles = false, smoothness = 10) {
         //Does all calculations regardless, but options to not display certain parts
         let prevItem: PathPoint
-        let currentPos: number
-        let pixelX: number
-        let pixelY: number
-        let modPrevItemX: number
-        let modPrevItemY: number
-        let modItemX: number
-        let modItemY: number
-        let midIntX: number
-        let midIntY: number
+        let currentPos: Fx8
+        let pixelX: Fx8
+        let pixelY: Fx8
+        let modPrevItemX: Fx8
+        let modPrevItemY: Fx8
+        let modItemX: Fx8
+        let modItemY: Fx8
+        let midIntX: Fx8
+        let midIntY: Fx8
         let pxp: number
         let pyp: number
         /*
@@ -86,13 +88,13 @@ class Path {
         for (let item of this.pointArray) {
             if (prevItem) {
                 for (let i = 0; i <= smoothness; i++) {
-                    currentPos = i / (smoothness)
+                    currentPos = Fx.div(Fx8(i), Fx8(smoothness))
                     //Angles
                     //Proper bezier curve implementation within makecode
-                    modPrevItemX = prevItem.x - Math.cos(prevItem.curveAngle) * prevItem.curveDis
-                    modPrevItemY = prevItem.y - Math.sin(prevItem.curveAngle) * prevItem.curveDis
-                    modItemX = item.x + Math.cos(item.curveAngle) * item.curveDis
-                    modItemY = item.y + Math.sin(item.curveAngle) * item.curveDis
+                    modPrevItemX = Fx.sub(prevItem.x, Fx8((Math.cos(prevItem.curveAngle)) * prevItem.curveDis))
+                    modPrevItemY = Fx.sub(prevItem.y, Fx8((Math.sin(prevItem.curveAngle)) * prevItem.curveDis))
+                    modItemX = Fx.add(item.x, Fx.mul(Fx8(Math.cos(item.curveAngle)), Fx8(item.curveDis)))
+                    modItemY = Fx.add(item.y, Fx.mul(Fx8(Math.sin(item.curveAngle)), Fx8(item.curveDis)))
                     midIntX = Path.interpolate(currentPos, modPrevItemX, modItemX)
                     midIntY = Path.interpolate(currentPos, modPrevItemY, modItemY)
                     pixelX = Path.interpolate(
@@ -108,15 +110,15 @@ class Path {
                     //Render lines?
                     if (lines) {
                         if (pxp) {
-                            image.drawLine(Math.round(pixelX), Math.round(pixelY), Math.round(pxp), Math.round(pyp), 2)
+                            image.drawLine(Fx.toInt(pixelX), Fx.toInt(pixelY), Math.round(pxp), Math.round(pyp), 2)
                         }
-                        pxp = Math.round(pixelX)
-                        pyp = Math.round(pixelY)
+                        pxp = Fx.toInt(pixelX)
+                        pyp = Fx.toInt(pixelY)
                     }
                     //Render angles?
                     if (angles) {
-                        image.drawLine(prevItem.x, prevItem.y, modPrevItemX, modPrevItemY, 5)
-                        image.drawLine(item.x, item.y, modItemX, modItemY, 5)
+                        image.drawLine(Fx.toInt(prevItem.x), Fx.toInt(prevItem.y), Fx.toInt(modPrevItemX), Fx.toInt(modPrevItemY), 5)
+                        image.drawLine(Fx.toInt(item.x), Fx.toInt(item.y), Fx.toInt(modItemX), Fx.toInt(modItemY), 5)
                     }
                 }
             }
@@ -127,7 +129,7 @@ class Path {
             prevItem = item
         }
     }
-    public findPoint(point: number, dist: number) {
+    public findPoint(point: number, dist: Fx8) {
         let item1 = this.pointArray[point]
         let item2 = this.pointArray[Math.min(point + 1, this.pointArray.length - 1)]
         /*
@@ -135,10 +137,10 @@ class Path {
             return new SimplePoint(item1.x, item1.y)
         }
         */
-        let pixelX: number
-        let pixelY: number
-        let midIntX: number
-        let midIntY: number
+        let pixelX: Fx8
+        let pixelY: Fx8
+        let midIntX: Fx8
+        let midIntY: Fx8
         //Angles
         //Proper bezier curve implementation within makecode
         /*
@@ -168,23 +170,26 @@ class Path {
             Path.interpolate(dist, item1.y, midIntY),
             Path.interpolate(dist, midIntY, item2.y)
         )
-        return(new SimplePoint(pixelX, pixelY))
+        return(new SimplePoint(Fx.toInt(pixelX), Fx.toInt(pixelY)))
     }
     public distBetweenIdx(pointIndex: number, precision = 10) {
-        let totalDist = 0
+        let distArray = []
+        let distTotal = 0
         for (let i = 0; i < precision; i++) {
-            totalDist += Path.distBetweenSimplePoints(this.findPoint(pointIndex, i / precision), this.findPoint(pointIndex, (i + 1) / precision))
+            distArray.push(Path.distBetweenSimplePoints(this.findPoint(pointIndex, Fx8(i / precision)), this.findPoint(pointIndex, Fx8((i + 1) / precision))))
+            distTotal += distArray[i]
         }
-        return totalDist
+        distArray.push(distTotal)
+        return distArray
     }
     public static distBetweenSimplePoints(p1: SimplePoint, p2: SimplePoint) {
         return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
     }
     public static distBetweenPathPoints(p1: PathPoint, p2: PathPoint) {
-        return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2)
+        return Math.sqrt((Fx.toInt(p2.x) - Fx.toInt(p1.x)) ** 2 + (Fx.toInt(p2.y) - Fx.toInt(p1.y)) ** 2)
     }
-    public static interpolate(mid: number, start: number, end: number) {
-        return start + (end - start) * mid
+    public static interpolate(mid: Fx8, start: Fx8, end: Fx8) {
+        return Fx.add(start, Fx.mul(Fx.sub(end, start), mid))
     }
     public static pathArraySortByTime(pathArray: Path[]) {
         let finalArray = []
@@ -208,7 +213,7 @@ class Path {
     }
     public checkOverlap(sprite: Sprite, radius: number) {
         for (let i = 0; i < this.pointArray.length; i++) {
-            if (Math.sqrt((sprite.x - this.pointArray[i].x) ** 2 + (sprite.y - this.pointArray[i].y) ** 2) <= radius) {
+            if (Math.sqrt((sprite.x - Fx.toInt(this.pointArray[i].x)) ** 2 + (sprite.y - Fx.toInt(this.pointArray[i].y)) ** 2) <= radius) {
                 return i
             }
         }
@@ -218,9 +223,10 @@ class Path {
     // Furthermore should be one-time actions so frametimes overall won't be worse just a few ms more when updating a path point, scales with path size
     public fillSegmentLengths() {
         for (let i = 0; i < this.pointArray.length - 1; i++) {
-            this.pointArray[i].segmentLength = this.distBetweenIdx(i)
+            this.pointArray[i].segmentLengths = (this.distBetweenIdx(i))
+            this.pointArray[i].segmentLength = this.pointArray[i].segmentLengths.pop()
         }
-        this.pointArray[this.pointArray.length - 1].segmentLength = 0
+        this.pointArray[this.pointArray.length - 1].segmentLengths = []
     }
     public print() {
         let string= ""
@@ -247,7 +253,6 @@ class PathFollower {
     public speed: number
     public count: number
     public spacing: number
-    public segmentLengths: number[]
     public frameCounter = 0
     public enemyType: number
     public enemyAnimation: number
@@ -272,7 +277,7 @@ class PathFollower {
                 }
                 // Handle delay for first point
                 if (this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay > 0) {
-                    this.followObjectArray[this.followObjectArray.length - 1].setPosPoint(this.path.findPoint(this.followObjectArray[this.followObjectArray.length - 1].currentPoint, this.followObjectArray[this.followObjectArray.length - 1].disPixels / this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].segmentLength))
+                    this.followObjectArray[this.followObjectArray.length - 1].setPosPoint(this.path.findPoint(this.followObjectArray[this.followObjectArray.length - 1].currentPoint, Fx8(this.followObjectArray[this.followObjectArray.length - 1].disPixels / this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].segmentLengths[this.followObjectArray[0].segmentLengthPos])))
                     // Add 1 since will subtract this frame, others subtract next frame after initialized
                     this.followObjectArray[this.followObjectArray.length - 1].delay = this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay + 1
                 }
@@ -285,6 +290,11 @@ class PathFollower {
                 }
                 // Add to distance
                 this.followObjectArray[i].disPixels += this.speed
+                this.followObjectArray[i].segmentDisPixels += this.speed
+                if (this.followObjectArray[i].segmentDisPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) {
+                    this.followObjectArray[i].segmentDisPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]
+                    this.followObjectArray[i].segmentLengthPos++
+                }
                 // Update the current point if needed and handle regular delay
                 // Dis pixels is past the length of the point array
                 // Current point is not the last point or later
@@ -296,18 +306,19 @@ class PathFollower {
                         this.followObjectArray[i].currentPoint++
                         this.followObjectArray[i].delay = this.path.pointArray[this.followObjectArray[i].currentPoint].delay
                         // Last point length will always be zero
-                        this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, 0))
+                        this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, Fx8(0)))
                         continue
                     } else {
                         //If no pause
-                        this.followObjectArray[i].disPixels = this.followObjectArray[i].disPixels - this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
+                        this.followObjectArray[i].disPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
                         this.followObjectArray[i].currentPoint++
+                        this.followObjectArray[i].segmentLengthPos = 0
                     }
                 }
                 // Main movement update code
-                this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, this.followObjectArray[i].disPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength))
+                this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, Fx8(this.followObjectArray[i].segmentLengthPos / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length + (this.followObjectArray[i].segmentDisPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) / (this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length))))
                 // Destroy cases for regular
-                if (this.enemyType < 1000 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength) {
+                if (this.enemyType < 1000 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 1 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint - 1].segmentLength) {
                     this.followObjectArray[i].destroy()
                     this.followObjectArray.removeAt(i)
                 }
@@ -335,7 +346,7 @@ class PathFollower {
         for (let obj of this.followObjectArray) {
             obj.destroy()
         }
-        this.followObjectArray = this.path = this.speed = this.count = this.spacing = this.segmentLengths = this.updater = this.frameCounter = null
+        this.followObjectArray = this.path = this.speed = this.count = this.spacing = this.updater = this.frameCounter = null
     }
 
 }
@@ -346,6 +357,8 @@ class PathFollowObject {
     private y: number
     public currentPoint = 0
     public disPixels = 0
+    public segmentDisPixels = 0
+    public segmentLengthPos = 0
     public delay: number
     public enemyType: number
     public enemyAnimation: number
@@ -427,7 +440,7 @@ class PathFollowObject {
         for (let e of this.enemy) {
             e.destroy()
         }
-        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = null
+        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.segmentLengthPos = null
     }
 }
 class Enemy {

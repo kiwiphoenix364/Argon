@@ -498,8 +498,8 @@ function editMode() {
                 controller.moveSprite(cursor, 0, 0)
             } else {
                 menu = 1
-                cursor.x = pathArray[currentSelection].pointArray[pointIdxSelected].x + 0.5
-                cursor.y = pathArray[currentSelection].pointArray[pointIdxSelected].y + 0.5
+                cursor.x = Fx.toInt(Fx.add(pathArray[currentSelection].pointArray[pointIdxSelected].x, Fx8(0.5)))
+                cursor.y = Fx.toInt(Fx.add(pathArray[currentSelection].pointArray[pointIdxSelected].y, Fx8(0.5)))
                 editSprite = sprites.create(img`
                     . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
                     2 2 e e e 2 e e 2 2 e e e 2 e e e 2 2 2
@@ -641,14 +641,14 @@ function editMode() {
         } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === 4) {
             if (selectMenu.selectedIdx === 0) {
                 menu = 2
-                pathArray[currentSelection].pointArray.push(new PathPoint(cursor.x, cursor.y))
+                pathArray[currentSelection].pointArray.push(new PathPoint(Fx8(cursor.x), Fx8(cursor.y)))
                 pointIdxSelected = pathArray[currentSelection].pointArray.length - 1
                 selectMenu.destroy()
                 controller.moveSprite(cursor)
             } else if (selectMenu.selectedIdx === 1) {
                 menu = 2
                 pointIdxSelected = Math.min(game.askForNumber("Index to insert"), pathArray[currentSelection].pointArray.length)
-                pathArray[currentSelection].pointArray.insertAt(pointIdxSelected, new PathPoint(cursor.x, cursor.y))
+                pathArray[currentSelection].pointArray.insertAt(pointIdxSelected, new PathPoint(Fx8(cursor.x), Fx8(cursor.y)))
                 pathArray[currentSelection].pointArray[pointIdxSelected].genMX()
                 // Would replace with indiv. fill cmd for .pointArray[pointIdxSelected] and .pointArray[pointIdxSelected - 1]
                 pathArray[currentSelection].fillSegmentLengths()
@@ -703,8 +703,8 @@ function editMode() {
         }
         //for dragging stuff lel
         if (menu === 2) {
-            pathArray[currentSelection].pointArray[pointIdxSelected].x = cursor.x - 0.5
-            pathArray[currentSelection].pointArray[pointIdxSelected].y = cursor.y - 0.5
+            pathArray[currentSelection].pointArray[pointIdxSelected].x = Fx8(cursor.x - 0.5)
+            pathArray[currentSelection].pointArray[pointIdxSelected].y = Fx8(cursor.y - 0.5)
         }
         //for spinny stuff
         if (menu === 3) {
@@ -731,10 +731,10 @@ function editMode() {
         }
         //Render ids
         for (let i = 0; i < pathArray[currentSelection].pointArray.length; i++) {
-            if (pathArray[currentSelection].pointArray[i].y > 60) {
-                SpriteMenu.drawOnImage(image, i.toString(), pathArray[currentSelection].pointArray[i].x - 1, pathArray[currentSelection].pointArray[i].y - 9)
+            if (Fx.toInt(pathArray[currentSelection].pointArray[i].y) > 60) {
+                SpriteMenu.drawOnImage(image, i.toString(), Fx.toInt(pathArray[currentSelection].pointArray[i].x) - 1, Fx.toInt(pathArray[currentSelection].pointArray[i].y) - 9)
             } else {
-                SpriteMenu.drawOnImage(image, i.toString(), pathArray[currentSelection].pointArray[i].x - 1, pathArray[currentSelection].pointArray[i].y + 5)
+                SpriteMenu.drawOnImage(image, i.toString(), Fx.toInt(pathArray[currentSelection].pointArray[i].x) - 1, Fx.toInt(pathArray[currentSelection].pointArray[i].y) + 5)
             }
         }
     })

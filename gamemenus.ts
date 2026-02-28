@@ -1,3 +1,6 @@
 function openingMenu() {
     
 }
+function levelDecompMenu() {
+
+}

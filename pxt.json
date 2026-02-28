@@ -1,5 +1,5 @@
 {
-    "name": "Argon",
+    "name": "Argon Project",
     "version": "0.0.3",
     "description": "",
     "dependencies": {
@@ -27,7 +27,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "4.0.5",
+        "target": "4.0.8",
         "targetId": "arcade"
     },
     "supportedTargets": [
