@@ -39,7 +39,7 @@ class PathPoint {
         return Math.sqrt((Fx.toFloat(this.x) - sprite.x) ** 2 + (Fx.toFloat(this.y) - sprite.y) ** 2)
     }
     public print() {
-        return "[" + this.x + "," + this.y + "," + this.curveAngle + "," + this.curveDis + "," + this.pauseAtPoint + "]"
+        return "[" + Fx.toInt(this.x) + "," + Fx.toInt(this.y) + "," + this.curveAngle + "," + this.curveDis + "," + this.pauseAtPoint + "]"
     }
 }
 class Path {
@@ -51,7 +51,8 @@ class Path {
     public speed: number
     public count: number
     public spacing: number
-    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, enemyAnimation = 0, speed = 2, count = 1, spacing = 5) {
+    public timeOffset: number
+    constructor(time: number, id: number, pointArray: PathPoint[], enemyType = 0, enemyAnimation = 0, speed = 2, count = 1, spacing = 5, timeOffset = 0) {
         this.enemyType = enemyType
         this.enemyAnimation = enemyAnimation
         this.speed = speed
@@ -61,6 +62,7 @@ class Path {
         this.id = id
         this.pointArray = pointArray
         this.fillSegmentLengths()
+        this.timeOffset = timeOffset
     }
     public renderPath(image: Image, points = true, lines = true, angles = false, smoothness = 10) {
         //Does all calculations regardless, but options to not display certain parts
@@ -242,7 +244,8 @@ class Path {
         string = string.concat(this.enemyAnimation + ",")
         string = string.concat(this.speed + ",")
         string = string.concat(this.count + ",")
-        string = string.concat(this.spacing + "")
+        string = string.concat(this.spacing + ",")
+        string = string.concat(this.timeOffset + "")
         string = string.concat("}")
         return string
     }
@@ -270,7 +273,7 @@ class PathFollower {
     }
     private startPathFollow() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
-            if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
+            if (this.frameCounter++ % this.spacing === this.path.timeOffset && this.frameCounter / this.spacing <= this.count) {
                 this.followObjectArray.push(new PathFollowObject(this.path))
                 /*
                 if (this.enemyType >= 1000) {
@@ -342,7 +345,6 @@ class PathFollowObject {
     public disPixels = 0
     public segmentDisPixels = 0
     public segmentLengthPos = 0
-    public delay: number
     public enemyType: number
     public enemyAnimation: number
     public enemy: Enemy[]

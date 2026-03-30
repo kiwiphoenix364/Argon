@@ -15,6 +15,7 @@ function decompString(data: string) {
     let sValue: number
     let cValue: number
     let dValue: number
+    let oValue: number
     for (let i = 0; i < data.length; i++) {
         //Handle skips
         if (data.charAt(i) == "{" || data.charAt(i) == "," || data.charAt(i) == "(" || data.charAt(i) == ")") {
@@ -73,11 +74,12 @@ function decompString(data: string) {
                 cValue = parseInt(data.substr(i, numCounter))
             } else if (dataType == 7) {
                 dValue = parseFloat(data.substr(i, numCounter))
-            }
+            } else if (dataType == 8)
+                oValue = parseFloat(data.substr(i, numCounter))
             dataType++
             i += numCounter
         }
-        if (data.charAt(i) == "}" && dataType == 8) {
+        if (data.charAt(i) == "}" && dataType == 9) {
             //Push to path array and move on to next
             pathArray.push(new Path(timeValue, idValue, pathCache, tValue, aValue, sValue, cValue, dValue))
             pathCache = []

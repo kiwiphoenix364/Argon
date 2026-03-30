@@ -620,7 +620,7 @@ function editMode() {
                 menu = 3
                 selectMenu.destroy()
             } else if (selectMenu.selectedIdx === 2) {
-                game.askForNumber("EDIT")
+                pathArray[currentSelection].pointArray[pointIdxSelected].pauseAtPoint = game.askForNumber("EDIT")
                 menu = -1
                 selectMenu.destroy()
                 controller.moveSprite(cursor)
