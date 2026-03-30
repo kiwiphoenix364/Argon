@@ -230,8 +230,10 @@ class Path {
         }
         this.pointArray[this.pointArray.length - 1].segmentLengths = []
     }
+    // Compiles levels in 1.0 format
     public print() {
         let string= ""
+        string = string.concat("(1.0)")
         string = string.concat("{")
         string = string.concat(this.time + ",")
         string = string.concat(this.id + ",")
