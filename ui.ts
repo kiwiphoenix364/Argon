@@ -620,10 +620,7 @@ function editMode() {
                 menu = 3
                 selectMenu.destroy()
             } else if (selectMenu.selectedIdx === 2) {
-                pathArray[currentSelection].pointArray[pointIdxSelected].delay = game.askForNumber("EDIT")
-                if (isNaN(pathArray[currentSelection].pointArray[pointIdxSelected].delay)) {
-                    pathArray[currentSelection].pointArray[pointIdxSelected].delay = 0
-                }
+                game.askForNumber("EDIT")
                 menu = -1
                 selectMenu.destroy()
                 controller.moveSprite(cursor)
