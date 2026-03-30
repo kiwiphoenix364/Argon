@@ -272,14 +272,18 @@ class PathFollower {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
             if (this.frameCounter++ % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
                 this.followObjectArray.push(new PathFollowObject(this.path))
+                this.followObjectArray[this.followObjectArray.length - 1].delay = this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay
+                /*
                 if (this.enemyType >= 1000) {
                     this.followObjectArray[this.followObjectArray.length - 1].disPixels -= this.followObjectArray[this.followObjectArray.length - 1].enemy[0].array.extLength
                 }
+                */
                 // Handle delay for first point
                 if (this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay > 0) {
                     this.followObjectArray[this.followObjectArray.length - 1].setPosPoint(this.path.findPoint(this.followObjectArray[this.followObjectArray.length - 1].currentPoint, Fx8(this.followObjectArray[this.followObjectArray.length - 1].disPixels / this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].segmentLengths[this.followObjectArray[0].segmentLengthPos])))
                     // Add 1 since will subtract this frame, others subtract next frame after initialized
                     this.followObjectArray[this.followObjectArray.length - 1].delay = this.path.pointArray[this.followObjectArray[this.followObjectArray.length - 1].currentPoint].delay + 1
+                console.log("delay")
                 }
 
             }
@@ -299,12 +303,14 @@ class PathFollower {
                 // Dis pixels is past the length of the point array
                 // Current point is not the last point or later
                 // Add case to make sure it is not an array at the end - this will be handled separately
-                if (this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1 && !(this.enemyType >= 1000 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2)) {
+                if (this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength && 
+                this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1 && 
+                !(this.enemyType >= 1000 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2)) 
+                {
                     // Handle pauses
-                    if (this.path.pointArray[this.followObjectArray[i].currentPoint + 1].delay > 0) {
+                    if (this.followObjectArray[i].delay > 0) {
                         this.followObjectArray[i].disPixels = 0
                         this.followObjectArray[i].currentPoint++
-                        this.followObjectArray[i].delay = this.path.pointArray[this.followObjectArray[i].currentPoint].delay
                         // Last point length will always be zero
                         this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, Fx8(0)))
                         continue
@@ -313,7 +319,12 @@ class PathFollower {
                         this.followObjectArray[i].disPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
                         this.followObjectArray[i].currentPoint++
                         this.followObjectArray[i].segmentLengthPos = 0
+                        this.followObjectArray[i].delay = this.path.pointArray[this.followObjectArray[i].currentPoint].delay
                     }
+                }
+                if (this.enemyType >= 1000 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 && this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength && this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1) {
+                    this.followObjectArray[i].currentPoint++
+                    this.followObjectArray[i].disPixels = 0
                 }
                 // Main movement update code
                 this.followObjectArray[i].setPosPoint(this.path.findPoint(this.followObjectArray[i].currentPoint, Fx8(this.followObjectArray[i].segmentLengthPos / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length + (this.followObjectArray[i].segmentDisPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) / (this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length))))
