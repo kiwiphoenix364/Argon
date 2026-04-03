@@ -139,6 +139,18 @@ function editMode() {
     menuAnimationButton.left = menuTypeButton.right + 1
     menuAnimationButton.top = 8
     menuAnimationButton.z = 5
+    let offsetButton = sprites.create(img`
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+    `, SpriteKind.Player)
+    offsetButton.left = menuAnimationButton.right + 1
+    offsetButton.top = 8
+    offsetButton.z = 5
     let saveButton = sprites.create(img`
         . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
         2 2 2 e e 2 2 e 2 2 e 2 e 2 e e e 2 2
@@ -148,12 +160,12 @@ function editMode() {
         2 2 e e 2 2 e 2 e 2 2 e 2 2 e e e 2 2
         . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
     `, SpriteKind.Player)
-    saveButton.left = menuAnimationButton.right + 1
+    saveButton.left = offsetButton.right + 1
     saveButton.top = 8
     saveButton.z = 5
     //make top menu
-    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton, menuAnimationButton, saveButton],
-        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image, menuAnimationButton.image, saveButton.image], [img`
+    let topMenu = new SpriteMenu([menuLeftButton, menuMiddleButton, menuRightButton, menuPlusButton, menuRunButton, menuSpeedButton, menuSpacingButton, menuCountButton, menuTypeButton, menuAnimationButton, offsetButton, saveButton],
+        [menuLeftButton.image, menuMiddleButton.image, menuRightButton.image, menuPlusButton.image, menuRunButton.image, menuSpeedButton.image, menuSpacingButton.image, menuCountButton.image, menuTypeButton.image, menuAnimationButton.image, offsetButton.image, saveButton.image], [img`
         . 4 4 4 4 4 .
         4 4 4 4 e 4 4
         4 4 4 e 4 4 4
@@ -233,6 +245,14 @@ function editMode() {
         4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
         4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
         . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+    `, img`
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+        . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
     `, img`
         . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
         4 4 4 e e 4 4 e 4 4 e 4 e 4 e e e 4 4
@@ -349,6 +369,23 @@ function editMode() {
                 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
                 . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
             `, 9, "A:" + pathArray[currentSelection].enemyAnimation.toString())
+            topMenu.drawOnBoth(img`
+                . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 .
+            `, img`
+                . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                . 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 .
+            `, 10, "O:" + pathArray[currentSelection].timeOffset.toString())
         }   
         if (menu === 1 || menu === 4 && selectMenu != null) {
             selectMenu.checkDirections(true)
@@ -372,7 +409,8 @@ function editMode() {
         } else if ((controller.A.isPressed() || browserEvents.MouseLeft.isPressed()) && menu === 0) {
 
             if (topMenu.selectedIdx == 3) {
-                pathArray.push(new Path(game.askForNumber("ENTER TIME"), idCounter++, []))
+                pathArray.push(new Path(game.askForNumber("ENTER TIME"), idCounter++, [new PathPoint(Fx8(0), Fx8(0))]))
+                pathArray[pathArray.length - 1].pointArray.pop()
                 pathArray = Path.pathArraySortByTime(pathArray)
             } else if (topMenu.selectedIdx === 0) {
                 currentSelection -= 1
@@ -414,11 +452,13 @@ function editMode() {
                 pathArray[currentSelection].enemyAnimation = game.askForNumber("EDIT")
                 refreshMenus()
             } else if (topMenu.selectedIdx === 10) {
+                pathArray[currentSelection].timeOffset = game.askForNumber("EDIT")
+                refreshMenus()
+            } else if (topMenu.selectedIdx === 11) {
                 let string = ""
                 for (let i = 0; i < pathArray.length; i++) {
                     string = string.concat(pathArray[i].print())
                 }
-                console.log(string)
                 refreshMenus()
             }
 
@@ -663,7 +703,6 @@ function editMode() {
             pathArray[currentSelection].fillSegmentLengths()
             menu = -1
             controller.moveSprite(cursor)
-            //console.log(pathArray[currentSelection].lengthArray.length)
         }
     }
     controller.anyButton.onEvent(ControllerButtonEvent.Pressed, click)
@@ -676,8 +715,6 @@ function editMode() {
             cursor.x = browserEvents.mouseX() + 0.5
             cursor.y = browserEvents.mouseY() + 0.5
         }
-        //console.log(pathArray[0].distBetweenIdx(1))
-        //console.log(Path.distBetweenPoints(pathArray[0].pointArray[1], pathArray[0].pointArray[2]))
         if (menu === 3) {
             //Special case for when changing angles
             //May be a bit messier than running twice but I prefer not to calculate paths twice

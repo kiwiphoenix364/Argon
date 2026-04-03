@@ -1,4 +1,4 @@
-<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable type="KIND_SpriteKind" id="]F}.Of?).L)-f9=$BJ~8">MenuSprite</variable></variables><comment x="0" y="0" w="240" h="120">
+<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable type="KIND_SpriteKind" id="T,^)j}N#D${+~-mV2I?4">MenuSprite</variable></variables><comment x="0" y="0" w="240" h="120">
 CONTROLLER_PRIORITY = 8;
 </comment><comment x="0" y="0" w="320" h="120">
 UPDATE_CONTROLLER_PRIORITY = 13;
