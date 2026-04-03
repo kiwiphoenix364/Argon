@@ -277,16 +277,20 @@ class PathFollower {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
             if ((this.frameCounter++ - this.path.timeOffset) % this.spacing === 0 && this.frameCounter / this.spacing <= this.count) {
                 this.followObjectArray.push(new PathFollowObject(this.path))
-                if (this.enemyType >= 1000) {
+                if (this.enemyType < 0) {
                     this.followObjectArray[this.followObjectArray.length - 1].disPixels -= this.followObjectArray[this.followObjectArray.length - 1].extLength
                     this.followObjectArray[this.followObjectArray.length - 1].segmentDisPixels -= this.followObjectArray[this.followObjectArray.length - 1].extLength
                 }
+                if (this.path.pointArray[0].pauseAtPoint > 0) {
+                    if (this.enemyType >= 0) {
+                        this.followObjectArray[this.followObjectArray.length - 1].waitTime = this.path.pointArray[0].pauseAtPoint
+                    } else {
+                        this.followObjectArray[this.followObjectArray.length - 1].segmentLengthPos = -1
+                    }
+                }
             }
-            if (this.frameCounter > this.path.timeOffset) {
+            if (this.frameCounter >= this.path.timeOffset) {
                 for (let i = 0; i < this.followObjectArray.length; i++) {
-                    // Add to distance
-                    this.followObjectArray[i].disPixels += this.speed
-                    this.followObjectArray[i].segmentDisPixels += this.speed
                     if (this.followObjectArray[i].segmentDisPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) {
                         this.followObjectArray[i].segmentDisPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]
                         this.followObjectArray[i].segmentLengthPos++
@@ -297,14 +301,43 @@ class PathFollower {
                     if (
                     this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength && 
                     this.followObjectArray[i].currentPoint < this.path.pointArray.length - 1 && 
-                    !(this.enemyType >= 1000 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2)
+                    !(this.enemyType < 0 && this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2)
                     ) {
-                        this.followObjectArray[i].disPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
-                        this.followObjectArray[i].currentPoint++
+                        if (this.path.pointArray[this.followObjectArray[i].currentPoint].pauseAtPoint > 0) {
+                            this.followObjectArray[i].segmentLengthPos = 0
+                            this.followObjectArray[i].disPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength
+                            this.followObjectArray[i].currentPoint++
+                        } else {
+                            this.followObjectArray[i].segmentLengthPos = 0
+                            this.followObjectArray[i].segmentDisPixels = 0
+                            this.followObjectArray[i].disPixels = 0
+                            this.followObjectArray[i].currentPoint++
+                            this.followObjectArray[i].waitTime = this.path.pointArray[this.followObjectArray[i].currentPoint].pauseAtPoint
+                        }
+                    } else if (
+                        this.path.pointArray[0].pauseAtPoint > 0 &&
+                        this.followObjectArray[i].segmentLengthPos === -1 &&
+                        this.followObjectArray[i].currentPoint === 0 && 
+                        this.followObjectArray[i].disPixels >= 0 &&
+                        this.followObjectArray[i].disPixels - this.speed < 0
+                    ) {
+                        this.followObjectArray[i].disPixels = 0
+                        this.followObjectArray[i].waitTime = this.path.pointArray[0].pauseAtPoint
+                        this.followObjectArray[i].segmentLengthPos = 0
+                    } else if (
+                        this.path.pointArray[this.path.pointArray.length - 1].pauseAtPoint > 0 &&
+                        this.enemyType < 0 && 
+                        this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 && 
+                        this.followObjectArray[i].disPixels >= this.path.pointArray[this.path.pointArray.length - 2].segmentLength &&
+                        this.followObjectArray[i].disPixels - this.speed < this.path.pointArray[this.path.pointArray.length - 2].segmentLength &&
+                        this.followObjectArray[i].segmentLengthPos != 0
+                    ) {
+                        this.followObjectArray[i].disPixels = this.path.pointArray[this.path.pointArray.length - 2].segmentLength
+                        this.followObjectArray[i].waitTime = this.path.pointArray[this.path.pointArray.length - 1].pauseAtPoint
                         this.followObjectArray[i].segmentLengthPos = 0
                     }
                     // Main movement update code
-                    if (this.enemyType < 1000 || this.followObjectArray[i].disPixels >= 0 && this.followObjectArray[i].disPixels < this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength) {
+                    if (this.enemyType >= 0 || this.followObjectArray[i].disPixels >= 0 && this.followObjectArray[i].disPixels < this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength) {
                         this.followObjectArray[i].setPosPoint(
                             this.path.findPoint(
                                 this.followObjectArray[i].currentPoint, 
@@ -319,17 +352,23 @@ class PathFollower {
                             )
                         )
                     }
+                    if (--this.followObjectArray[i].waitTime > 0) {
+                        continue
+                    }
+                    // Add to distance
+                    this.followObjectArray[i].disPixels += this.speed
+                    this.followObjectArray[i].segmentDisPixels += this.speed
                     // Destroy cases for regular
                     if (
-                        this.enemyType < 1000 && 
-                        this.followObjectArray[i].currentPoint === this.path.pointArray.length - 1 && 
-                        this.followObjectArray[i].segmentDisPixels > this.path.pointArray[this.followObjectArray[i].currentPoint - 1].segmentLengths[this.followObjectArray[i].segmentLengthPos]
+                        this.enemyType >= 0 &&
+                        this.followObjectArray[i].currentPoint === this.path.pointArray.length - 1 &&
+                        this.followObjectArray[i].segmentDisPixels > 0
                     ) {
                         this.followObjectArray[i].destroy()
                         this.followObjectArray.removeAt(i)
                     } else if (
-                        this.enemyType >= 1000 && 
-                        this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 && 
+                        this.enemyType < 0 &&
+                        this.followObjectArray[i].currentPoint === this.path.pointArray.length - 2 &&
                         this.followObjectArray[i].disPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength + this.followObjectArray[this.followObjectArray.length - 1].extLength
                     ) {
                         this.followObjectArray[i].destroy()
@@ -367,13 +406,14 @@ class PathFollowObject {
     private updater: control.FrameCallback
     public animationFrame = 0
     public extLength = 0
+    public waitTime = 0
     constructor(path: Path) {
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
         this.path = path
         this.enemy = []
         this.createEnemies()
-        if (this.enemyType >= 1000) {
+        if (this.enemyType < 0) {
             this.extLength = this.enemy[0].array.calcExtLength()
         }
         this.update()
@@ -456,7 +496,7 @@ class Enemy {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
-        if (this.enemyType == 1000) {
+        if (this.enemyType == -1) {
             this.array = new EnemyArray(this.enemyType)
         } else if (this.enemyType >= 0 && this.enemyType <= 4) {
             this.sprite = sprites.create(img`
@@ -516,11 +556,11 @@ class EnemyArray {
     constructor(enemyType: number) {
         //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
         this.setAnchor()
-        this.arrayType = (enemyType - 1000)
+        this.arrayType = Math.abs(enemyType)
         this.spriteArray = []
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
-        if (this.arrayType === 0) {
+        if (this.arrayType === 1) {
             for (let i = 0; i < this.xNum * this.yNum; i++) {
                 this.spriteArray.push(sprites.create(img`
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3

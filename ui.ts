@@ -872,10 +872,7 @@ class SpriteMenu {
         }
     }
     public static returnFontNames() {
-        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "{", "}", " ", "<", ">", ":"]
-    }
-    public static returnKaKiGoFontNames() {
-        return ["NI", "NU", "NO", "NE", "NA", "ZI", "ZU", "ZO", "ZE", "ZA", "KI", "KU", "KO", "KE", "KA", "TI", "TU", "TO", "TE", "TA", "GI", "GU", "GO", "GE", "GA", ]
+        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", ",", "~", "`", "{", "}", " ", "<", ">", ":", "-"]
     }
     public static returnFonts() {
         return [img`
@@ -1154,160 +1151,12 @@ class SpriteMenu {
         .
         .
         e
+    `, img`
+        . . .
+        . . .
+        e e e
+        . . .
+        . . .
     `]
-    }
-    //https://docs.google.com/spreadsheets/d/11-zCEaOKTSJYAaF32aLZPCeWq6aYrdwU_0B-Ay_yfno/edit?usp=sharing
-    public static returnKaKiGo() {
-        return [img`
-            . e e e .
-            e . e . e
-            e . e . e
-            e . e . e
-            e . e . e
-        `, img`
-            e e . e e e .
-            e . e . . . e
-            . . e . . . e
-            . . e . . . e
-            . . e . . . e
-        `, img`
-            . e e e . . .
-            e . . . e . .
-            e . . . e . .
-            e . . . e . e
-            e . . . e e e
-        `, img`
-            . e e e .
-            e . . . e
-            e e e e e
-            e . . . e
-            e . . . e
-        `, img`
-            e e e e .
-            e e . . e
-            e . e . e
-            e . e . e
-            e . . e e
-        `, img`
-            e e e e e
-            . e e . .
-            . . e . .
-            . e e e .
-            . . e . .
-        `, img`
-            e e e e e e e
-            e . . e . . .
-            . . . . e . .
-            . . . e . e .
-            . . . . e . .
-        `, img`
-            e e e e e . .
-            . e . . . . .
-            . . e . . . .
-            . e . e . . e
-            . . e . . e e
-        `, img`
-            e e e e e
-            . e . . .
-            e e e e e
-            . e . e .
-            . . e . .
-        `, img`
-            e e e e e
-            . e e . .
-            . . e e .
-            . e . e e
-            . . e . e
-        `, img`
-            e . e . .
-            e e e e .
-            e . e . e
-            e e e e .
-            e . e . .
-        `, img`
-            e e e . e . .
-            e . e e . e .
-            . . e . . . e
-            . . e e . e .
-            . . e . e . .
-        `, img`
-            e . e . . . .
-            e e . e . . .
-            e . . . e . .
-            e e . e . . e
-            e . e . . e e
-        `, img`
-            e . e . .
-            e e . e .
-            e e e e e
-            e e . e .
-            e . e . .
-        `, img`
-            e . e . .
-            e e . e .
-            e . e . e
-            e e . e .
-            e . e . e
-        `, img`
-            . e e e .
-            e . e . e
-            e . e . e
-            . e e e .
-            e e e e e
-        `, img`
-            e e . e e e .
-            e . e . . . e
-            . . e . . . e
-            . . . e . e .
-            . . e e . e e
-        `, img`
-            . e e e . . .
-            e . . . e . .
-            e . . . e . .
-            . e . e . . e
-            e e . e e e e
-        `, img`
-            . e e e .
-            e . . . e
-            e e e e e
-            . e . e .
-            e e . e e
-        `, img`
-            e e e e .
-            e e . . e
-            e . e . e
-            . e . e .
-            e e . e e
-        `, img`
-            . . e . .
-            e . e e .
-            e . e . e
-            . e e e .
-            . . e . .
-        `, img`
-            e e . . . . .
-            e . e . e e .
-            . . e . e . e
-            . . . e e e .
-            . . . . e . .
-        `, img`
-            . . . . . . .
-            e . e e . . .
-            e . e . e . .
-            . e e e . . e
-            . . e . . e e
-        `, img`
-            . . . . .
-            e . e e .
-            e e e e e
-            . e e e .
-            . . e . .
-        `, img`
-            e . . . .
-            e e e e .
-            e . e . e
-            . e e e .
-            . . e . e
-        `]
     }
 }
