@@ -8,4 +8,6 @@ let shaderPack = new ShaderPack(
         [0, 11, 7, 6, 5, 9, 8, 11, 10, 10, 10, 10, 11, 10, 5, 9]
     ]
 )
-//let shader = new Shader(shaderPack, true, 50)
+let shader = new Shader(shaderPack, false, 9999)
+shader.mapLayer.fill(3)
+tiles.setCurrentTilemap(tilemap`level1`)
