@@ -3,7 +3,7 @@ let levelData = "(1.0){0,0,([10,10,2.356194490192345,40,0][40,40,2.3561944901923
 let pathArray: Path[]
 let idCounter: number
 let idCache: number
-let debug = true
+let debug = false
 if (debug) {
     EditLevel(levelData)
 } else {

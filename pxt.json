@@ -4,8 +4,8 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "simple shader": "github:kiwiphoenix364/simple-shader",
-        "browser-events": "*"
+        "browser-events": "*",
+        "simple shader": "github:kiwiphoenix364/simple-shader#master"
     },
     "files": [
         "main.blocks",
