@@ -289,7 +289,7 @@ class PathFollower {
                     }
                 }
             }
-            if (this.frameCounter >= this.path.timeOffset) {
+            if (this.frameCounter > this.path.timeOffset) {
                 for (let i = 0; i < this.followObjectArray.length; i++) {
                     if (this.followObjectArray[i].segmentDisPixels > this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) {
                         this.followObjectArray[i].segmentDisPixels -= this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]
