@@ -1,5 +1,5 @@
 // Add your code here
-let shaderPack = new ShaderPack(
+let shaderPack = new SS_ShaderPack(
     ["light", "dark", "purple", "orange", "bright"],
     [
         [0, 1, 1, 2, 3, 6, 7, 1, 7, 8, 11, 1, 1, 12, 4, 14],
