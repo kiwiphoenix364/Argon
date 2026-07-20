@@ -193,6 +193,9 @@ class Path {
     public static interpolate(mid: Fx8, start: Fx8, end: Fx8) {
         return Fx.add(start, Fx.mul(Fx.sub(end, start), mid))
     }
+    public static interpolateFloat(mid: number, start: number, end: number) {
+        return start + (end - start) * mid
+    }
     public static pathArraySortByTime(pathArray: Path[]) {
         let finalArray = []
         for (let i = 0; i < pathArray.length; i++) {
