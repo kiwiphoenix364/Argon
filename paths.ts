@@ -172,7 +172,7 @@ class Path {
             Path.interpolate(dist, item1.y, midIntY),
             Path.interpolate(dist, midIntY, item2.y)
         )
-        return(new SimplePoint(Fx.toInt(pixelX), Fx.toInt(pixelY)))
+        return(new SimplePoint(Fx.toFloat(pixelX), Fx.toFloat(pixelY)))
     }
     public distBetweenIdx(pointIndex: number, precision = 10) {
         let distArray = []
@@ -266,6 +266,7 @@ class PathFollower {
     public enemyAnimation: number
     public pauseCounter: number
     private updater: control.FrameCallback
+    public nextPoint: SimplePoint
     constructor(path: Path) {
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
@@ -341,20 +342,24 @@ class PathFollower {
                     }
                     // Main movement update code
                     if (this.enemyType >= 0 || this.followObjectArray[i].disPixels >= 0 && this.followObjectArray[i].disPixels < this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength) {
-                        this.followObjectArray[i].setPosPoint(
-                            this.path.findPoint(
-                                this.followObjectArray[i].currentPoint, 
-                                Fx8(this.followObjectArray[i].segmentLengthPos / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length + (this.followObjectArray[i].segmentDisPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) / (this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length))
-                            )
-                        ) 
+                        this.nextPoint = this.path.findPoint(
+                            this.followObjectArray[i].currentPoint,
+                            Fx8(this.followObjectArray[i].segmentLengthPos / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length + (this.followObjectArray[i].segmentDisPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths[this.followObjectArray[i].segmentLengthPos]) / (this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLengths.length))
+                        )
+                        
                     } else {
-                        this.followObjectArray[i].setPosPoint(
-                            this.path.findPoint(
+                        this.nextPoint = this.path.findPoint(
                                 this.followObjectArray[i].currentPoint,
                                 Fx8(this.followObjectArray[i].disPixels / this.path.pointArray[this.followObjectArray[i].currentPoint].segmentLength)
                             )
-                        )
                     }
+                    if (this.nextPoint.x - this.followObjectArray[i].x != 0 && this.nextPoint.y - this.followObjectArray[i].y != 0 && this.nextPoint.x - this.followObjectArray[i].x - this.nextPoint.y - this.followObjectArray[i].y != NaN) {
+                        this.followObjectArray[i].angle = new SimplePoint(this.nextPoint.x - this.followObjectArray[i].x, this.nextPoint.y - this.followObjectArray[i].y)
+                        console.log(this.nextPoint.y - this.followObjectArray[i].y)
+                    }
+                    this.followObjectArray[i].setPosPoint(
+                        this.nextPoint
+                    )
                     if (--this.followObjectArray[i].waitTime > 0) {
                         continue
                     }
@@ -396,9 +401,9 @@ class PathFollower {
 }
 class PathFollowObject {
     public path: Path
-    public angle: number
-    private x: number
-    private y: number
+    public angle: SimplePoint
+    public x: number
+    public y: number
     public currentPoint = 0
     public disPixels = 0
     public segmentDisPixels = 0
@@ -410,6 +415,7 @@ class PathFollowObject {
     public animationFrame = 0
     public extLength = 0
     public waitTime = 0
+    public dir = 0
     constructor(path: Path) {
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
@@ -423,20 +429,15 @@ class PathFollowObject {
     }
     private createEnemies() {
         //ENEMY AMOUNT PER TYPE IN ORDER
-        let enemiesPerAnimation = [
-            1, //1
-            1, //2
-            1, //3
-            2 //4
-        ]
-        for (let i = 0; i < enemiesPerAnimation[this.enemyAnimation]; i++) {
+        let enemiesPerAnimation = DataDrivenEnemies.enemiesInAnimation(this.enemyAnimation)
+        for (let i = 0; i < enemiesPerAnimation; i++) {
             this.enemy.push(new Enemy(this.enemyType))
         }
     }
     private update() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
             this.animationFrame++
-            DataDrivenEnemies.runAnimation(this.enemy, this.enemyAnimation, this.animationFrame, this.x, this.y)
+            DataDrivenEnemies.runAnimation(this.enemy, this.enemyAnimation, this.animationFrame, this.x, this.y, this.angle)
         })
     }
     public setPosPoint(point: SimplePoint) {
@@ -454,7 +455,7 @@ class PathFollowObject {
         for (let e of this.enemy) {
             e.destroy()
         }
-        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.segmentLengthPos = null
+        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.segmentLengthPos = this.angle = null
     }
 }
 class Enemy {
@@ -555,38 +556,73 @@ class EnemyArray {
     }
 }
 class DataDrivenEnemies {
+    public static currentAnimationSet: number[]
+    public static currentAnimation: number[]
+    public static currentAngle: number
+    // Enemy count in each type's animation
+    private static readonly animationEnemyNum = [
+        1,
+        1,
+        1,
+        2,
+    ]
+    // Animation movement information
+    /*
+    [
+        // ANIMATION 1
+        [
+            AnimationSpeedMultiplierX,
+            AnimationSpeedMultiplierY,
+            AnimationMovementMultiplierX,
+            AnimationMovementMultiplierY,
+            OffsetX,
+            OffsetY
+        ]
+    ]
+    */
+    private static readonly animation: number[][] = [
+        // ANIMATION MOVEMENT DATA BELOW
+        [0, 0, 0, 0, 0, 0],
+        [.25, 0, 10, 0, 0, 0],
+        [0, .25, 0, 10, 0, 0],
+        [.25, .25, 10, 10, 0, 0, 1]
+    ]
+    // Animation used for each enemy
+    /*
+    [
+        [
+            AnimationNumForEnemy1,
+            AnimationNumForEnemy2
+        ]
+    ]
+    */
+    private static readonly animationUsedPerEnemy: number[][] = [
+        // ANIMATION EACH ENEMY USES HERE
+        [0],
+        [1],
+        [3],
+        [1, 2]
+    ]
     constructor () {
 
     }
-    static runAnimation(enemy: Enemy[], animation: number, frame: number, x: number, y: number) {
-        //ADD ANIMATIONS HERE
-        switch (animation) {
-            case 0: {
-                enemy[0].setPos(
-                    x,
-                    y
+    static enemiesInAnimation(animation: number) {
+        return this.animationEnemyNum[animation]
+    }
+    static runAnimation(enemy: Enemy[], animation: number, frame: number, x: number, y: number, angle: SimplePoint) {
+        this.currentAnimation = this.animationUsedPerEnemy[animation]
+        for (let i = 0; i < this.animationEnemyNum[animation]; i++) {
+            this.currentAnimationSet = this.animation[this.animationUsedPerEnemy[animation][i]]
+            if (this.currentAnimationSet[6]) {
+                this.currentAngle = Math.atan2(angle.y, angle.x)
+                enemy[i].setPos(
+                    x + Math.sin(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * Math.cos(this.currentAngle + 1.57) * this.currentAnimationSet[2],
+                    y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * Math.sin(this.currentAngle + 1.57) * this.currentAnimationSet[3]
                 )
-            }
-            case 1: {
-                enemy[0].setPos(
-                    x + Math.sin(frame / 4) * 5,
-                    y
-                )
-            }
-            case 2: {
-                enemy[0].setPos(
-                    x,
-                    y + Math.sin(frame / 4) * 5
-                )
-            }
-            case 3: {
-                enemy[0].setPos(
-                    x,
-                    y + Math.sin(frame / 4) * 10
-                )
-                enemy[1].setPos(
-                    x + Math.sin(frame / 3) * 10,
-                    y
+            } else  {
+                enemy[i].setPos(
+                    x + Math.cos(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * this.currentAnimationSet[2],
+                    y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * this.currentAnimationSet[3]
                 )
             }
         }
@@ -654,6 +690,9 @@ class DataDrivenEnemies {
                     2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                     2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 `
+            }
+            default: {
+
             }
         }
     }
