@@ -436,42 +436,8 @@ class PathFollowObject {
     private update() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
             this.animationFrame++
-            this.runAnimation()
+            DataDrivenEnemies.runAnimation(this.enemy, this.enemyAnimation, this.animationFrame, this.x, this.y)
         })
-    }
-    private runAnimation() {
-        //ENEMY ANIMATIONS
-        //SPECIFY HOW MANY ANIMATIONS IN createEnemies()
-        //IF MULTIPLE ENEMIES INCLUDED IMPLEMENT POSITIONING FOR ALL
-        //TYPE 0 - NONE
-        //TYPE 1 - LEFT/RIGHT MOVEMENT
-        //TYPE 2 - UP/DOWN MOVEMENT
-        //TYPE 3 - DUAL OSCILLATING
-        if (this.enemyAnimation === 0) {
-            this.enemy[0].setPos(
-                this.x,
-                this.y
-            )
-        } else if (this.enemyAnimation === 1) {
-            this.enemy[0].setPos(
-                this.x + Math.sin(this.animationFrame / 4) * 5,
-                this.y
-            )
-        } else if (this.enemyAnimation === 2) {
-            this.enemy[0].setPos(
-                this.x,
-                this.y + Math.sin(this.animationFrame / 4) * 5
-            )
-        } else if (this.enemyAnimation === 3) {
-            this.enemy[0].setPos(
-                this.x,
-                this.y + Math.sin(this.animationFrame / 4) * 10
-            )
-            this.enemy[1].setPos(
-                this.x + Math.sin(this.animationFrame / 3) * 10,
-                this.y
-            )
-        }
     }
     public setPosPoint(point: SimplePoint) {
         this.x = point.x
@@ -499,27 +465,10 @@ class Enemy {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
-        if (this.enemyType == -1) {
+        if (this.enemyType === -1) {
             this.array = new EnemyArray(this.enemyType)
-        } else if (this.enemyType >= 0 && this.enemyType <= 4) {
-            this.sprite = sprites.create(img`
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-            `, SpriteKind.Player)
+        } else if (this.enemyType >= 0) {
+            this.sprite = sprites.create(DataDrivenEnemies.getEnemy(enemyType), SpriteKind.Player)
             this.sprite.setFlag(SpriteFlag.Ghost, true)
         }
     }
@@ -547,13 +496,14 @@ class EnemyArray {
     public ySeparate = 32
     public xShift = 16
     public yShift = 0
-    private x = 0
-    private y = 0
-    private relX = 0
-    private relY = 0
+    public x = 0
+    public y = 0
+    public relX = 0
+    public relY = 0
     public arrayType = 1
     public anchorX = 0
     public anchorY = 0
+    public img: Image
     public spriteArray: Sprite[]
     public path: Path
     constructor(enemyType: number) {
@@ -563,26 +513,11 @@ class EnemyArray {
         this.spriteArray = []
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
+        DataDrivenEnemies.setupEnemyArr(this, this.arrayType)
         if (this.arrayType === 1) {
             for (let i = 0; i < this.xNum * this.yNum; i++) {
-                this.spriteArray.push(sprites.create(img`
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            `, SpriteKind.Player))
+                this.spriteArray.push(sprites.create(this.img, SpriteKind.Player))
+                this.spriteArray[i].setFlag(SpriteFlag.Ghost, true)
             }
         }
         this.updatePos()
@@ -617,5 +552,109 @@ class EnemyArray {
             e.destroy()
         }
         this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.arrayType = this.anchorX = this.anchorY = this.spriteArray = null
+    }
+}
+class DataDrivenEnemies {
+    constructor () {
+
+    }
+    static runAnimation(enemy: Enemy[], animation: number, frame: number, x: number, y: number) {
+        //ADD ANIMATIONS HERE
+        switch (animation) {
+            case 0: {
+                enemy[0].setPos(
+                    x,
+                    y
+                )
+            }
+            case 1: {
+                enemy[0].setPos(
+                    x + Math.sin(frame / 4) * 5,
+                    y
+                )
+            }
+            case 2: {
+                enemy[0].setPos(
+                    x,
+                    y + Math.sin(frame / 4) * 5
+                )
+            }
+            case 3: {
+                enemy[0].setPos(
+                    x,
+                    y + Math.sin(frame / 4) * 10
+                )
+                enemy[1].setPos(
+                    x + Math.sin(frame / 3) * 10,
+                    y
+                )
+            }
+        }
+    }
+    static getEnemy(enemyType: number) {
+        //ADD ENEMIES HERE
+        switch (enemyType) {
+            case 0: {
+                return img`
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                `
+            }
+            default: {
+                return img``
+            }
+        }
+    }
+    static setupEnemyArr(arr: EnemyArray, arrType: number) {
+        //ADD ENEMY ARRAYS HERE
+        switch (arrType) {
+            case 1: {
+                arr.xNum = 4
+                arr.yNum = 4
+                arr.xSeparate = 32
+                arr.ySeparate = 32
+                arr.xShift = 16
+                arr.yShift = 0
+                arr.x = 0
+                arr.y = 0
+                arr.relX = 0
+                arr.relY = 0
+                arr.arrayType = 1
+                arr.anchorX = 0
+                arr.anchorY = 0
+                arr.img = img`
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                `
+            }
+        }
     }
 }

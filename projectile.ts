@@ -6,6 +6,7 @@ class Adv_Projectile {
     public vY: number
     public aX: number
     public aY: number
+    public life: number
     constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, sPosX: number, sPosY: number, angleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number) {
         this.sprite = new Sprite(spriteImg)
         this.x = sPosX
@@ -22,6 +23,12 @@ class Adv_Projectile {
         this.sprite.ay = this.aY
         this.sprite.setFlag(SpriteFlag.AutoDestroy, destroyOutOfScreen)
         this.sprite.lifespan = life
+        this.life = life
+        this.destroy()
+    }
+    destroy() {
+        pause(this.life)
+        this.sprite = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
     }
 }
 class Multi_Proj_POS {
@@ -63,7 +70,12 @@ class Multi_Proj_POS {
                 new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, Path.interpolateFloat(j, this.x, this.ePosX), Path.interpolateFloat(j, this.y, this.ePosY), this.vA, this.vS, this.aA, this.aS)
             }
             pause(this.delay)
-        }
+        } 
+        this.destroy()
+    }
+    destroy() {
+        pause(this.life)
+        this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs =  this.ePosX = this.ePosY = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = null
     }
 }
 class Multi_Proj_VEL {
@@ -104,5 +116,10 @@ class Multi_Proj_VEL {
             }
             pause(this.delay)
         }
+        this.destroy()
+    }
+    destroy() {
+        pause(this.life)
+        this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = null
     }
 }
