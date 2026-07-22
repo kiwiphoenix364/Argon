@@ -556,6 +556,7 @@ class EnemyArray {
     }
 }
 class DataDrivenEnemies {
+    // ALL ENEMIES AND ANIMATION DATA STORED HERE
     public static currentAnimationSet: number[]
     public static currentAnimation: number[]
     public static currentAngle: number

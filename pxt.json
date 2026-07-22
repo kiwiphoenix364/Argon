@@ -24,7 +24,8 @@
         "gamemenus.ts",
         "tilemap.g.jres",
         "tilemap.g.ts",
-        "projectile.ts"
+        "projectile.ts",
+        "dialogengine.ts"
     ],
     "testFiles": [
         "test.ts"
