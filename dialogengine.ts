@@ -18,7 +18,7 @@ class DialogWindow {
         let pause = 40
         let keyWords: number[] = []
         let spaces: number[] = []
-        let spaceIdx: number = 0
+        let spaceIdx: number = -1
         let emphasized = false
         let keyWordsLoc = 0
         let spaceLoc = 0
@@ -28,9 +28,10 @@ class DialogWindow {
         for (let i = 0; i < text.length; i++) {
             if (text.charAt(i) === " ") {
                 if (DialogText.emphasizedWords.indexOf(text.slice(spaceIdx + 1, i)) >= 0) {
-                    keyWords.push(spaceIdx)
+                    keyWords.push(spaceIdx + 1)
                     keyWords.push(i)
                 }
+                
                 spaceIdx = i
                 spaces.push(i)
             }
@@ -86,7 +87,7 @@ class DialogText {
     // ]
     public static readonly dialog: String[][] = [
         [
-            "test lol!",
+            "test lol test test again!",
             "You moved to the next dialog!"
         ]
     ]
