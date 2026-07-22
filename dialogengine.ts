@@ -87,7 +87,7 @@ class DialogText {
     // ]
     public static readonly dialog: String[][] = [
         [
-            "test lol test test again!",
+            "test lol test test the line wrapping again!",
             "You moved to the next dialog!"
         ]
     ]
