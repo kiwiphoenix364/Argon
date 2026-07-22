@@ -28,7 +28,8 @@ class DialogText {
         ]
     ]
     public static readonly emphasizedWords: String[] = [
-        "test"
+        "test",
+        "the"
     ]
     public static readonly font: Image[] = [
         img`
@@ -298,19 +299,22 @@ class DialogText {
         let yPadding = 2
         let pause = 40
         let keyWords: number[] = []
+        let spaces: number[] = []
         let spaceIdx: number = 0
         let emphasized = false
         let keyWordsLoc = 0
+        let spaceLoc = 0
         let currentLetterImg: Image
         let x = xPadding
         let y = yPadding
         for (let i = 0; i < text.length; i++) {
             if (text.charAt(i) === " ") {
-                if (this.emphasizedWords.indexOf(text.slice(spaceIdx, i)) >= 0) {
+                if (this.emphasizedWords.indexOf(text.slice(spaceIdx + 1, i)) >= 0) {
                     keyWords.push(spaceIdx)
                     keyWords.push(i)
                 }
                 spaceIdx = i
+                spaces.push(i)
             }
         }
         
@@ -334,16 +338,28 @@ class DialogText {
                 
                 textWindow.dialogBox.drawTransparentImage(currentLetterImg, x, y)
                 x += currentLetterImg.width + 1
-                if (x > textWindow.dialogBox.width - xPadding) {
+
+                if (spaces[spaceLoc] === i) {
+                    spaceLoc++
+                }
+                if (x > textWindow.dialogBox.width - xPadding - this.distToSpace(text, i, spaces[spaceLoc])) {
                     x = xPadding
                     y += 6
                 }
+
                 this.pause()
             }
         }
     }
     static pause() {
         pause(40)
+    }
+    static distToSpace(text: String, startIdx: number, endIdx: number) {
+        let space = 0
+        for (let i = startIdx; i < endIdx; i++) {
+            space += this.font[this.fontLetters.indexOf(text.charAt(i).toUpperCase())].width + 1
+        }
+        return space
     }
 }
 let mySprite = sprites.create(img`
@@ -365,4 +381,4 @@ let mySprite = sprites.create(img`
     ................................................................................
 `, SpriteKind.Player)
 let test = new DialogWindow(mySprite.image)
-DialogText.drawDialog(test, DialogText.getDialog(0, 0))
+DialogText.drawDialog(test, DialogText.getDialog(0, 1))
