@@ -468,3 +468,4 @@ scene.setBackgroundImage(img`
 `)
 let test = new DialogWindow(scene.backgroundImage())
 DialogText.drawDialog(test, DialogText.getDialog(0, 0))
+scene.setBackgroundImage(test.dialogBox)
