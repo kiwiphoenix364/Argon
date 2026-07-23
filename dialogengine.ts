@@ -67,6 +67,7 @@ class DialogWindow {
                     DialogWindow.pause()
                 }
             }
+            interrupt.bool = true
         })
     }
     static pause() {
@@ -385,7 +386,7 @@ class DialogController {
             let interrupt = new BoolRef(false)
             this.dialogWindow.drawDialog(this.tree[i], interrupt)
             pauseUntil(() => !controller.A.isPressed())
-            pauseUntil(() => controller.A.isPressed())
+            pauseUntil(() => controller.A.isPressed() || interrupt.bool === true)
             pauseUntil(() => !controller.A.isPressed())
             interrupt.bool = true
             pauseUntil(() => !controller.A.isPressed())
