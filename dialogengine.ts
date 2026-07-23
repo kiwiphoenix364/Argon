@@ -1,48 +1,48 @@
+class BoolRef {
+    public bool: Boolean
+    constructor (value: boolean) {
+        this.bool = value
+    }
+}
 class DialogWindow {
     public dialogBoxImage: Image
     public dialogBox: Image
-    public skip = false
     constructor (boxImg: Image) {
         this.dialogBox = boxImg
         this.dialogBoxImage = boxImg.clone()
     }
-    static pause() {
-        pause(40)
-    }
     public clearDialogBox() {
-        this.dialogBox = this.dialogBoxImage.clone()
+        this.dialogBox.copyFrom(this.dialogBoxImage)
     }
-    public drawDialog(text: String) {
-        let xPadding = 2
-        let yPadding = 2
-        let pause = 40
-        let keyWords: number[] = []
-        let spaces: number[] = []
-        let spaceIdx: number = -1
-        let emphasized = false
-        let keyWordsLoc = 0
-        let spaceLoc = 0
-        let currentLetterImg: Image
-        let x = xPadding
-        let y = yPadding
-        for (let i = 0; i < text.length; i++) {
-            if (text.charAt(i) === " ") {
-                if (DialogText.emphasizedWords.indexOf(text.slice(spaceIdx + 1, i)) >= 0) {
-                    keyWords.push(spaceIdx + 1)
-                    keyWords.push(i)
+    public drawDialog(text: String, interrupt: BoolRef) {
+        control.runInBackground(() => {
+            interrupt.bool = false
+            let xPadding = 2
+            let yPadding = 2
+            let pause = 40
+            let keyWords: number[] = []
+            let spaces: number[] = []
+            let spaceIdx: number = -1
+            let emphasized = false
+            let keyWordsLoc = 0
+            let spaceLoc = 0
+            let currentLetterImg: Image
+            let x = xPadding
+            let y = yPadding
+            this.clearDialogBox()
+            for (let i = 0; i < text.length; i++) {
+                if (text.charAt(i) === " ") {
+                    if (DialogText.emphasizedWords.indexOf(text.slice(spaceIdx + 1, i)) >= 0) {
+                        keyWords.push(spaceIdx + 1)
+                        keyWords.push(i)
+                    }
+                    spaceIdx = i
+                    spaces.push(i)
                 }
-                
-                spaceIdx = i
-                spaces.push(i)
             }
-            
-        }
-        spaces.push(text.length)
-        for (let i = 0; i < text.length; i++) {
-            if (!this.skip) {
-
+            spaces.push(text.length)
+            for (let i = 0; i < text.length; i++) {
                 currentLetterImg = DialogText.font[DialogText.fontLetters.indexOf(text.charAt(i).toUpperCase())].clone()
-
                 if (!emphasized && i === keyWords[keyWordsLoc]) {
                     emphasized = true
                     keyWordsLoc++
@@ -54,11 +54,8 @@ class DialogWindow {
                 if (emphasized) {
                     currentLetterImg.replace(14, 8)
                 }
-
-
                 this.dialogBox.drawTransparentImage(currentLetterImg, x, y)
                 x += currentLetterImg.width + 1
-
                 if (spaces[spaceLoc] === i) {
                     spaceLoc++
                 }
@@ -66,13 +63,17 @@ class DialogWindow {
                     x = xPadding
                     y += 6
                 }
-
-                DialogWindow.pause()
+                if (!interrupt.bool) {
+                    DialogWindow.pause()
+                }
             }
-        }
+        })
+    }
+    static pause() {
+        pause(40)
     }
     public destroy() {
-        this.dialogBoxImage = this.dialogBox = this.skip = null
+        this.dialogBoxImage = this.dialogBox = null
     }
 }
 class DialogText {
@@ -381,10 +382,15 @@ class DialogController {
     }
     protected drawDialog() {
         for (let i = 0; i < this.tree.length; i++) {
-            this.dialogWindow.drawDialog(this.tree[i])
-            pauseUntil(() => !controller.A.isPressed(), 0)
-            pauseUntil(() => controller.A.isPressed(), 0)
-            this.dialogWindow.clearDialogBox()
+            let interrupt = new BoolRef(false)
+            this.dialogWindow.drawDialog(this.tree[i], interrupt)
+            pauseUntil(() => !controller.A.isPressed())
+            pauseUntil(() => controller.A.isPressed())
+            pauseUntil(() => !controller.A.isPressed())
+            interrupt.bool = true
+            pauseUntil(() => !controller.A.isPressed())
+            pauseUntil(() => controller.A.isPressed())
+            pauseUntil(() => !controller.A.isPressed())
         }
     }
 }
