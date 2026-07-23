@@ -35,8 +35,9 @@ class DialogWindow {
                 spaceIdx = i
                 spaces.push(i)
             }
+            
         }
-
+        spaces.push(text.length)
         for (let i = 0; i < text.length; i++) {
             if (!this.skip) {
 
