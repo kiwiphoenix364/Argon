@@ -5,7 +5,7 @@
     "dependencies": {
         "device": "*",
         "browser-events": "*",
-        "simple shader": "github:kiwiphoenix364/simple-shader#v5.0.4"
+        "simple shader": "github:kiwiphoenix364/simple-shader#v5.0.5"
     },
     "files": [
         "main.blocks",
