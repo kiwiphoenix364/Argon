@@ -22,3 +22,4 @@ namespace SpriteKind {
 // Game timing at 18
 // PathFollowObjects - Update pos at 19 and pos animations at 20
 // spritedamagetick at 21, SpriteTick at 22
+tiles.setCurrentTilemap(tilemap`level1`)
