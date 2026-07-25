@@ -9,11 +9,13 @@ class DialogWindow {
     public dialogBox: Image
     public nameBoxImage: Image
     public nameBox: Image
-    constructor (boxImg: Image, nameImg: Image) {
+    public avatarImage: Image
+    constructor (boxImg: Image, nameImg: Image, avatarImg: Image) {
         this.nameBox = nameImg
         this.nameBoxImage = nameImg.clone()
         this.dialogBox = boxImg
         this.dialogBoxImage = boxImg.clone()
+        this.avatarImage = avatarImg
     }
     public clearDialogBox() {
         this.dialogBox.copyFrom(this.dialogBoxImage)
@@ -37,16 +39,19 @@ class DialogWindow {
         let xName = xPadding
         let y = yPadding
         let name: String = ""
+        this.clearNameBox()
         this.clearDialogBox()
         if (text.includes(":")) {
             for (let i = 0; i < text.length; i++) {
                 if (text.charAt(i) === ":") {
-                    name = text.substr(0, i - 1)
+                    name = text.substr(0, i)
                     text = text.substr(i + 1, text.length - i - 1).trim()
                     break
                 }
             }
         }
+        //Draw avatar
+        this.avatarImage.copyFrom(DialogText.avatars[DialogText.avatarNames.indexOf(name)])
         //Print name
         control.runInBackground(() => { 
             for (let i = 0; i < name.length; i++) {
@@ -469,16 +474,20 @@ class DialogText {
 class DialogController {
     public sprite: Sprite
     public nameSprite: Sprite
+    public avatarSprite: Sprite
     public dialogWindow: DialogWindow
     public tree: String[]
-    constructor(tree: String[], left: number, top: number, right: number, bottom: number, leftN: number, topN: number, rightN: number, bottomN: number) {
+    constructor(tree: String[], left: number, top: number, right: number, bottom: number, leftN: number, topN: number, rightN: number, bottomN: number, leftA: number, topA: number, rightA: number, bottomA: number) {
         this.sprite = sprites.create(image.create(right - left, bottom - top), SpriteKind.Player)
         this.sprite.left = left
         this.sprite.top = top
         this.nameSprite = sprites.create(image.create(rightN - leftN, bottomN - topN), SpriteKind.Player)
         this.nameSprite.left = leftN
         this.nameSprite.top = topN
-        this.dialogWindow = new DialogWindow(this.sprite.image, this.nameSprite.image)
+        this.avatarSprite = sprites.create(image.create(rightA - leftA, bottomA - topA), SpriteKind.Player)
+        this.avatarSprite.left = leftA
+        this.avatarSprite.top = topA
+        this.dialogWindow = new DialogWindow(this.sprite.image, this.nameSprite.image, this.avatarSprite.image)
         this.tree = tree
         this.drawDialog()
     }
@@ -496,4 +505,4 @@ class DialogController {
         }
     }
 }
-let test2 = new DialogController(DialogText.dialog[0], 0, 60, 160, 120, 100, 50, 160, 60)
+let test2 = new DialogController(DialogText.dialog[0], 0, 60, 160, 120, 100, 50, 160, 60, 0, 0, 100, 60)
