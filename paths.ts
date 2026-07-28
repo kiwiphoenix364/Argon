@@ -577,16 +577,21 @@ class DataDrivenEnemies {
             AnimationMovementMultiplierX,
             AnimationMovementMultiplierY,
             OffsetX,
-            OffsetY
+            OffsetY,
+            UseDirectionInfo? (0/1),
+            Projectile (Multi_Proj_VEL),
+            ProjectileInterval,
+            OverwriteProjectileDir (0,1)
         ]
     ]
     */
     private static readonly animation: number[][] = [
         // ANIMATION MOVEMENT DATA BELOW
-        [0, 0, 0, 0, 0, 0],
-        [.25, 0, 10, 0, 0, 0],
-        [0, .25, 0, 10, 0, 0],
-        [.25, .25, 10, 10, 0, 0, 1]
+        [0, 0, 0, 0, 0, 0, 0], // No animation
+        [.25, 0, 10, 0, 0, 0, 0], // Left/right wave
+        [0, .25, 0, 10, 0, 0, 0], // Up/down wave
+        [.25, .25, 10, 10, 0, 0, 1], // Wave with facing
+        [.25, .25, 10, 10, 0, 0, 1, 1, 200, 1], // Wave with facing and projectile
     ]
     // Animation used for each enemy
     /*
@@ -614,7 +619,7 @@ class DataDrivenEnemies {
         this.currentAnimation = this.animationUsedPerEnemy[animation]
         for (let i = 0; i < this.animationEnemyNum[animation]; i++) {
             this.currentAnimationSet = this.animation[this.animationUsedPerEnemy[animation][i]]
-            if (this.currentAnimationSet[6]) {
+            if (this.currentAnimationSet[6] === 1) {
                 this.currentAngle = Math.atan2(angle.y, angle.x)
                 enemy[i].setPos(
                     x + Math.sin(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * Math.cos(this.currentAngle + 1.57) * this.currentAnimationSet[2],
