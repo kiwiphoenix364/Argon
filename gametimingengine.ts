@@ -4,6 +4,7 @@ let pathArray: Path[]
 let idCounter: number
 let idCache: number
 let debug = false
+game.stats = true
 if (debug) {
     EditLevel(levelData)
 } else {
