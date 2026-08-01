@@ -27,8 +27,10 @@ class Adv_Projectile {
         this.destroy()
     }
     destroy() {
-        pause(this.life)
-        this.sprite = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
+        control.runInBackground(() => {
+            pause(this.life)
+            this.sprite = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
+        })
     }
 }
 class Multi_Proj_POS {
@@ -67,15 +69,18 @@ class Multi_Proj_POS {
     public spawnProjectiles() {
         for (let i = 0; i < this.volleys; i++) {
             for (let j = 0; j < this.perVolley; j++) {
-                new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, Path.interpolateFloat(j, this.x, this.ePosX), Path.interpolateFloat(j, this.y, this.ePosY), this.vA, this.vS, this.aA, this.aS)
+                let ratio = j / (this.perVolley - 1)
+                new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, Path.interpolateFloat(ratio, this.x, this.ePosX), Path.interpolateFloat(ratio, this.x, this.ePosX), this.vA, this.vS, this.aA, this.aS)
             }
             pause(this.delay)
         } 
         this.destroy()
     }
     destroy() {
-        pause(this.life)
-        this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs =  this.ePosX = this.ePosY = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = null
+        control.runInBackground(() => {
+            pause(this.life)
+            this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs =  this.ePosX = this.ePosY = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = null
+        })
     }
 }
 class Multi_Proj_VEL {
@@ -110,17 +115,21 @@ class Multi_Proj_VEL {
         this.spawnProjectiles()
     }
     public spawnProjectiles() {
-        for (let i = 0; i < this.volleys; i++) {
-            for (let j = 0; j < this.perVolley; j++) {
-                new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, this.x, this.y, Path.interpolateFloat(j, this.vA, this.eVA), this.vS, this.aA, this.aS)
+        control.runInBackground(() => {
+            for (let i = 0; i < this.volleys; i++) {
+                for (let j = 0; j < this.perVolley; j++) {
+                    new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, this.x, this.y, Path.interpolateFloat(j / (this.perVolley - 1), this.vA, this.eVA), this.vS, this.aA, this.aS)
+                }
+                pause(this.delay)
             }
-            pause(this.delay)
-        }
-        this.destroy()
+            this.destroy()
+        })
     }
     destroy() {
-        pause(this.life)
-        this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = null
+        control.runInBackground(() => {
+            pause(this.life)
+            this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = null
+        })
     }
 }
 class Multi_Proj_BOTH {
@@ -141,8 +150,9 @@ class Multi_Proj_BOTH {
     public x2: number
     public y2: number
     public bigProjs: number
+    public bigDelay: number
     public bigSpriteImg: Image
-    constructor(spriteImg: Image, bigSpriteImg: Image, destroyOutOfScreen: boolean, life: number, bigProjs: number, volleys: number, perVolley: number, delay: number, sPosX: number, sPosY: number, ePosX: number, ePosY: number, angleVelocity: number, eAngleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number) {
+    constructor(spriteImg: Image, bigSpriteImg: Image, destroyOutOfScreen: boolean, life: number, bigProjs: number, volleys: number, perVolley: number, delay: number, bigDelay: number, sPosX: number, sPosY: number, ePosX: number, ePosY: number, angleVelocity: number, eAngleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number) {
         this.spriteImg = spriteImg
         this.x = sPosX
         this.y = sPosY
@@ -160,18 +170,25 @@ class Multi_Proj_BOTH {
         this.life = life
         this.bigProjs = bigProjs
         this.bigSpriteImg = bigSpriteImg
+        this.bigDelay = bigDelay
         this.spawnProjectiles()
     }
     public spawnProjectiles() {
-        for (let i = 0; i < this.bigProjs; i++) {
-            new Multi_Proj_VEL(this.spriteImg, this.destrOutOfScreen, this.life, this.volleys, this.perVolley, Path.interpolateFloat(i, this.x, this.x2), this.perVolley, Path.interpolateFloat(i, this.y, this.y2), this.vA, this.eVA, this.vS, this.aA, this.aS)
-            pause(this.delay)
-        }
-        this.destroy()
+        control.runInBackground(() => {
+            for (let i = 0; i < this.bigProjs; i++) {
+                let ratio = i / (this.bigProjs - 1)
+                new Multi_Proj_VEL(this.spriteImg, this.destrOutOfScreen, this.life, this.volleys, this.perVolley, this.delay, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), this.vA, this.eVA, this.vS, this.aA, this.aS)
+                new Adv_Projectile(this.bigSpriteImg, true, this.life, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), 0, 0, 0, 0)
+                pause(this.bigDelay)
+            }
+            this.destroy()
+        })
     }
     destroy() {
-        pause(this.life)
-        this.spriteImg = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = this.x2 = this.y2 = this.bigProjs = null
+        control.runInBackground(() => {
+            pause(this.life)
+            this.spriteImg = this.bigDelay = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = this.x2 = this.y2 = this.bigProjs = null
+        })
     }
 }
 let test = new Multi_Proj_BOTH(img`
@@ -208,4 +225,4 @@ let test = new Multi_Proj_BOTH(img`
     4 5 4 e 5 5 5 5 e e . . . . . .
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
-`, true, 500, 10, 10, 10, 50, 40, 20, 100, 60, -1.57, 0, 100, 0, 0)
+`, true, 5000, 5, 10, 5, 500, 1000, 40, 20, 120, 60, 0, 3.14, 100, 0, 0)
