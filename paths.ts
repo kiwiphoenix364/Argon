@@ -560,6 +560,7 @@ class DataDrivenEnemies {
     public static currentAnimationSet: number[]
     public static currentAnimation: number[]
     public static currentAngle: number
+    
     // Enemy count in each type's animation
     private static readonly animationEnemyNum = [
         1,
@@ -579,7 +580,7 @@ class DataDrivenEnemies {
             OffsetX,
             OffsetY,
             UseDirectionInfo? (0/1),
-            Projectile (Multi_Proj_VEL),
+            ProjectileIDX (Multi_Proj_VEL),
             ProjectileInterval,
             OverwriteProjectileDir (0,1)
         ]
@@ -591,7 +592,7 @@ class DataDrivenEnemies {
         [.25, 0, 10, 0, 0, 0, 0], // Left/right wave
         [0, .25, 0, 10, 0, 0, 0], // Up/down wave
         [.25, .25, 10, 10, 0, 0, 1], // Wave with facing
-        [.25, .25, 10, 10, 0, 0, 1, 1, 200, 1], // Wave with facing and projectile
+        [.25, .25, 10, 10, 0, 0, 1, 1, 100, 1], // Wave with facing and projectile
     ]
     // Animation used for each enemy
     /*
@@ -625,11 +626,17 @@ class DataDrivenEnemies {
                     x + Math.sin(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * Math.cos(this.currentAngle + 1.57) * this.currentAnimationSet[2],
                     y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * Math.sin(this.currentAngle + 1.57) * this.currentAnimationSet[3]
                 )
+                if (this.currentAnimationSet[7] === 1 && this.currentAnimationSet[8] % frame === 0) {
+                    //new Multi_Proj_VEL()
+                }
             } else  {
                 enemy[i].setPos(
                     x + Math.cos(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * this.currentAnimationSet[2],
                     y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * this.currentAnimationSet[3]
                 )
+                if (this.currentAnimationSet[7] === 1 && this.currentAnimationSet[8] % frame === 0) {
+                    //new Multi_Proj_VEL()
+                }
             }
         }
     }

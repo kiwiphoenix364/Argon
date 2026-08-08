@@ -4,8 +4,7 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "browser-events": "*",
-        "simple shader": "github:kiwiphoenix364/simple-shader#v5.0.5"
+        "browser-events": "*"
     },
     "files": [
         "main.blocks",
@@ -25,7 +24,8 @@
         "tilemap.g.jres",
         "tilemap.g.ts",
         "projectile.ts",
-        "dialogengine.ts"
+        "dialogengine.ts",
+        "localSimpleShader5.0.5.ts"
     ],
     "testFiles": [
         "test.ts"

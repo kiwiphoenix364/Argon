@@ -199,6 +199,19 @@ class Multi_Proj_BOTH {
         })
     }
 }
+class DataDrivenProjectiles {
+    public static readonly enemyProjStats: number[][] = [
+        [
+            
+        ]
+    ]
+    public static readonly enemyProjImgs: Image[] = [
+
+    ]
+    constructor() {
+
+    }
+}
 let test = new Multi_Proj_BOTH(img`
     . . . . . . . . . . b 5 b . . .
     . . . . . . . . . b 5 b . . . .
