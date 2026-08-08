@@ -72,6 +72,7 @@ class Multi_Proj_POS {
                 let ratio = j / (this.perVolley - 1)
                 new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, Path.interpolateFloat(ratio, this.x, this.ePosX), Path.interpolateFloat(ratio, this.x, this.ePosX), this.vA, this.vS, this.aA, this.aS)
             }
+
             pause(this.delay)
         } 
         this.destroy()
@@ -98,8 +99,9 @@ class Multi_Proj_VEL {
     public delay: number
     public destrOutOfScreen: boolean
     public life: number
-    public aO: boolean
-    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, volleys: number, perVolley: number, delay: number, sPosX: number, sPosY: number, angleVelocity: number, eAngleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number, angleOffset: boolean) {
+    public angleChange: number
+    public angleOverflow: number
+    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, volleys: number, perVolley: number, delay: number, sPosX: number, sPosY: number, angleVelocity: number, eAngleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number, angleChange = 0, angleOverflow = 0) {
         this.spriteImg = spriteImg
         this.x = sPosX
         this.y = sPosY
@@ -108,7 +110,8 @@ class Multi_Proj_VEL {
         this.aA = angleAcceleration
         this.aS = aSpeed
         this.eVA = eAngleVelocity
-        this.aO = angleOffset
+        this.angleChange = angleChange
+        this.angleOverflow = angleOverflow
         this.volleys = volleys
         this.perVolley = perVolley
         this.delay = delay
@@ -118,14 +121,14 @@ class Multi_Proj_VEL {
     }
     public spawnProjectiles() {
         control.runInBackground(() => {
-            let aOTV = 0
-            if (this.aO) {
-                aOTV = (this.vA - this.eVA) / (this.perVolley - 1) / 2
-            }
+            let currentAngle = 0
+            let actualAngleChange = (this.angleChange * (this.eVA - this.vA)) / this.perVolley
+            let actualAngleOverflow = (this.angleOverflow * (this.eVA - this.vA)) / this.perVolley
             for (let i = 0; i < this.volleys; i++) {
                 for (let j = 0; j < this.perVolley; j++) {
-                    new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, this.x, this.y, Path.interpolateFloat(j / (this.perVolley - 1), this.vA, this.eVA) + (i % 2 === 1? aOTV : 0), this.vS, this.aA, this.aS)
+                    new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, this.x, this.y, Path.interpolateFloat(j / (this.perVolley - 1), this.vA, this.eVA) + currentAngle, this.vS, this.aA, this.aS)
                 }
+                currentAngle = actualAngleOverflow != 0 ? (currentAngle + actualAngleChange) % actualAngleOverflow : 0
                 pause(this.delay)
             }
             this.destroy()
@@ -158,8 +161,9 @@ class Multi_Proj_BOTH {
     public bigProjs: number
     public bigDelay: number
     public bigSpriteImg: Image
-    public aO: boolean
-    constructor(spriteImg: Image, bigSpriteImg: Image, destroyOutOfScreen: boolean, life: number, bigProjs: number, volleys: number, perVolley: number, delay: number, bigDelay: number, sPosX: number, sPosY: number, ePosX: number, ePosY: number, angleVelocity: number, eAngleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number, angleOffset: boolean) {
+    public angleChange: number
+    public angleOverflow: number
+    constructor(spriteImg: Image, bigSpriteImg: Image, destroyOutOfScreen: boolean, life: number, bigProjs: number, volleys: number, perVolley: number, delay: number, bigDelay: number, sPosX: number, sPosY: number, ePosX: number, ePosY: number, angleVelocity: number, eAngleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number, angleChange = 0, angleOverflow = 0) {
         this.spriteImg = spriteImg
         this.x = sPosX
         this.y = sPosY
@@ -178,14 +182,15 @@ class Multi_Proj_BOTH {
         this.bigProjs = bigProjs
         this.bigSpriteImg = bigSpriteImg
         this.bigDelay = bigDelay
-        this.aO = angleOffset
+        this.angleChange = angleChange
+        this.angleOverflow = angleOverflow
         this.spawnProjectiles()
     }
     public spawnProjectiles() {
         control.runInBackground(() => {
             for (let i = 0; i < this.bigProjs; i++) {
                 let ratio = i / (this.bigProjs - 1)
-                new Multi_Proj_VEL(this.spriteImg, this.destrOutOfScreen, this.life, this.volleys, this.perVolley, this.delay, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), this.vA, this.eVA, this.vS, this.aA, this.aS, this.aO)
+                new Multi_Proj_VEL(this.spriteImg, this.destrOutOfScreen, this.life, this.volleys, this.perVolley, this.delay, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), this.vA, this.eVA, this.vS, this.aA, this.aS, this.angleChange, this.angleOverflow)
                 new Adv_Projectile(this.bigSpriteImg, true, this.life, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), 0, 0, 0, 0)
                 pause(this.bigDelay)
             }
@@ -195,21 +200,41 @@ class Multi_Proj_BOTH {
     destroy() {
         control.runInBackground(() => {
             pause(this.life)
-            this.spriteImg = this.bigDelay = this.aO = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = this.x2 = this.y2 = this.bigProjs = null
+            this.spriteImg = this.bigDelay = this.angleChange = this.angleOverflow = this.x = this.y = this.vA = this.vS = this.aA = this.aS = this.life = this.projs = this.eVA = this.volleys = this.perVolley = this.delay = this.destrOutOfScreen = this.life = this.x2 = this.y2 = this.bigProjs = null
         })
     }
 }
 class DataDrivenProjectiles {
+    // Img number, pattern
     public static readonly enemyProjStats: number[][] = [
         [
-            
+            0, 0
+        ]
+    ]
+    // destr? (1/0), life, volleys, perVolley, delay, sAngle, eAngle, speed, accelerationAngle, accelerationSpeed, angleOffset, angleOverflow
+    public static readonly projPattern: number[][] = [
+        [
+            1, 5000, 5, 5, 200, 0, 3.14, 100, 0, 0, 0, 0
+        ],
+        [
+            1, 5000, 5, 5, 200, 0, 3.14, 100, 0, 0, 0.5, 1
         ]
     ]
     public static readonly enemyProjImgs: Image[] = [
-
+        img`
+            . . 8 8 . .
+            . . 8 8 . .
+            . . 8 8 . .
+            . . 8 8 . .
+            . . 8 8 . .
+            . . 8 8 . .
+        `
     ]
     constructor() {
 
+    }
+    static spawnProjAtEnemyPos(enemy: Enemy, proj: number, useAngle: boolean) {
+        new Multi_Proj_VEL(DataDrivenProjectiles.enemyProjImgs[DataDrivenProjectiles.enemyProjStats[proj][0]], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][0] === 0 ? false : true, DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][1], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][2], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][3], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][4], enemy.sprite.x, enemy.sprite.y, DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][5], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][6], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][7], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][8], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][9], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][10], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][11])
     }
 }
 let test = new Multi_Proj_BOTH(img`
@@ -246,4 +271,4 @@ let test = new Multi_Proj_BOTH(img`
     4 5 4 e 5 5 5 5 e e . . . . . .
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
-`, true, 5000, 5, 10, 5, 500, 1000, 40, 20, 120, 60, 0, 1.57, 100, 0, 0, true)
+`, true, 5000, 5, 10, 5, 500, 1000, 40, 20, 120, 60, 0, 1.57, 100, 0, 0)
