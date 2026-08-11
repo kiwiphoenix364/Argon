@@ -2,6 +2,8 @@ namespace SpriteKind {
     export const MenuSprite = SpriteKind.create()
 }
 
+// Timing = 6;
+// Cursor = 7
 // CONTROLLER_PRIORITY = 8;
 // UPDATE_CONTROLLER_PRIORITY = 13;
 // CONTROLLER_SPRITES_PRIORITY = 13;

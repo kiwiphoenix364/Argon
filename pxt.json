@@ -4,7 +4,8 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "browser-events": "*"
+        "browser-events": "*",
+        "controller": "*"
     },
     "files": [
         "main.blocks",
