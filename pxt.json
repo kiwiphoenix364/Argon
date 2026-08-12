@@ -26,7 +26,8 @@
         "tilemap.g.ts",
         "projectile.ts",
         "dialogengine.ts",
-        "localSimpleShader5.0.5.ts"
+        "localSimpleShader5.0.5.ts",
+        "gamecoreelements.ts"
     ],
     "testFiles": [
         "test.ts"
