@@ -42,28 +42,44 @@ function RunLevel(levelData: string) {
     })
 }
 class Timing {
-    private updater: control.FrameCallback
+    private static updater: control.FrameCallback
     public static gameTime = 0
     private static pauseTime = 0
+    private static paused = true
     constructor() {
 
     }
-    public startTimer() {
-        control.timer8.start
-        this.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-            Timing.gameTime = control.timer8.millis()
-        })
+    public static startTimer() {
+        if (Timing.paused) {
+            control.timer8.start
+            Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
+                Timing.gameTime = control.timer8.millis() + Timing.pauseTime
+                info.setScore(Timing.gameTime)
+                Timing.paused = false
+            })
+        }
     }
-    public pauseTimer() {
-        control.timer8.reset()
-        game.currentScene().eventContext.unregisterFrameHandler(this.updater)
+    public static pauseTimer() {
+        if (!Timing.paused) {
+            Timing.pauseTime = Timing.gameTime
+            control.timer8.reset()
+            game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
+            Timing.paused = true
+        }
     }
-    public resetStartTimer() {
-
+    public static resetTimer() {
+        Timing.pauseTime = 0
+        if (!Timing.paused) {
+            control.timer8.reset()
+            game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
+            Timing.paused = true
+        }
+    }
+    public static getPausedState() {
+        return Timing.paused
     }
 }
 class OverallGameStats {
-    public static paused = false
     public static currentGameState = "start"
     constructor() {
 
@@ -147,7 +163,6 @@ class Cursor {
                         bufY.shift()
                     }
                 }
-                console.log(dynamicSmoothingVal)
                 bufX.shift()
                 bufY.shift()
                 bufX[dynamicSmoothingVal - 1] = curX
@@ -172,7 +187,7 @@ class Cursor {
     }
 }
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (OverallGameStats.paused)
+    if (!Timing.getPausedState())
     game.pushScene()
 })
 new Cursor(img`
@@ -182,3 +197,4 @@ new Cursor(img`
     . . 3 . .
     . . 3 . .
 `, 1)
+Timing.startTimer()

@@ -24,7 +24,10 @@ class Adv_Projectile {
         this.sprite.setFlag(SpriteFlag.AutoDestroy, destroyOutOfScreen)
         this.sprite.lifespan = life
         this.life = life
-        this.destroy()
+        this.updateSprite()
+    }
+    private updateSprite() {
+
     }
     destroy() {
         control.runInBackground(() => {
