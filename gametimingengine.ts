@@ -9,7 +9,7 @@ if (debug) {
     EditLevel(levelData)
 } else {
     openingMenu()
-    // RunLevel(levelData)
+    RunLevel(levelData)
 }
 function EditLevel(levelData: string) {
     game.pushScene()
@@ -27,12 +27,10 @@ function RunLevel(levelData: string) {
     idCounter = pathArray.length - 1
     idCache = 0
     console.log("loaded")
-    let time = 0
     let idx = 0
     let updater: control.FrameCallback
     updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
-        time += 1 / 50
-        if (idx < pathArray.length && time >= pathArray[idx].time) {
+        if (idx < pathArray.length && Timing.gameTime / 1000 >= pathArray[idx].time) {
             new PathFollower(pathArray[idx++])
         }
         if (idx >= pathArray.length) {
