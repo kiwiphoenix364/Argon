@@ -1,36 +1,34 @@
 class Timing {
     private static updater: control.FrameCallback
     public static gameTime = 0
-    private static pauseTime = 0
-    private static paused = false
+    private static paused: boolean = true
     constructor() {
 
     }
     public static startTimer() {
-        if (Timing.paused) {
+        if (Timing.paused === true) {
             control.timer8.reset()
-            control.timer8.start
             Timing.paused = false
             Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                Timing.gameTime = control.timer8.millis() + Timing.pauseTime
+                Timing.gameTime = control.timer8.millis()
                 info.setScore(Timing.gameTime)
             })
         }
     }
     public static pauseTimer() {
-        if (!Timing.paused) {
-            Timing.pauseTime = Timing.gameTime
-            control.timer8.reset()
+        if (Timing.paused === false) {
             game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
             Timing.paused = true
         }
     }
-    public static resetTimer() {
-        Timing.pauseTime = 0
-        if (!Timing.paused) {
-            control.timer8.reset()
-            game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
-            Timing.paused = true
+    public static unpauseTimer() {
+        if (Timing.paused === true) {
+            control.timer8.start = Timing.gameTime
+            Timing.paused = false
+            Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
+                Timing.gameTime = control.timer8.millis()
+                info.setScore(Timing.gameTime)
+            })
         }
     }
     public static getPausedState() {
@@ -43,9 +41,6 @@ class OverallGameStats {
 
     }
 }
-controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    game.pushScene()
-})
 class Cursor {
     private updater: control.FrameCallback
     public sprite = sprites.create(img`
@@ -68,7 +63,7 @@ class Cursor {
     `)
     public mode = 0
     public speed = 100
-    public gyroSensitivity = 0.5
+    public gyroSensitivity = 0.4
     public gyroAutoSmooth = 5
     public maxSmoothness = 15
     constructor(image = img`
@@ -132,9 +127,12 @@ class Cursor {
                 }
                 this.sprite.x = Math.round(avgX / ctr) + 80
                 this.sprite.y = Math.round(avgY / ctr) + 60
-            } else {
+            } else if (this.mode === 2) {
                 this.sprite.x = browserEvents.mouseX() + 0.5
                 this.sprite.y = browserEvents.mouseY() + 0.5
+            } else {
+                this.sprite.x = controller.acceleration(ControllerDimension.X) / 1.28 * this.gyroSensitivity + 80
+                this.sprite.y = controller.acceleration(ControllerDimension.Y) / 1.71 * this.gyroSensitivity + 60
             }
             this.sprite.x = Math.constrain(this.sprite.x, 0, 160)
             this.sprite.y = Math.constrain(this.sprite.y, 0, 120)
@@ -144,24 +142,77 @@ class Cursor {
         this.sprite.setImage(image)
     }
 }
-pauseMenu()
-function pauseMenu() {
-    controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-        if (!Timing.getPausedState()) {
-            Timing.pauseTimer()
-            game.pushScene()
-        } else {
-            game.popScene()
-            Timing.startTimer()
-        }
-        pauseMenu()
-    })
+class EnemyLayer {
+    public static layer: scene.Renderable
+    constructor() {
+        
+    }
+    public static startEnemyLayer() {
+        EnemyLayer.layer = scene.createRenderable(100, (screenImg: Image, camera: scene.Camera) => {
+            let deltaValue = control.eventContext().deltaTime
+            // Stuff is optimized into separate lists so it doesnt have if statements and can run the fastest possible
+            // Lol I'm an idiot it's of not in but smh why doesnt the compiler just treat them the same
+            // Simple projectiles
+            for (let val of Adv_Projectile.fast_proj_list) {
+                if (Timing.gameTime > val.life) {
+                    val.destroy(Adv_Projectile.fast_proj_list)
+                    continue
+                }
+                val.x += val.vX * deltaValue
+                val.y += val.vY * deltaValue
+                screenImg.drawTransparentImage(val.img, val.x, val.y)
+            }
+            // Projectiles with acceleration
+            for (let val of Adv_Projectile.proj_list) {
+                if (Timing.gameTime > val.life) {
+                    val.destroy(Adv_Projectile.proj_list)
+                    continue
+                }
+                val.x += val.vX * deltaValue
+                val.y += val.vY * deltaValue
+                val.vX += val.aX * deltaValue
+                val.vY += val.aY * deltaValue
+                screenImg.drawTransparentImage(val.img, val.x, val.y)
+            }
+            // Projectiles with acceleration and turning
+            for (let val of Adv_Projectile.slow_proj_list) {
+                if (Timing.gameTime > val.life) {
+                    val.destroy(Adv_Projectile.slow_proj_list)
+                    continue
+                }
+                val.x += val.vX * deltaValue
+                val.y += val.vY * deltaValue
+                val.vX += val.aX * deltaValue
+                val.vY += val.aY * deltaValue
+                helpers.imageDrawScaledRotated(screenImg, val.x, val.y, val.img, 1, 1, Math.atan2(val.vY, val.vX))
+            }
+        })
+    }
 }
+class PauseMenuCore{
+    constructor() {
 
-new Cursor(img`
-    . . 3 . .
-    . . 3 . .
-    3 3 . 3 3
-    . . 3 . .
-    . . 3 . .
-`, 2)
+    }
+    public static pauseMenu() {
+        controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
+            if (!Timing.getPausedState()) {
+                Timing.pauseTimer()
+                game.pushScene()
+            } else {
+                game.popScene()
+                Timing.unpauseTimer()
+            }
+            PauseMenuCore.pauseMenu()
+        })
+    }
+}
+class GameUtils{
+    constructor() {
+
+    }
+    public static setupGame() {
+        PauseMenuCore.pauseMenu()
+        Timing.startTimer()
+        EnemyLayer.startEnemyLayer()
+    }
+}

@@ -355,7 +355,6 @@ class PathFollower {
                     }
                     if (this.nextPoint.x - this.followObjectArray[i].x != 0 && this.nextPoint.y - this.followObjectArray[i].y != 0 && this.nextPoint.x - this.followObjectArray[i].x - this.nextPoint.y - this.followObjectArray[i].y != NaN) {
                         this.followObjectArray[i].angle = new SimplePoint(this.nextPoint.x - this.followObjectArray[i].x, this.nextPoint.y - this.followObjectArray[i].y)
-                        console.log(this.nextPoint.y - this.followObjectArray[i].y)
                     }
                     this.followObjectArray[i].setPosPoint(
                         this.nextPoint

@@ -1,5 +1,5 @@
 class Adv_Projectile {
-    public sprite: Sprite
+    public img: Image
     public x: number
     public y: number
     public vX: number
@@ -7,33 +7,45 @@ class Adv_Projectile {
     public aX: number
     public aY: number
     public life: number
-    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, sPosX: number, sPosY: number, angleVelocity: number, vSpeed: number, angleAcceleration: number, aSpeed: number) {
-        this.sprite = sprites.create(spriteImg)
-        this.x = sPosX
-        this.y = sPosY
+    public static fast_proj_list: Adv_Projectile[] = []
+    public static proj_list: Adv_Projectile[] = []
+    public static slow_proj_list: Adv_Projectile[] = []
+    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, sPosX: number, sPosY: number, angleVelocity: number, vSpeed: number, angleAcceleration = 0, aSpeed = 0, angleMode = 0) {
+        if (angleMode === 0) {
+            // Angle 0, just image
+            this.img = spriteImg
+        } else if (angleMode === 1) {
+            // Based on starting velocity
+            this.img = image.create(spriteImg.width, spriteImg.height)
+            helpers.imageDrawScaledRotated(this.img, 0, 0, spriteImg, 1, 1, angleVelocity)
+        } else if (angleMode === 2) {
+            // Updates dir constantly - laggy, code in EnemyLayer controls this.
+            this.img = spriteImg
+        } else if (angleMode === 3) {
+            // Faces in direction of acceleration
+            this.img = image.create(spriteImg.width, spriteImg.height)
+            helpers.imageDrawScaledRotated(this.img, 0, 0, spriteImg, 1, 1, angleAcceleration)
+        }
+        this.x = sPosX - (spriteImg.width >> 1)
+        this.y = sPosY - (spriteImg.height >> 1)
         this.vX = Math.cos(angleVelocity) * vSpeed
         this.vY = Math.sin(angleVelocity) * vSpeed
         this.aX = Math.cos(angleAcceleration) * aSpeed
         this.aY = Math.sin(angleAcceleration) * aSpeed
-        this.sprite.x = this.x
-        this.sprite.y = this.y
-        this.sprite.vx = this.vX
-        this.sprite.vy = this.vY
-        this.sprite.ax = this.aX
-        this.sprite.ay = this.aY
-        this.sprite.setFlag(SpriteFlag.AutoDestroy, destroyOutOfScreen)
-        this.sprite.lifespan = life
-        this.life = life
-        this.updateSprite()
+        this.life = life + Timing.gameTime
+        // Adv_Projectile.proj_list used in EnemyLayer to move/render projectiles.
+        if (aSpeed === 0) {
+            Adv_Projectile.fast_proj_list.push(this)
+        } else if (angleMode != 2) {
+            Adv_Projectile.proj_list.push(this)
+        } else {
+            Adv_Projectile.slow_proj_list.push(this)
+        }
+        
     }
-    private updateSprite() {
-
-    }
-    destroy() {
-        control.runInBackground(() => {
-            pause(this.life)
-            this.sprite = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
-        })
+    destroy(removeFrom: Adv_Projectile[]) {
+        this.img = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
+        removeFrom.removeElement(this)
     }
 }
 class Multi_Proj_POS {
@@ -72,7 +84,7 @@ class Multi_Proj_POS {
     public spawnProjectiles() {
         for (let i = 0; i < this.volleys; i++) {
             for (let j = 0; j < this.perVolley; j++) {
-                let ratio = j / (this.perVolley - 1)
+                let ratio = this.perVolley - 1 > 0 ? j / (this.perVolley - 1) : 0
                 new Adv_Projectile(this.spriteImg, this.destrOutOfScreen, this.life, Path.interpolateFloat(ratio, this.x, this.ePosX), Path.interpolateFloat(ratio, this.x, this.ePosX), this.vA, this.vS, this.aA, this.aS)
             }
 
@@ -192,7 +204,7 @@ class Multi_Proj_BOTH {
     public spawnProjectiles() {
         control.runInBackground(() => {
             for (let i = 0; i < this.bigProjs; i++) {
-                let ratio = i / (this.bigProjs - 1)
+                let ratio = this.bigProjs - 1 > 0 ? i / (this.bigProjs - 1) : 0
                 new Multi_Proj_VEL(this.spriteImg, this.destrOutOfScreen, this.life, this.volleys, this.perVolley, this.delay, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), this.vA, this.eVA, this.vS, this.aA, this.aS, this.angleChange, this.angleOverflow)
                 new Adv_Projectile(this.bigSpriteImg, true, this.life, Path.interpolateFloat(ratio, this.x, this.x2), Path.interpolateFloat(ratio, this.y, this.y2), 0, 0, 0, 0)
                 pause(this.bigDelay)
@@ -241,38 +253,3 @@ class DataDrivenProjectiles {
         new Multi_Proj_VEL(DataDrivenProjectiles.enemyProjImgs[DataDrivenProjectiles.enemyProjStats[proj][0]], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][0] === 0 ? false : true, DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][1], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][2], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][3], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][4], enemy.sprite.x, enemy.sprite.y, DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][5], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][6], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][7], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][8], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][9], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][10], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][11])
     }
 }
-let test = new Multi_Proj_BOTH(img`
-    . . . . . . . . . . b 5 b . . .
-    . . . . . . . . . b 5 b . . . .
-    . . . . . . b b b b b b . . . .
-    . . . . . b b 5 5 5 5 5 b . . .
-    . . . . b b 5 d 1 f 5 5 d f . .
-    . . . . b 5 5 1 f f 5 d 4 c . .
-    . . . . b 5 5 d f b d d 4 4 . .
-    . b b b d 5 5 5 5 5 4 4 4 4 4 b
-    b d d d b b d 5 5 4 4 4 4 4 b .
-    b b d 5 5 5 b 5 5 5 5 5 5 b . .
-    c d c 5 5 5 5 d 5 5 5 5 5 5 b .
-    c b d c d 5 5 b 5 5 5 5 5 5 b .
-    . c d d c c b d 5 5 5 5 5 d b .
-    . . c b d d d d d 5 5 5 b b . .
-    . . . c c c c c c c c b b . . .
-    . . . . . . . . . . . . . . . .
-`, img`
-    . . . . . . . e e e e . . . . .
-    . . . . . e e 4 5 5 5 e e . . .
-    . . . . e 4 5 6 2 2 7 6 6 e . .
-    . . . e 5 6 6 7 2 2 6 4 4 4 e .
-    . . e 5 2 2 7 6 6 4 5 5 5 5 4 .
-    . e 5 6 2 2 8 8 5 5 5 5 5 4 5 4
-    . e 5 6 7 7 8 5 4 5 4 5 5 5 5 4
-    e 4 5 8 6 6 5 5 5 5 5 5 4 5 5 4
-    e 5 c e 8 5 5 5 4 5 5 5 5 5 5 4
-    e 5 c c e 5 4 5 5 5 4 5 5 5 e .
-    e 5 c c 5 5 5 5 5 5 5 5 4 e . .
-    e 5 e c 5 4 5 4 5 5 5 e e . . .
-    e 5 e e 5 5 5 5 5 4 e . . . . .
-    4 5 4 e 5 5 5 5 e e . . . . . .
-    . 4 5 4 5 5 4 e . . . . . . . .
-    . . 4 4 e e e . . . . . . . . .
-`, true, 5000, 1, 10, 5, 500, 1000, 40, 20, 120, 60, 0, 1.57, 100, 0, 0, 0.75, 1)

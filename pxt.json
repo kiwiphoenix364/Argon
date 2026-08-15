@@ -27,7 +27,9 @@
         "projectile.ts",
         "dialogengine.ts",
         "localSimpleShader5.0.5.ts",
-        "gamecoreelements.ts"
+        "gamecoreelements.ts",
+        "pauseMenu.ts",
+        "menuclasses.ts"
     ],
     "testFiles": [
         "test.ts"
