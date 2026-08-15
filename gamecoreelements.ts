@@ -153,37 +153,40 @@ class EnemyLayer {
             // Stuff is optimized into separate lists so it doesnt have if statements and can run the fastest possible
             // Lol I'm an idiot it's of not in but smh why doesnt the compiler just treat them the same
             // Simple projectiles
-            for (let val of Adv_Projectile.fast_proj_list) {
-                if (Timing.gameTime > val.life) {
+            for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
+                const val = Adv_Projectile.fast_proj_list[i]
+                val.x += val.vX * deltaValue
+                val.y += val.vY * deltaValue
+                if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
                     val.destroy(Adv_Projectile.fast_proj_list)
                     continue
                 }
-                val.x += val.vX * deltaValue
-                val.y += val.vY * deltaValue
                 screenImg.drawTransparentImage(val.img, val.x, val.y)
             }
             // Projectiles with acceleration
-            for (let val of Adv_Projectile.proj_list) {
-                if (Timing.gameTime > val.life) {
+            for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
+                const val = Adv_Projectile.proj_list[i]
+                val.x += val.vX * deltaValue
+                val.y += val.vY * deltaValue
+                val.vX += val.aX * deltaValue
+                val.vY += val.aY * deltaValue
+                if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
                     val.destroy(Adv_Projectile.proj_list)
                     continue
                 }
-                val.x += val.vX * deltaValue
-                val.y += val.vY * deltaValue
-                val.vX += val.aX * deltaValue
-                val.vY += val.aY * deltaValue
                 screenImg.drawTransparentImage(val.img, val.x, val.y)
             }
             // Projectiles with acceleration and turning
-            for (let val of Adv_Projectile.slow_proj_list) {
-                if (Timing.gameTime > val.life) {
-                    val.destroy(Adv_Projectile.slow_proj_list)
-                    continue
-                }
+            for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
+                const val = Adv_Projectile.slow_proj_list[i]
                 val.x += val.vX * deltaValue
                 val.y += val.vY * deltaValue
                 val.vX += val.aX * deltaValue
                 val.vY += val.aY * deltaValue
+                if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
+                    val.destroy(Adv_Projectile.slow_proj_list)
+                    continue
+                }
                 helpers.imageDrawScaledRotated(screenImg, val.x, val.y, val.img, 1, 1, Math.atan2(val.vY, val.vX))
             }
         })

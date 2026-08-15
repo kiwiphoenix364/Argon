@@ -7,6 +7,7 @@ class Adv_Projectile {
     public aX: number
     public aY: number
     public life: number
+    public autoDestroy: boolean
     public static fast_proj_list: Adv_Projectile[] = []
     public static proj_list: Adv_Projectile[] = []
     public static slow_proj_list: Adv_Projectile[] = []
@@ -33,6 +34,7 @@ class Adv_Projectile {
         this.aX = Math.cos(angleAcceleration) * aSpeed
         this.aY = Math.sin(angleAcceleration) * aSpeed
         this.life = life + Timing.gameTime
+        this.autoDestroy = destroyOutOfScreen
         // Adv_Projectile.proj_list used in EnemyLayer to move/render projectiles.
         if (aSpeed === 0) {
             Adv_Projectile.fast_proj_list.push(this)
@@ -42,7 +44,7 @@ class Adv_Projectile {
             Adv_Projectile.slow_proj_list.push(this)
         }
         
-    }
+    } 
     destroy(removeFrom: Adv_Projectile[]) {
         this.img = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
         removeFrom.removeElement(this)
