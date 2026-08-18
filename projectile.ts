@@ -11,7 +11,7 @@ class Adv_Projectile {
     public static fast_proj_list: Adv_Projectile[] = []
     public static proj_list: Adv_Projectile[] = []
     public static slow_proj_list: Adv_Projectile[] = []
-    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, sPosX: number, sPosY: number, angleVelocity: number, vSpeed: number, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
+    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, posX: number, posY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
         if (angleMode === 0) {
             // Angle 0, just image
             this.img = spriteImg
@@ -27,8 +27,8 @@ class Adv_Projectile {
             this.img = image.create(spriteImg.width, spriteImg.height)
             helpers.imageDrawScaledRotated(this.img, 0, 0, spriteImg, 1, 1, angleAcceleration)
         }
-        this.x = sPosX - (spriteImg.width >> 1)
-        this.y = sPosY - (spriteImg.height >> 1)
+        this.x = posX - (spriteImg.width >> 1)
+        this.y = posY - (spriteImg.height >> 1)
         this.vX = Math.cos(angleVelocity) * vSpeed
         this.vY = Math.sin(angleVelocity) * vSpeed
         this.aX = Math.cos(angleAcceleration) * aSpeed
@@ -48,6 +48,81 @@ class Adv_Projectile {
     destroy(removeFrom: Adv_Projectile[]) {
         this.img = this.x = this.y = this.vX = this.vY = this.aX = this.aY = this.life = null
         removeFrom.removeElement(this)
+    }
+}
+class ADV_Projectile_Spawner {
+    public delay: number
+    public numberToSpawn: number
+    public currentValue: number = 0
+    public nextUpdateTime: number
+    public spawnScript: () => void
+    public static adv_projectile_spawner_updater_list: ADV_Projectile_Spawner[] = []
+    constructor(spawnScript: () => void, delay: number, numberToSpawn: number) {
+        this.nextUpdateTime = Timing.gameTime
+        this.delay = delay
+        this.numberToSpawn = numberToSpawn
+        this.spawnScript = spawnScript
+        ADV_Projectile_Spawner.adv_projectile_spawner_updater_list.push(this)
+    }
+    public attemptSpawn() {
+        if (Timing.gameTime >= this.nextUpdateTime) {
+            this.nextUpdateTime += this.delay
+            this.spawnScript()
+        }
+    }
+    public destroy() {
+        this.delay = this.numberToSpawn = this.currentValue = this.nextUpdateTime = this.spawnScript = null
+        ADV_Projectile_Spawner.adv_projectile_spawner_updater_list.removeElement(this)
+    }
+    // Custom time-based spawning scripts below
+    public multi_spawner_line_timed(spriteImg: Image, destroyOutOfScreen: boolean, life: number, sPosX: number, ePosX: number, sPosY: number, ePosY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
+        let ratio = this.numberToSpawn - 1 > 0 ? this.currentValue / (this.numberToSpawn - 1) : 0
+        new Adv_Projectile(spriteImg, destroyOutOfScreen, life, Path.interpolateFloat(ratio, sPosX, ePosX), Path.interpolateFloat(ratio, sPosY, ePosY), angleVelocity, vSpeed, angleAcceleration, aSpeed, angleMode)
+        this.nextUpdateTime += this.delay
+        this.currentValue += 1
+        if (this.currentValue >= this.numberToSpawn) {
+            this.destroy()
+        }
+    }
+}
+class ADV_Projectile_Spawner_Custom_Timing extends ADV_Projectile_Spawner {
+    public addDelayFunction: (updateTime: number, delay: number, numberToSpawn: number, currentValue: number) => number
+    constructor(spawnScript: () => void, delay: number, numberToSpawn: number, addDelayFunction = (updateTime: number, delay: number, numberSpawned: number, currentValue: number) => { return updateTime + delay }) {
+        super(spawnScript, delay, numberToSpawn)
+        this.addDelayFunction = addDelayFunction
+    }
+    public attemptSpawn() {
+        if (Timing.gameTime >= this.nextUpdateTime) {
+            this.nextUpdateTime = this.addDelayFunction(this.nextUpdateTime, this.delay, this.numberToSpawn, this.currentValue)
+            this.spawnScript()
+        }
+    }
+    public destroy() {
+        this.delay = this.numberToSpawn = this.currentValue = this.nextUpdateTime = this.spawnScript = this.addDelayFunction = null
+        ADV_Projectile_Spawner.adv_projectile_spawner_updater_list.removeElement(this)
+    }
+}
+class ADV_Projectile_Spawner_Scripts {
+    constructor() {
+    }
+    public static singleProj(img: Image, destr: boolean, life: number, x: number, y: number, angle: number, speed: number) {
+        new Adv_Projectile(img, destr, life, x, y, angle, speed)
+    }
+    public static multi_vel(img: Image, destr: boolean, life: number, x: number, y: number, perVolley: number, startAngle: number, endAngle: number, speed: number, offset: number) {
+        let currentAngle = 0
+        let actualAngleChange = (offset * (endAngle - startAngle)) / perVolley
+        let actualAngleOverflow = (offset * (endAngle - startAngle)) / perVolley
+        currentAngle = actualAngleOverflow != 0 ? (currentAngle + actualAngleChange) % actualAngleOverflow : 0
+        for (let j = 0; j < perVolley; j++) {
+            let ratio = perVolley - 1 > 0 ? j / (perVolley - 1) : 0
+            new Adv_Projectile(img, destr, life, x, y, Path.interpolateFloat(ratio, startAngle, endAngle) + currentAngle, speed)
+        }
+    }
+    public static multi_spawner_line_timed() {
+
+    }
+    public static timed_spawner(spawnScript: () => void, delay: number, times: number) {
+        
     }
 }
 class Multi_Proj_POS {

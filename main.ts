@@ -10,8 +10,13 @@ namespace SpriteKind {
 // FOLLOW_SPRITE_PRIORITY = 14;
 // PHYSICS_PRIORITY = 15;
 // ANIMATION_UPDATE_PRIORITY = 15;
+// Shaders - init. at 16 ms and update attached sprites 23-24, renderable update
+// Game timing at 17
+// Spawn timed projectiles at 18
 // UPDATE_INTERVAL_PRIORITY = 19;
+// PathFollowObjects - Update pos at 19 and pos animations at 20
 // UPDATE_PRIORITY = 20;
+// spritedamagetick at 21, SpriteTick at 22
 // PRE_RENDER_UPDATE_PRIORITY = 55;
 // RENDER_BACKGROUND_PRIORITY = 60;
 // RENDER_SPRITES_PRIORITY = 90;
@@ -19,11 +24,9 @@ namespace SpriteKind {
 // MULTIPLAYER_SCREEN_PRIORITY = 190;
 // UPDATE_SCREEN_PRIORITY = 200;
 // MULTIPLAYER_POST_SCREEN_PRIORITY = 210;
-// 
-// Shaders - init. at 17 ms and update attached sprites 23-24, renderable update
-// Game timing at 18
-// PathFollowObjects - Update pos at 19 and pos animations at 20
-// spritedamagetick at 21, SpriteTick at 22
+
+
+
 
 // Main game setup
 
@@ -45,7 +48,7 @@ let cur = new Cursor(img`
         . . 3 . .
         . . 3 . .
 `, 1)
-let test = new Multi_Proj_BOTH(img`
+/*let test = new Multi_Proj_BOTH(img`
     . . . . . .
     . . . . . .
     3 3 3 3 3 3
@@ -70,3 +73,24 @@ let test = new Multi_Proj_BOTH(img`
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
 `, true, 5000, 10, 10, 5, 200, 500, 40, 20, 120, 60, 0, 2 * Math.PI, 100, 0, 0, 0.75, 1)
+*/
+let test2 = new ADV_Projectile_Spawner(() => {
+    test2.multi_spawner_line_timed(img`
+        . . . . . . . e e e e . . . . .
+        . . . . . e e 4 5 5 5 e e . . .
+        . . . . e 4 5 6 2 2 7 6 6 e . .
+        . . . e 5 6 6 7 2 2 6 4 4 4 e .
+        . . e 5 2 2 7 6 6 4 5 5 5 5 4 .
+        . e 5 6 2 2 8 8 5 5 5 5 5 4 5 4
+        . e 5 6 7 7 8 5 4 5 4 5 5 5 5 4
+        e 4 5 8 6 6 5 5 5 5 5 5 4 5 5 4
+        e 5 c e 8 5 5 5 4 5 5 5 5 5 5 4
+        e 5 c c e 5 4 5 5 5 4 5 5 5 e .
+        e 5 c c 5 5 5 5 5 5 5 5 4 e . .
+        e 5 e c 5 4 5 4 5 5 5 e e . . .
+        e 5 e e 5 5 5 5 5 4 e . . . . .
+        4 5 4 e 5 5 5 5 e e . . . . . .
+        . 4 5 4 5 5 4 e . . . . . . . .
+        . . 4 4 e e e . . . . . . . . .
+    `, true, 5000, 10, 100, 10, 100)
+}, 1000, 10)

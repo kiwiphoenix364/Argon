@@ -116,7 +116,7 @@ class SS_Shader {
         img.setRows(0, renderBuf)
     }
     protected updateShaderLayer() {
-        this.updater = game.currentScene().eventContext.registerFrameHandler(17, () => {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(16, () => {
             if (this.refreshShaderLayer === true) {
                 this.shaderLayer.fill(0)
             }

@@ -26,7 +26,7 @@ class Level {
         idCache = 0
         let idx = 0
         let updater: control.FrameCallback
-        updater = game.currentScene().eventContext.registerFrameHandler(18, () => {
+        updater = game.currentScene().eventContext.registerFrameHandler(17, () => {
             if (idx < pathArray.length && Timing.gameTime / 1000 >= pathArray[idx].time) {
                 new PathFollower(pathArray[idx++])
             }

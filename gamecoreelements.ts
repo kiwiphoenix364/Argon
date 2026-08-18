@@ -99,6 +99,7 @@ class Cursor {
                 this.sprite.x += controller.dx() * this.speed / 10
                 this.sprite.y += controller.dy() * this.speed / 10
             } else if (this.mode === 1) {
+                // Dynamic smoothing of gyro controls with mitigated input lag
                 let avgX = 0
                 let avgY = 0
                 let ctr = 0
@@ -140,6 +141,19 @@ class Cursor {
     }
     public changeCursorImg(image: Image) {
         this.sprite.setImage(image)
+    }
+}
+class ADV_Projectile_Spawner_Updater {
+    public static updater: control.FrameCallback
+    constructor() {
+
+    }
+    public static startADVProjectileSpawnerUpdater() {
+        ADV_Projectile_Spawner_Updater.updater = game.currentScene().eventContext.registerFrameHandler(17, () => {
+            for (let i = ADV_Projectile_Spawner.adv_projectile_spawner_updater_list.length - 1; i >= 0; i--) {
+                ADV_Projectile_Spawner.adv_projectile_spawner_updater_list[i].attemptSpawn()
+            }
+        })
     }
 }
 class EnemyLayer {
@@ -217,5 +231,6 @@ class GameUtils{
         PauseMenuCore.pauseMenu()
         Timing.startTimer()
         EnemyLayer.startEnemyLayer()
+        ADV_Projectile_Spawner_Updater.startADVProjectileSpawnerUpdater()
     }
 }
