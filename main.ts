@@ -74,8 +74,21 @@ let cur = new Cursor(img`
     . . 4 4 e e e . . . . . . . . .
 `, true, 5000, 10, 10, 5, 200, 500, 40, 20, 120, 60, 0, 2 * Math.PI, 100, 0, 0, 0.75, 1)
 */
+let test3: ADV_Projectile_Spawner
 let test2 = new ADV_Projectile_Spawner(() => {
-    test2.multi_spawner_line_timed(img`
+    test2.multi_spawner_line_timed(
+    () => {
+            test3 = new ADV_Projectile_Spawner(() => {
+            test3.multi_spawner_cones_timed(img`
+                . . . . . .
+                . . . . . .
+                3 3 3 3 3 3
+                3 3 3 3 3 3
+                . . . . . .
+                . . . . . .
+            `, true, 1000, test2.tempX, test2.tempY, 0, Math.PI * 2, 100, 0, 0, 1, 0.2, 1)
+        }, 200, 10)
+    }, img`
         . . . . . . . e e e e . . . . .
         . . . . . e e 4 5 5 5 e e . . .
         . . . . e 4 5 6 2 2 7 6 6 e . .
