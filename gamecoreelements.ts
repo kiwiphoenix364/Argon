@@ -2,6 +2,7 @@ class Timing {
     private static updater: control.FrameCallback
     public static gameTime = 0
     private static pausedTime = 0
+    public static delta = control.eventContext().deltaTime
     private static paused: boolean = true
     constructor() {
 
@@ -13,6 +14,7 @@ class Timing {
             control.timer8.reset()
             Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
                 Timing.gameTime = control.timer8.millis()
+                Timing.delta = control.eventContext().deltaTime
                 info.setScore(Timing.gameTime)
             })
         }
@@ -30,6 +32,7 @@ class Timing {
             control.timer8.reset()
             Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
                 Timing.gameTime = control.timer8.millis() + Timing.pausedTime
+                Timing.delta = control.eventContext().deltaTime
                 info.setScore(Timing.gameTime)
             })
         }
@@ -303,14 +306,13 @@ class EnemyLayer {
     public static startEnemyLayer() {
         EnemyLayer.layer = scene.createRenderable(100, (screenImg: Image, camera: scene.Camera) => {
             if (!Timing.getPausedState()) {
-                let deltaValue = control.eventContext().deltaTime
                 // Stuff is optimized into separate lists so it doesnt have if statements and can run the fastest possible
                 // Lol I'm an idiot it's of not in but smh why doesnt the compiler just treat them the same
                 // Simple projectiles
                 for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.fast_proj_list[i]
-                    val.x += val.vX * deltaValue
-                    val.y += val.vY * deltaValue
+                    val.x += val.vX * Timing.delta
+                    val.y += val.vY * Timing.delta
                     if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
                         val.destroy(Adv_Projectile.fast_proj_list)
                         continue
@@ -320,10 +322,10 @@ class EnemyLayer {
                 // Projectiles with acceleration
                 for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.proj_list[i]
-                    val.x += val.vX * deltaValue
-                    val.y += val.vY * deltaValue
-                    val.vX += val.aX * deltaValue
-                    val.vY += val.aY * deltaValue
+                    val.x += val.vX * Timing.delta
+                    val.y += val.vY * Timing.delta
+                    val.vX += val.aX * Timing.delta
+                    val.vY += val.aY * Timing.delta
                     if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
                         val.destroy(Adv_Projectile.proj_list)
                         continue
@@ -333,10 +335,10 @@ class EnemyLayer {
                 // Projectiles with acceleration and turning
                 for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.slow_proj_list[i]
-                    val.x += val.vX * deltaValue
-                    val.y += val.vY * deltaValue
-                    val.vX += val.aX * deltaValue
-                    val.vY += val.aY * deltaValue
+                    val.x += val.vX * Timing.delta
+                    val.y += val.vY * Timing.delta
+                    val.vX += val.aX * Timing.delta
+                    val.vY += val.aY * Timing.delta
                     if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
                         val.destroy(Adv_Projectile.slow_proj_list)
                         continue
