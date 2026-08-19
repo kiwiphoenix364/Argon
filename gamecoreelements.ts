@@ -171,7 +171,8 @@ class PathFollowerUpdater {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
             for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
                 const val = PathFollower.pathFollowerList[i]
-                if ((val.frameCounter++ - val.path.timeOffset) % val.spacing === 0 && val.frameCounter / val.spacing <= val.count) {
+                if ((Timing.gameTime - val.path.timeOffset) >= val.timeCounter && val.count-- > 0) {
+                    val.timeCounter += val.spacing
                     val.followObjectArray.push(new PathFollowObject(val.path))
                     if (val.enemyType < 0) {
                         val.followObjectArray[val.followObjectArray.length - 1].disPixels -= val.followObjectArray[val.followObjectArray.length - 1].extLength
@@ -185,99 +186,96 @@ class PathFollowerUpdater {
                         }
                     }
                 }
-                if (val.frameCounter > val.path.timeOffset) {
-                    for (let i = 0; i < val.followObjectArray.length; i++) {
-                        if (val.followObjectArray[i].segmentDisPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) {
-                            val.followObjectArray[i].segmentDisPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]
-                            val.followObjectArray[i].segmentLengthPos++
-                        }
-                        // Dis pixels is past the length of the point array
-                        // Current point is not the last point or later
-                        // Add case to make sure it is not an array at the end - this will be handled separately
-                        if (
-                            val.followObjectArray[i].disPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength &&
-                            val.followObjectArray[i].currentPoint < val.path.pointArray.length - 1 &&
-                            !(val.enemyType < 0 && val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2)
-                        ) {
-                            if (val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint > 0) {
-                                val.followObjectArray[i].segmentLengthPos = 0
-                                val.followObjectArray[i].disPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength
-                                val.followObjectArray[i].currentPoint++
-                            } else {
-                                val.followObjectArray[i].segmentLengthPos = 0
-                                val.followObjectArray[i].segmentDisPixels = 0
-                                val.followObjectArray[i].disPixels = 0
-                                val.followObjectArray[i].currentPoint++
-                                val.followObjectArray[i].waitTime = val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint
-                            }
-                        } else if (
-                            val.path.pointArray[0].pauseAtPoint > 0 &&
-                            val.followObjectArray[i].segmentLengthPos === -1 &&
-                            val.followObjectArray[i].currentPoint === 0 &&
-                            val.followObjectArray[i].disPixels >= 0 &&
-                            val.followObjectArray[i].disPixels - val.speed < 0
-                        ) {
-                            val.followObjectArray[i].disPixels = 0
-                            val.followObjectArray[i].waitTime = val.path.pointArray[0].pauseAtPoint
+                for (let i = 0; i < val.followObjectArray.length; i++) {
+                    if (val.followObjectArray[i].segmentDisPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) {
+                        val.followObjectArray[i].segmentDisPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]
+                        val.followObjectArray[i].segmentLengthPos++
+                    }
+                    // Dis pixels is past the length of the point array
+                    // Current point is not the last point or later
+                    // Add case to make sure it is not an array at the end - this will be handled separately
+                    if (
+                        val.followObjectArray[i].disPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength &&
+                        val.followObjectArray[i].currentPoint < val.path.pointArray.length - 1 &&
+                        !(val.enemyType < 0 && val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2)
+                    ) {
+                        if (val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint > 0) {
                             val.followObjectArray[i].segmentLengthPos = 0
-                        } else if (
-                            val.path.pointArray[val.path.pointArray.length - 1].pauseAtPoint > 0 &&
-                            val.enemyType < 0 &&
-                            val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2 &&
-                            val.followObjectArray[i].disPixels >= val.path.pointArray[val.path.pointArray.length - 2].segmentLength &&
-                            val.followObjectArray[i].disPixels - val.speed < val.path.pointArray[val.path.pointArray.length - 2].segmentLength &&
-                            val.followObjectArray[i].segmentLengthPos != 0
-                        ) {
-                            val.followObjectArray[i].disPixels = val.path.pointArray[val.path.pointArray.length - 2].segmentLength
-                            val.followObjectArray[i].waitTime = val.path.pointArray[val.path.pointArray.length - 1].pauseAtPoint
-                            val.followObjectArray[i].segmentLengthPos = 0
-                        }
-                        // Main movement update code
-                        if (val.enemyType >= 0 || val.followObjectArray[i].disPixels >= 0 && val.followObjectArray[i].disPixels < val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength) {
-                            val.nextPoint = val.path.findPoint(
-                                val.followObjectArray[i].currentPoint,
-                                Fx8(val.followObjectArray[i].segmentLengthPos / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths.length + (val.followObjectArray[i].segmentDisPixels / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) / (val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths.length))
-                            )
-
+                            val.followObjectArray[i].disPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength
+                            val.followObjectArray[i].currentPoint++
                         } else {
-                            val.nextPoint = val.path.findPoint(
-                                val.followObjectArray[i].currentPoint,
-                                Fx8(val.followObjectArray[i].disPixels / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength)
-                            )
+                            val.followObjectArray[i].segmentLengthPos = 0
+                            val.followObjectArray[i].segmentDisPixels = 0
+                            val.followObjectArray[i].disPixels = 0
+                            val.followObjectArray[i].currentPoint++
+                            val.followObjectArray[i].waitTime = val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint
                         }
-                        if (val.nextPoint.x - val.followObjectArray[i].x != 0 && val.nextPoint.y - val.followObjectArray[i].y != 0 && val.nextPoint.x - val.followObjectArray[i].x - val.nextPoint.y - val.followObjectArray[i].y != NaN) {
-                            val.followObjectArray[i].angle = new SimplePoint(val.nextPoint.x - val.followObjectArray[i].x, val.nextPoint.y - val.followObjectArray[i].y)
-                        }
-                        val.followObjectArray[i].setPosPoint(
-                            val.nextPoint
+                    } else if (
+                        val.path.pointArray[0].pauseAtPoint > 0 &&
+                        val.followObjectArray[i].segmentLengthPos === -1 &&
+                        val.followObjectArray[i].currentPoint === 0 &&
+                        val.followObjectArray[i].disPixels >= 0 &&
+                        val.followObjectArray[i].disPixels - val.speed < 0
+                    ) {
+                        val.followObjectArray[i].disPixels = 0
+                        val.followObjectArray[i].waitTime = val.path.pointArray[0].pauseAtPoint
+                        val.followObjectArray[i].segmentLengthPos = 0
+                    } else if (
+                        val.path.pointArray[val.path.pointArray.length - 1].pauseAtPoint > 0 &&
+                        val.enemyType < 0 &&
+                        val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2 &&
+                        val.followObjectArray[i].disPixels >= val.path.pointArray[val.path.pointArray.length - 2].segmentLength &&
+                        val.followObjectArray[i].disPixels - val.speed < val.path.pointArray[val.path.pointArray.length - 2].segmentLength &&
+                        val.followObjectArray[i].segmentLengthPos != 0
+                    ) {
+                        val.followObjectArray[i].disPixels = val.path.pointArray[val.path.pointArray.length - 2].segmentLength
+                        val.followObjectArray[i].waitTime = val.path.pointArray[val.path.pointArray.length - 1].pauseAtPoint
+                        val.followObjectArray[i].segmentLengthPos = 0
+                    }
+                    // Main movement update code
+                    if (val.enemyType >= 0 || val.followObjectArray[i].disPixels >= 0 && val.followObjectArray[i].disPixels < val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength) {
+                        val.nextPoint = val.path.findPoint(
+                            val.followObjectArray[i].currentPoint,
+                            Fx8(val.followObjectArray[i].segmentLengthPos / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths.length + (val.followObjectArray[i].segmentDisPixels / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) / (val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths.length))
                         )
-                        if (--val.followObjectArray[i].waitTime > 0) {
-                            continue
-                        }
-                        // Add to distance
-                        val.followObjectArray[i].disPixels += val.speed
-                        val.followObjectArray[i].segmentDisPixels += val.speed
-                        // Destroy cases for regular
-                        if (
-                            val.enemyType >= 0 &&
-                            val.followObjectArray[i].currentPoint === val.path.pointArray.length - 1 &&
-                            val.followObjectArray[i].segmentDisPixels > 0
-                        ) {
-                            val.followObjectArray[i].destroy()
-                            val.followObjectArray.removeAt(i)
-                        } else if (
-                            val.enemyType < 0 &&
-                            val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2 &&
-                            val.followObjectArray[i].disPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength + val.followObjectArray[val.followObjectArray.length - 1].extLength
-                        ) {
-                            val.followObjectArray[i].destroy()
-                            val.followObjectArray.removeAt(i)
-                        }
+                    } else {
+                        val.nextPoint = val.path.findPoint(
+                            val.followObjectArray[i].currentPoint,
+                            Fx8(val.followObjectArray[i].disPixels / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength)
+                        )
                     }
-                    // Destroy array if empty
-                    if (val.followObjectArray.length === 0) {
-                        val.destroy()
+                    if (val.nextPoint.x - val.followObjectArray[i].x != 0 && val.nextPoint.y - val.followObjectArray[i].y != 0 && val.nextPoint.x - val.followObjectArray[i].x - val.nextPoint.y - val.followObjectArray[i].y != NaN) {
+                        val.followObjectArray[i].angle = new SimplePoint(val.nextPoint.x - val.followObjectArray[i].x, val.nextPoint.y - val.followObjectArray[i].y)
                     }
+                    val.followObjectArray[i].setPosPoint(
+                        val.nextPoint
+                    )
+                    if (--val.followObjectArray[i].waitTime > 0) {
+                        continue
+                    }
+                    // Add to distance
+                    val.followObjectArray[i].disPixels += val.speed
+                    val.followObjectArray[i].segmentDisPixels += val.speed
+                    // Destroy cases for regular
+                    if (
+                        val.enemyType >= 0 &&
+                        val.followObjectArray[i].currentPoint === val.path.pointArray.length - 1 &&
+                        val.followObjectArray[i].segmentDisPixels > 0
+                    ) {
+                        val.followObjectArray[i].destroy()
+                        val.followObjectArray.removeAt(i)
+                    } else if (
+                        val.enemyType < 0 &&
+                        val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2 &&
+                        val.followObjectArray[i].disPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength + val.followObjectArray[val.followObjectArray.length - 1].extLength
+                    ) {
+                        val.followObjectArray[i].destroy()
+                        val.followObjectArray.removeAt(i)
+                    }
+                }
+                // Destroy array if empty
+                if (val.count = 0) {
+                    val.destroy()
                 }
             }
         })

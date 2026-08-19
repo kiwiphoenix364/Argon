@@ -261,7 +261,7 @@ class PathFollower {
     public speed: number
     public count: number
     public spacing: number
-    public frameCounter = 0
+    public timeCounter = Timing.gameTime
     public enemyType: number
     public enemyAnimation: number
     public pauseCounter: number
@@ -282,7 +282,7 @@ class PathFollower {
         for (let obj of this.followObjectArray) {
             obj.destroy()
         }
-        this.followObjectArray = this.path = this.speed = this.count = this.spacing = this.frameCounter = null
+        this.followObjectArray = this.path = this.speed = this.count = this.spacing = this.timeCounter = null
     }
 
 }
