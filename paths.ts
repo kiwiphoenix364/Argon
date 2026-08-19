@@ -298,11 +298,11 @@ class PathFollowObject {
     public enemyType: number
     public enemyAnimation: number
     public enemy: Enemy[]
-    private updater: control.FrameCallback
     public animationFrame = 0
     public extLength = 0
     public waitTime = 0
     public dir = 0
+    public static pathFollowObjectArray: PathFollowObject[] = []
     constructor(path: Path) {
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
@@ -312,7 +312,7 @@ class PathFollowObject {
         if (this.enemyType < 0) {
             this.extLength = this.enemy[0].array.calcExtLength()
         }
-        this.update()
+        PathFollowObject.pathFollowObjectArray.push(this)
     }
     private createEnemies() {
         //ENEMY AMOUNT PER TYPE IN ORDER
@@ -320,12 +320,6 @@ class PathFollowObject {
         for (let i = 0; i < enemiesPerAnimation; i++) {
             this.enemy.push(new Enemy(this.enemyType))
         }
-    }
-    private update() {
-        this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
-            this.animationFrame++
-            DataDrivenEnemies.runAnimation(this.enemy, this.enemyAnimation, this.animationFrame, this.x, this.y, this.angle)
-        })
     }
     public setPosPoint(point: SimplePoint) {
         this.x = point.x
@@ -338,11 +332,11 @@ class PathFollowObject {
         this.y = point.y
     }
     public destroy() {
-        game.currentScene().eventContext.unregisterFrameHandler(this.updater)
         for (let e of this.enemy) {
             e.destroy()
         }
         this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.segmentLengthPos = this.angle = null
+        PathFollowObject.pathFollowObjectArray.removeElement(this)
     }
 }
 class Enemy {

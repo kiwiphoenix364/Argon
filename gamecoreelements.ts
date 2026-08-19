@@ -280,6 +280,21 @@ class PathFollowerUpdater {
         })
     }
 }
+class PathFollowObjectUpdater {
+    public static updater: control.FrameCallback
+    constructor() {
+
+    }
+    public static startPathFollowObjectUpdater() {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
+            for (let i = PathFollowObject.pathFollowObjectArray.length - 1; i >= 0; i--) {
+                const val = PathFollowObject.pathFollowObjectArray[i]
+                val.animationFrame++
+                DataDrivenEnemies.runAnimation(val.enemy, val.enemyAnimation, val.animationFrame, val.x, val.y, val.angle)
+            }
+        })
+    }
+}
 class EnemyLayer {
     public static layer: scene.Renderable
     constructor() {
@@ -365,5 +380,6 @@ class GameUtils{
         EnemyLayer.startEnemyLayer()
         ADV_Projectile_Spawner_Updater.startADVProjectileSpawnerUpdater()
         PathFollowerUpdater.startPathFollowerUpdater()
+        PathFollowObjectUpdater.startPathFollowObjectUpdater()
     }
 }
