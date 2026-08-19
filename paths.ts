@@ -347,7 +347,7 @@ class Enemy {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
-        if (this.enemyType === -1) {
+        if (this.enemyType <= -1) {
             this.array = new EnemyArray(this.enemyType)
         } else if (this.enemyType >= 0) {
             this.sprite = new EnemyRender(DataDrivenEnemies.getEnemy(enemyType))
@@ -389,12 +389,12 @@ class EnemyArray {
     public path: Path
     constructor(enemyType: number) {
         //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
-        this.setAnchor()
         this.arrayType = Math.abs(enemyType)
         this.spriteArray = []
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
         DataDrivenEnemies.setupEnemyArr(this, this.arrayType)
+        this.setAnchor()
         for (let i = 0; i < this.xNum * this.yNum; i++) {
             this.spriteArray.push(new EnemyRender(this.img))
         }
@@ -411,8 +411,8 @@ class EnemyArray {
         this.updatePos()
     }
     public setAnchor() {
-        this.anchorX = 0 - ((this.xNum - 1) * this.xSeparate + this.xShift) / 2
-        this.anchorY = 0 - ((this.yNum - 1) * this.ySeparate + this.yShift) / 2
+        this.anchorX = (-((this.xNum - 1) * this.xSeparate + this.xShift + this.img.width)) >> 1
+        this.anchorY = (-((this.yNum - 1) * this.ySeparate + this.yShift + this.img.height)) >> 1
     }
     public calcExtLength() {
         return Math.sqrt(((this.xNum - 1) * this.xSeparate + Math.abs(this.xShift)) ** 2 + ((this.yNum - 1) * this.ySeparate + Math.abs(this.yShift)) ** 2) / 2;
@@ -424,6 +424,7 @@ class EnemyArray {
                 this.spriteArray[i + j * this.xNum].y = this.y + this.anchorY + (i % 2) * this.yShift + this.relY + this.ySeparate * j
             }
         }
+        console.log("L: " + this.spriteArray[0].x + " C: " + this.x + " R: " + this.spriteArray[3].x)
     }
     public destroy() {
         for (let e of this.spriteArray) {
