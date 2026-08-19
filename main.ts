@@ -34,7 +34,7 @@ namespace SpriteKind {
 let pathArray: Path[]
 let idCounter: number
 let idCache: number
-let lvlEdit = false
+let lvlEdit = true
 let debug = true
 game.stats = true
 
@@ -47,7 +47,7 @@ let cur = new Cursor(img`
         3 3 . 3 3
         . . 3 . .
         . . 3 . .
-`, 1)
+`, 2)
 /*let test = new Multi_Proj_BOTH(img`
     . . . . . .
     . . . . . .
@@ -74,6 +74,7 @@ let cur = new Cursor(img`
     . . 4 4 e e e . . . . . . . . .
 `, true, 5000, 10, 10, 5, 200, 500, 40, 20, 120, 60, 0, 2 * Math.PI, 100, 0, 0, 0.75, 1)
 */
+/*
 let test3: ADV_Projectile_Spawner
 let test2 = new ADV_Projectile_Spawner(() => {
     test2.multi_spawner_line_timed(
@@ -107,3 +108,4 @@ let test2 = new ADV_Projectile_Spawner(() => {
         . . 4 4 e e e . . . . . . . . .
     `, true, 5000, 10, 100, 10, 100)
 }, 1000, 10)
+*/
