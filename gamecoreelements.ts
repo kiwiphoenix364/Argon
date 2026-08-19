@@ -1,14 +1,16 @@
 class Timing {
     private static updater: control.FrameCallback
     public static gameTime = 0
+    private static pausedTime = 0
     private static paused: boolean = true
     constructor() {
 
     }
     public static startTimer() {
         if (Timing.paused === true) {
-            control.timer8.reset()
             Timing.paused = false
+            Timing.pausedTime = 0
+            control.timer8.reset()
             Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
                 Timing.gameTime = control.timer8.millis()
                 info.setScore(Timing.gameTime)
@@ -17,16 +19,17 @@ class Timing {
     }
     public static pauseTimer() {
         if (Timing.paused === false) {
-            game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
             Timing.paused = true
+            Timing.pausedTime = control.timer8.millis() + Timing.pausedTime
+            game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
         }
     }
     public static unpauseTimer() {
         if (Timing.paused === true) {
-            control.timer8.start = Timing.gameTime
             Timing.paused = false
+            control.timer8.reset()
             Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                Timing.gameTime = control.timer8.millis()
+                Timing.gameTime = control.timer8.millis() + Timing.pausedTime
                 info.setScore(Timing.gameTime)
             })
         }
@@ -214,9 +217,7 @@ class PauseMenuCore{
         controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
             if (!Timing.getPausedState()) {
                 Timing.pauseTimer()
-                game.pushScene()
             } else {
-                game.popScene()
                 Timing.unpauseTimer()
             }
             PauseMenuCore.pauseMenu()
