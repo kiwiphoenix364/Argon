@@ -254,8 +254,8 @@ class PathFollowerUpdater {
                         continue
                     }
                     // Add to distance
-                    val.followObjectArray[i].disPixels += val.speed
-                    val.followObjectArray[i].segmentDisPixels += val.speed
+                    val.followObjectArray[i].disPixels += val.speed * Timing.delta
+                    val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
                     // Destroy cases for regular
                     if (
                         val.enemyType >= 0 &&
