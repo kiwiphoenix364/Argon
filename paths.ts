@@ -267,6 +267,7 @@ class PathFollower {
     public pauseCounter: number
     private updater: control.FrameCallback
     public nextPoint: SimplePoint
+    public static pathFollowerList: PathFollower[]= []
     constructor(path: Path) {
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
@@ -275,7 +276,7 @@ class PathFollower {
         this.spacing = path.spacing
         this.followObjectArray = []
         this.path = path
-        this.startPathFollow()
+        PathFollower.pathFollowerList.push(this)
     }
     private startPathFollow() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
@@ -390,7 +391,7 @@ class PathFollower {
         })
     }
     public destroy() {
-        game.currentScene().eventContext.unregisterFrameHandler(this.updater)
+        PathFollower.pathFollowerList.removeElement(this)
         for (let obj of this.followObjectArray) {
             obj.destroy()
         }
@@ -459,7 +460,7 @@ class PathFollowObject {
 }
 class Enemy {
     public enemyType: number
-    public sprite: Sprite
+    public sprite: EnemyRender
     public array: EnemyArray
     constructor(enemyType: number) {
         this.enemyType = enemyType
@@ -468,8 +469,7 @@ class Enemy {
         if (this.enemyType === -1) {
             this.array = new EnemyArray(this.enemyType)
         } else if (this.enemyType >= 0) {
-            this.sprite = sprites.create(DataDrivenEnemies.getEnemy(enemyType), SpriteKind.Player)
-            this.sprite.setFlag(SpriteFlag.Ghost, true)
+            this.sprite = new EnemyRender(DataDrivenEnemies.getEnemy(enemyType))
         }
     }
     public setPos(x: number, y: number) {
@@ -504,7 +504,7 @@ class EnemyArray {
     public anchorX = 0
     public anchorY = 0
     public img: Image
-    public spriteArray: Sprite[]
+    public spriteArray: EnemyRender[]
     public path: Path
     constructor(enemyType: number) {
         //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
@@ -514,11 +514,8 @@ class EnemyArray {
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
         DataDrivenEnemies.setupEnemyArr(this, this.arrayType)
-        if (this.arrayType === 1) {
-            for (let i = 0; i < this.xNum * this.yNum; i++) {
-                this.spriteArray.push(sprites.create(this.img, SpriteKind.Player))
-                this.spriteArray[i].setFlag(SpriteFlag.Ghost, true)
-            }
+        for (let i = 0; i < this.xNum * this.yNum; i++) {
+            this.spriteArray.push(new EnemyRender(this.img))
         }
         this.updatePos()
     }
@@ -552,6 +549,20 @@ class EnemyArray {
             e.destroy()
         }
         this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.arrayType = this.anchorX = this.anchorY = this.spriteArray = null
+    }
+}
+class EnemyRender {
+    public img: Image
+    public x: number = 0
+    public y: number = 0
+    public static enemy_render_list: EnemyRender[] = []
+    constructor(img: Image) {
+        this.img = img
+        EnemyRender.enemy_render_list.push(this)
+    }
+    destroy() {
+        this.img = this.x = this.y = null
+        EnemyRender.enemy_render_list.removeElement(this)
     }
 }
 class DataDrivenEnemies {
