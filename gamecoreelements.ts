@@ -178,6 +178,9 @@ class PathFollowerUpdater {
                     if (val.enemyType < 0) {
                         val.followObjectArray[val.followObjectArray.length - 1].disPixels -= val.followObjectArray[val.followObjectArray.length - 1].extLength
                         val.followObjectArray[val.followObjectArray.length - 1].segmentDisPixels -= val.followObjectArray[val.followObjectArray.length - 1].extLength
+                    } else {
+                        val.followObjectArray[val.followObjectArray.length - 1].disPixels
+                        val.followObjectArray[val.followObjectArray.length - 1].segmentDisPixels
                     }
                     if (val.path.pointArray[0].pauseAtPoint > 0) {
                         if (val.enemyType >= 0) {
@@ -273,6 +276,8 @@ class PathFollowerUpdater {
                         val.followObjectArray[i].destroy()
                         val.followObjectArray.removeAt(i)
                     } else {
+                        // Attempt spawn projectiles
+                        // Move to after sprites updated in future
                         for (let i = 0; i < val.followObjectArray.length; i++) {
                             for (let j = 0; j < val.followObjectArray[i].enemy.length; j++) {
                                 if (val.followObjectArray[i].enemyType >= 0) {
