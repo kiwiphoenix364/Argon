@@ -171,7 +171,8 @@ class PathFollowerUpdater {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
             for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
                 const val = PathFollower.pathFollowerList[i]
-                if ((Timing.gameTime - val.path.timeOffset) >= val.timeCounter && val.count-- > 0) {
+                if ((Timing.gameTime - val.path.timeOffset) >= val.timeCounter && val.count > 0) {
+                    val.count--
                     val.timeCounter += val.spacing
                     val.followObjectArray.push(new PathFollowObject(val.path))
                     if (val.enemyType < 0) {
@@ -273,12 +274,20 @@ class PathFollowerUpdater {
                         val.followObjectArray.removeAt(i)
                     } else {
                         for (let i = 0; i < val.followObjectArray.length; i++) {
-                            val.enemyProjectileSpawner.attemptSpawn(val.followObjectArray[i].x, val.followObjectArray[i].y)
+                            for (let j = 0; j < val.followObjectArray[i].enemy.length; j++) {
+                                if (val.followObjectArray[i].enemyType >= 0) {
+                                    val.followObjectArray[i].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[i].enemy[j].sprite.x, val.followObjectArray[i].enemy[j].sprite.y)
+                                } else {
+                                    for (let k = 0; k < val.followObjectArray[i].enemy[j].array.spriteArray.length; k++) {
+                                        val.followObjectArray[i].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[i].enemy[j].array.spriteArray[k].x, val.followObjectArray[i].enemy[j].array.spriteArray[k].y)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
                 // Destroy array if empty
-                if (val.count = 0) {
+                if (val.count === 0) {
                     val.destroy()
                 }
             }
@@ -350,7 +359,7 @@ class EnemyLayer {
                 // Enemy Sprites
                 for (let i = EnemyRender.enemy_render_list.length - 1; i >= 0; i--) {
                     const val = EnemyRender.enemy_render_list[i]
-                    screenImg.drawTransparentImage(val.img, val.x, val.y)
+                    screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
             }
         })

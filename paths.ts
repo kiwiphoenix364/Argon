@@ -266,7 +266,6 @@ class PathFollower {
     public enemyAnimation: number
     public pauseCounter: number
     public nextPoint: SimplePoint
-    public enemyProjectileSpawner: SimpleEnemyProjectiles
     public static pathFollowerList: PathFollower[] = []
     constructor(path: Path) {
         this.enemyType = path.enemyType
@@ -276,7 +275,6 @@ class PathFollower {
         this.spacing = path.spacing
         this.followObjectArray = []
         this.path = path
-        this.enemyProjectileSpawner = SimpleEnemyProjectiles.spawnEnemyProjectile(this.enemyType)
         PathFollower.pathFollowerList.push(this)
     }
     public destroy() {
@@ -289,6 +287,7 @@ class PathFollower {
 
 }
 class PathFollowObject {
+    public enemyProjectileSpawner: SimpleEnemyProjectiles
     public path: Path
     public angle: SimplePoint
     public x: number
@@ -314,6 +313,7 @@ class PathFollowObject {
         if (this.enemyType < 0) {
             this.extLength = this.enemy[0].array.calcExtLength()
         }
+        this.enemyProjectileSpawner = SimpleEnemyProjectiles.spawnEnemyProjectile(this.enemyType)
         PathFollowObject.pathFollowObjectArray.push(this)
     }
     private createEnemies() {
@@ -337,7 +337,8 @@ class PathFollowObject {
         for (let e of this.enemy) {
             e.destroy()
         }
-        this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.segmentLengthPos = this.angle = null
+        this.enemyProjectileSpawner.destroy()
+        this.enemyProjectileSpawner = this.x = this.y = this.currentPoint = this.disPixels = this.enemy = this.enemyType = this.segmentLengthPos = this.angle = null
         PathFollowObject.pathFollowObjectArray.removeElement(this)
     }
 }
@@ -357,8 +358,8 @@ class Enemy {
     }
     public setPos(x: number, y: number) {
         if (this.sprite != undefined) {
-            this.sprite.x = x - (this.sprite.img.width >> 1)
-            this.sprite.y = y - (this.sprite.img.height >> 1)
+            this.sprite.x = x
+            this.sprite.y = y
         } else {
             this.array.setPos(x, y)
         }
@@ -413,8 +414,8 @@ class EnemyArray {
         this.updatePos()
     }
     public setAnchor() {
-        this.anchorX = (-((this.xNum - 1) * this.xSeparate + this.xShift + this.img.width)) >> 1
-        this.anchorY = (-((this.yNum - 1) * this.ySeparate + this.yShift + this.img.height)) >> 1
+        this.anchorX = (-((this.xNum - 1) * this.xSeparate + this.xShift)) >> 1
+        this.anchorY = (-((this.yNum - 1) * this.ySeparate + this.yShift)) >> 1
     }
     public calcExtLength() {
         return Math.sqrt(((this.xNum - 1) * this.xSeparate + Math.abs(this.xShift)) ** 2 + ((this.yNum - 1) * this.ySeparate + Math.abs(this.yShift)) ** 2) / 2;
@@ -622,6 +623,7 @@ class SimpleEnemyProjectiles {
         this.nextShot = Timing.gameTime + startDelay
     }
     public static spawnEnemyProjectile(enemyType: number) {
+        console.log(enemyType)
         if (enemyType >= 0) {
             return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][2])
         } else {
@@ -633,6 +635,9 @@ class SimpleEnemyProjectiles {
             this.nextShot += this.delay
             ProjectileList.projectile[this.projectileType](x, y)
         }
+    }
+    public destroy() {
+        this.delay = this.nextShot = this.projectileType = null
     }
 }
 class ProjectileList {
@@ -671,8 +676,8 @@ class ProjectileList {
     4 5 4 e 5 5 5 5 e e . . . . . .
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
-                `, true, 5000, x, x + 50, y, y + 50)
-            }, 1000, 10)
+                `, true, 2100, x, x + 10, y, y + 10)
+            }, 1000, 2)
         },
         (x: number, y: number) => {
 

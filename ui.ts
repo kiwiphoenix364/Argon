@@ -459,6 +459,7 @@ function editMode() {
                 for (let i = 0; i < pathArray.length; i++) {
                     string = string.concat(pathArray[i].print())
                 }
+                console.log(string)
                 refreshMenus()
             }
 
