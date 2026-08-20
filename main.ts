@@ -34,7 +34,7 @@ namespace SpriteKind {
 let pathArray: Path[]
 let idCounter: number
 let idCache: number
-let lvlEdit = true
+let lvlEdit = false
 let debug = true
 game.stats = true
 

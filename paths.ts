@@ -266,7 +266,8 @@ class PathFollower {
     public enemyAnimation: number
     public pauseCounter: number
     public nextPoint: SimplePoint
-    public static pathFollowerList: PathFollower[]= []
+    public enemyProjectileSpawner: SimpleEnemyProjectiles
+    public static pathFollowerList: PathFollower[] = []
     constructor(path: Path) {
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
@@ -275,6 +276,7 @@ class PathFollower {
         this.spacing = path.spacing
         this.followObjectArray = []
         this.path = path
+        this.enemyProjectileSpawner = SimpleEnemyProjectiles.spawnEnemyProjectile(this.enemyType)
         PathFollower.pathFollowerList.push(this)
     }
     public destroy() {
@@ -355,8 +357,8 @@ class Enemy {
     }
     public setPos(x: number, y: number) {
         if (this.sprite != undefined) {
-            this.sprite.x = x
-            this.sprite.y = y
+            this.sprite.x = x - (this.sprite.img.width >> 1)
+            this.sprite.y = y - (this.sprite.img.height >> 1)
         } else {
             this.array.setPos(x, y)
         }
@@ -472,9 +474,6 @@ class DataDrivenEnemies {
             OffsetX,
             OffsetY,
             UseDirectionInfo? (0/1),
-            ProjectileIDX (Multi_Proj_VEL),
-            ProjectileInterval,
-            OverwriteProjectileDir (0,1)
         ]
     ]
     */
@@ -484,7 +483,7 @@ class DataDrivenEnemies {
         [.25, 0, 10, 0, 0, 0, 0], // Left/right wave
         [0, .25, 0, 10, 0, 0, 0], // Up/down wave
         [.25, .25, 10, 10, 0, 0, 1], // Wave with facing
-        [.25, .25, 10, 10, 0, 0, 1, 1, 100, 1], // Wave with facing and projectile
+        [.25, .25, 10, 10, 0, 0, 1], // Wave with facing and projectile
     ]
     // Animation used for each enemy
     /*
@@ -501,6 +500,28 @@ class DataDrivenEnemies {
         [1],
         [3],
         [1, 2]
+    ]
+    private static readonly enemyImages: Image[] = [
+        //ADD ENEMIES HERE
+        img`
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        `,
+
     ]
     constructor () {
 
@@ -533,32 +554,7 @@ class DataDrivenEnemies {
         }
     }
     static getEnemy(enemyType: number) {
-        //ADD ENEMIES HERE
-        switch (enemyType) {
-            case 0: {
-                return img`
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                `
-            }
-            default: {
-                return img``
-            }
-        }
+        return DataDrivenEnemies.enemyImages[enemyType]
     }
     static setupEnemyArr(arr: EnemyArray, arrType: number) {
         //ADD ENEMY ARRAYS HERE
@@ -600,5 +596,88 @@ class DataDrivenEnemies {
 
             }
         }
+    }
+}
+// Updates with sprite position animations; enemy type index is same as projectile
+class SimpleEnemyProjectiles {
+    public delay: number
+    public projectileType: number
+    public nextShot: number
+    // Add projectiles fired by sprites here
+    public static readonly enemyProjectileSpawnList: number[][] = [
+        // startDelay, delay, projectileIDX
+        // Begins enemy idx 0
+        // Put -1 in projectileIDX to disable
+        [0, 2000, 0]
+    ]
+    public static readonly enemyArrayProjectileSpawnList: number[][] = [
+        // startDelay, delay, projectileIDX
+        // Begins enemy (array) idx -1 going backwards
+        // Put -1 in projectileIDX to disable
+        [0, 2000, 0]
+    ]
+    constructor(startDelay: number, delay: number, projectileType: number) {
+        this.delay = delay
+        this.projectileType = projectileType
+        this.nextShot = Timing.gameTime + startDelay
+    }
+    public static spawnEnemyProjectile(enemyType: number) {
+        if (enemyType >= 0) {
+            return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][2])
+        } else {
+            return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][2])
+        }
+    }
+    public attemptSpawn(x: number, y: number) {
+        if (this.projectileType != -1 && Timing.gameTime >= this.nextShot) {
+            this.nextShot += this.delay
+            ProjectileList.projectile[this.projectileType](x, y)
+        }
+    }
+}
+class ProjectileList {
+    // Add projectiles here
+    public static readonly projectile: ((x: number, y: number) => void)[] = [
+        (x: number, y: number) => {
+            let test2: ADV_Projectile_Spawner
+            let test3: ADV_Projectile_Spawner
+            test2 = new ADV_Projectile_Spawner(() => {
+                test2.multi_spawner_line_timed(
+                () => {
+                    test3 = new ADV_Projectile_Spawner(() => {
+                        test3.multi_spawner_cones_timed(img`
+                            . . . . . .
+                            . . . . . .
+                            3 3 3 3 3 3
+                            3 3 3 3 3 3
+                            . . . . . .
+                            . . . . . .
+                        `, true, 1000, test2.tempX, test2.tempY, 0, Math.PI * 2, 100, 0, 0, 1, 0.2, 1)
+                    }, 200, 10)
+                }, img`
+    . . . . . . . e e e e . . . . .
+    . . . . . e e 4 5 5 5 e e . . .
+    . . . . e 4 5 6 2 2 7 6 6 e . .
+    . . . e 5 6 6 7 2 2 6 4 4 4 e .
+    . . e 5 2 2 7 6 6 4 5 5 5 5 4 .
+    . e 5 6 2 2 8 8 5 5 5 5 5 4 5 4
+    . e 5 6 7 7 8 5 4 5 4 5 5 5 5 4
+    e 4 5 8 6 6 5 5 5 5 5 5 4 5 5 4
+    e 5 c e 8 5 5 5 4 5 5 5 5 5 5 4
+    e 5 c c e 5 4 5 5 5 4 5 5 5 e .
+    e 5 c c 5 5 5 5 5 5 5 5 4 e . .
+    e 5 e c 5 4 5 4 5 5 5 e e . . .
+    e 5 e e 5 5 5 5 5 4 e . . . . .
+    4 5 4 e 5 5 5 5 e e . . . . . .
+    . 4 5 4 5 5 4 e . . . . . . . .
+    . . 4 4 e e e . . . . . . . . .
+                `, true, 5000, x, x + 50, y, y + 50)
+            }, 1000, 10)
+        },
+        (x: number, y: number) => {
+
+        }
+    ]
+    constructor() {
     }
 }

@@ -271,6 +271,10 @@ class PathFollowerUpdater {
                     ) {
                         val.followObjectArray[i].destroy()
                         val.followObjectArray.removeAt(i)
+                    } else {
+                        for (let i = 0; i < val.followObjectArray.length; i++) {
+                            val.enemyProjectileSpawner.attemptSpawn(val.followObjectArray[i].x, val.followObjectArray[i].y)
+                        }
                     }
                 }
                 // Destroy array if empty
