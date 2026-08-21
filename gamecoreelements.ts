@@ -155,7 +155,7 @@ class ADV_Projectile_Spawner_Updater {
 
     }
     public static startADVProjectileSpawnerUpdater() {
-        ADV_Projectile_Spawner_Updater.updater = game.currentScene().eventContext.registerFrameHandler(17, () => {
+        ADV_Projectile_Spawner_Updater.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
             for (let i = ADV_Projectile_Spawner.adv_projectile_spawner_updater_list.length - 1; i >= 0; i--) {
                 ADV_Projectile_Spawner.adv_projectile_spawner_updater_list[i].attemptSpawn()
             }
@@ -178,74 +178,65 @@ class PathFollowerUpdater {
                     if (val.enemyType < 0) {
                         val.followObjectArray[val.followObjectArray.length - 1].disPixels -= val.followObjectArray[val.followObjectArray.length - 1].extLength
                         val.followObjectArray[val.followObjectArray.length - 1].segmentDisPixels -= val.followObjectArray[val.followObjectArray.length - 1].extLength
+                        val.followObjectArray[val.followObjectArray.length - 1].currentPoint = -1
                     } else {
-                        val.followObjectArray[val.followObjectArray.length - 1].disPixels
-                        val.followObjectArray[val.followObjectArray.length - 1].segmentDisPixels
+                        val.followObjectArray[val.followObjectArray.length - 1].disPixels = 0 
+                        val.followObjectArray[val.followObjectArray.length - 1].segmentDisPixels = 0
                     }
                     if (val.path.pointArray[0].pauseAtPoint > 0) {
                         if (val.enemyType >= 0) {
-                            val.followObjectArray[val.followObjectArray.length - 1].waitTime = val.path.pointArray[0].pauseAtPoint
-                        } else {
-                            val.followObjectArray[val.followObjectArray.length - 1].segmentLengthPos = -1
+                            val.followObjectArray[val.followObjectArray.length - 1].waitTime = val.path.pointArray[0].pauseAtPoint + Timing.gameTime
                         }
                     }
                 }
                 for (let i = 0; i < val.followObjectArray.length; i++) {
-                    if (val.followObjectArray[i].segmentDisPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) {
-                        val.followObjectArray[i].segmentDisPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]
-                        val.followObjectArray[i].segmentLengthPos++
-                    }
-                    // Dis pixels is past the length of the point array
-                    // Current point is not the last point or later
-                    // Add case to make sure it is not an array at the end - this will be handled separately
-                    if (
-                        val.followObjectArray[i].disPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength &&
-                        val.followObjectArray[i].currentPoint < val.path.pointArray.length - 1 &&
-                        !(val.enemyType < 0 && val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2)
-                    ) {
-                        if (val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint > 0) {
-                            val.followObjectArray[i].segmentLengthPos = 0
-                            val.followObjectArray[i].disPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength
+                    // Trigger if not paused
+                    if (val.followObjectArray[i].waitTime <= Timing.gameTime) {
+                        // Add to distance
+                        val.followObjectArray[i].disPixels += val.speed * Timing.delta
+                        val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
+                        if (val.followObjectArray[i].currentPoint >= 0) {
+                            // In or after line
+                            if (val.followObjectArray[i].segmentDisPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) {
+                                val.followObjectArray[i].segmentDisPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]
+                                val.followObjectArray[i].segmentLengthPos++
+                            }
+                            if (val.followObjectArray[i].disPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength) {
+                                val.followObjectArray[i].segmentLengthPos = 0
+                                // If needs to stop, stops, otherwise keeps going
+                                if (val.path.pointArray[val.followObjectArray[i].currentPoint + 1].pauseAtPoint === 0) {
+                                    val.followObjectArray[i].disPixels -= val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength
+                                } else {
+                                    val.followObjectArray[i].disPixels = 0
+                                    val.followObjectArray[i].segmentDisPixels = 0
+                                    val.followObjectArray[i].waitTime = val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint + Timing.gameTime
+                                }
+                                val.followObjectArray[i].currentPoint++
+                            }
+                        } else if (val.followObjectArray[i].segmentDisPixels >= 0 && val.followObjectArray[i].segmentDisPixels - val.speed * Timing.delta < 0) {
+                            // If before line
                             val.followObjectArray[i].currentPoint++
-                        } else {
-                            val.followObjectArray[i].segmentLengthPos = 0
-                            val.followObjectArray[i].segmentDisPixels = 0
-                            val.followObjectArray[i].disPixels = 0
-                            val.followObjectArray[i].currentPoint++
-                            val.followObjectArray[i].waitTime = val.path.pointArray[val.followObjectArray[i].currentPoint].pauseAtPoint
                         }
-                    } else if (
-                        val.path.pointArray[0].pauseAtPoint > 0 &&
-                        val.followObjectArray[i].segmentLengthPos === -1 &&
-                        val.followObjectArray[i].currentPoint === 0 &&
-                        val.followObjectArray[i].disPixels >= 0 &&
-                        val.followObjectArray[i].disPixels - val.speed < 0
-                    ) {
-                        val.followObjectArray[i].disPixels = 0
-                        val.followObjectArray[i].waitTime = val.path.pointArray[0].pauseAtPoint
-                        val.followObjectArray[i].segmentLengthPos = 0
-                    } else if (
-                        val.path.pointArray[val.path.pointArray.length - 1].pauseAtPoint > 0 &&
-                        val.enemyType < 0 &&
-                        val.followObjectArray[i].currentPoint === val.path.pointArray.length - 2 &&
-                        val.followObjectArray[i].disPixels >= val.path.pointArray[val.path.pointArray.length - 2].segmentLength &&
-                        val.followObjectArray[i].disPixels - val.speed < val.path.pointArray[val.path.pointArray.length - 2].segmentLength &&
-                        val.followObjectArray[i].segmentLengthPos != 0
-                    ) {
-                        val.followObjectArray[i].disPixels = val.path.pointArray[val.path.pointArray.length - 2].segmentLength
-                        val.followObjectArray[i].waitTime = val.path.pointArray[val.path.pointArray.length - 1].pauseAtPoint
-                        val.followObjectArray[i].segmentLengthPos = 0
                     }
                     // Main movement update code
-                    if (val.enemyType >= 0 || val.followObjectArray[i].disPixels >= 0 && val.followObjectArray[i].disPixels < val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength) {
+                    // Inside line case
+                    if (val.followObjectArray[i].currentPoint >= 0 && val.followObjectArray[i].currentPoint <= val.path.pointArray.length - 2) {
                         val.nextPoint = val.path.findPoint(
                             val.followObjectArray[i].currentPoint,
+                            // Percent of segments through + Percent through current segment / percentage segment is of whole
                             Fx8(val.followObjectArray[i].segmentLengthPos / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths.length + (val.followObjectArray[i].segmentDisPixels / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) / (val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths.length))
                         )
-                    } else {
+                    } else if (val.followObjectArray[i].currentPoint < 0) {
+                        // Before line case
                         val.nextPoint = val.path.findPoint(
-                            val.followObjectArray[i].currentPoint,
-                            Fx8(val.followObjectArray[i].disPixels / val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLength)
+                            0,
+                            Fx8(val.followObjectArray[i].disPixels / val.path.pointArray[0].segmentLength)
+                        )
+                    } else if (val.followObjectArray[i].currentPoint > val.path.pointArray.length - 2) {
+                        // After line case
+                        val.nextPoint = val.path.findPoint(
+                            val.path.pointArray.length - 2,
+                            Fx8((val.followObjectArray[i].disPixels + val.path.pointArray[val.path.pointArray.length - 2].segmentLength) / val.path.pointArray[val.path.pointArray.length - 2].segmentLength)
                         )
                     }
                     if (val.nextPoint.x - val.followObjectArray[i].x != 0 && val.nextPoint.y - val.followObjectArray[i].y != 0 && val.nextPoint.x - val.followObjectArray[i].x - val.nextPoint.y - val.followObjectArray[i].y != NaN) {
@@ -254,12 +245,6 @@ class PathFollowerUpdater {
                     val.followObjectArray[i].setPosPoint(
                         val.nextPoint
                     )
-                    if (--val.followObjectArray[i].waitTime > 0) {
-                        continue
-                    }
-                    // Add to distance
-                    val.followObjectArray[i].disPixels += val.speed * Timing.delta
-                    val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
                     // Destroy cases for regular
                     if (
                         val.enemyType >= 0 &&
@@ -275,25 +260,12 @@ class PathFollowerUpdater {
                     ) {
                         val.followObjectArray[i].destroy()
                         val.followObjectArray.removeAt(i)
-                    } else {
-                        // Attempt spawn projectiles
-                        // Move to after sprites updated in future
-                        for (let i = 0; i < val.followObjectArray.length; i++) {
-                            for (let j = 0; j < val.followObjectArray[i].enemy.length; j++) {
-                                if (val.followObjectArray[i].enemyType >= 0) {
-                                    val.followObjectArray[i].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[i].enemy[j].sprite.x, val.followObjectArray[i].enemy[j].sprite.y)
-                                } else {
-                                    for (let k = 0; k < val.followObjectArray[i].enemy[j].array.spriteArray.length; k++) {
-                                        val.followObjectArray[i].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[i].enemy[j].array.spriteArray[k].x, val.followObjectArray[i].enemy[j].array.spriteArray[k].y)
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
                 // Destroy array if empty
-                if (val.count === 0) {
+                if (val.count === 0 && val.followObjectArray.length === 0) {
                     val.destroy()
+                    console.log("DESTROYED")
                 }
             }
         })
@@ -365,6 +337,21 @@ class EnemyLayer {
                 for (let i = EnemyRender.enemy_render_list.length - 1; i >= 0; i--) {
                     const val = EnemyRender.enemy_render_list[i]
                     screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
+                }
+                // Attempt Spawn Enemy Projectiles
+                for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
+                    const val = PathFollower.pathFollowerList[i]
+                    for (let j = 0; j < val.followObjectArray.length; j++) {
+                        for (let k = 0; k < val.followObjectArray[j].enemy.length; k++) {
+                            if (val.followObjectArray[j].enemyType >= 0) {
+                                val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j].enemy[k].sprite.x, val.followObjectArray[j].enemy[k].sprite.y)
+                            } else {
+                                for (let l = 0; l < val.followObjectArray[j].enemy[k].array.spriteArray.length; l++) {
+                                    val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j].enemy[k].array.spriteArray[l].x, val.followObjectArray[j].enemy[k].array.spriteArray[l].y)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })

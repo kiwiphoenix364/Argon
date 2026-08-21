@@ -427,7 +427,6 @@ class EnemyArray {
                 this.spriteArray[i + j * this.xNum].y = this.y + this.anchorY + (i % 2) * this.yShift + this.relY + this.ySeparate * j
             }
         }
-        console.log("L: " + this.spriteArray[0].x + " C: " + this.x + " R: " + this.spriteArray[3].x)
     }
     public destroy() {
         for (let e of this.spriteArray) {
@@ -623,7 +622,6 @@ class SimpleEnemyProjectiles {
         this.nextShot = Timing.gameTime + startDelay
     }
     public static spawnEnemyProjectile(enemyType: number) {
-        console.log(enemyType)
         if (enemyType >= 0) {
             return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][2])
         } else {

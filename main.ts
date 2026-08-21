@@ -12,10 +12,10 @@ namespace SpriteKind {
 // ANIMATION_UPDATE_PRIORITY = 15;
 // Shaders - init. at 16 ms and update attached sprites 23-24, renderable update
 // Game timing at 17
-// Spawn timed projectiles at 18
 // UPDATE_INTERVAL_PRIORITY = 19;
 // PathFollowObjects - Update pos at 19 and pos animations at 20
 // UPDATE_PRIORITY = 20;
+// Spawn timed projectiles at 21
 // spritedamagetick at 21, SpriteTick at 22
 // PRE_RENDER_UPDATE_PRIORITY = 55;
 // RENDER_BACKGROUND_PRIORITY = 60;
