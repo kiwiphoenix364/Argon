@@ -38,6 +38,16 @@ let lvlEdit = true
 let debug = true
 game.stats = true
 
+LS.addToFront(LS_COLORS.Green)
+LS.addToFront(LS_COLORS.White)
+LS.addToFront(LS_COLORS.Yellow)
+LS.addToFront(LS_COLORS.Orange_Light)
+LS.addToFront(LS_COLORS.Blue_Navy)
+namespace userconfig {
+    export const ARCADE_SCREEN_HEIGHT = 128
+    // Extra height used for virtual light strip
+}
+
 Level.startGame()
 
 //let test2 = new DialogController(DialogText.dialog[0], 0, 60, 160, 120, 100, 50, 160, 60, 0, 0, 100, 60)

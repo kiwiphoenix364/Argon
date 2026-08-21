@@ -43,6 +43,8 @@ class Timing {
 }
 class OverallGameStats {
     public static currentGameState = "start"
+    public static readonly screenWidth = 160
+    public static readonly screenHeight = 120
     constructor() {
 
     }
@@ -310,7 +312,7 @@ class EnemyLayer {
                     const val = Adv_Projectile.fast_proj_list[i]
                     val.x += val.vX * Timing.delta
                     val.y += val.vY * Timing.delta
-                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
+                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight || Timing.gameTime > val.life)) {
                         val.destroy(Adv_Projectile.fast_proj_list)
                         continue
                     }
@@ -323,7 +325,7 @@ class EnemyLayer {
                     val.y += val.vY * Timing.delta
                     val.vX += val.aX * Timing.delta
                     val.vY += val.aY * Timing.delta
-                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
+                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight) || Timing.gameTime > val.life) {
                         val.destroy(Adv_Projectile.proj_list)
                         continue
                     }
@@ -336,7 +338,7 @@ class EnemyLayer {
                     val.y += val.vY * Timing.delta
                     val.vX += val.aX * Timing.delta
                     val.vY += val.aY * Timing.delta
-                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= screenImg.width || val.y <= -val.img.height || val.y >= screenImg.height) || Timing.gameTime > val.life) {
+                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight) || Timing.gameTime > val.life) {
                         val.destroy(Adv_Projectile.slow_proj_list)
                         continue
                     }
@@ -355,6 +357,7 @@ class EnemyLayer {
                     }
                 }
             }
+            LS.drawLightStrip(screenImg)
         })
     }
 }
@@ -381,6 +384,7 @@ class GameUtils{
 
     }
     public static setupGame() {
+        LS.setBrightness(15)
         PauseMenuCore.pauseMenu()
         Timing.startTimer()
         EnemyLayer.startEnemyLayer()
