@@ -31,7 +31,7 @@ class Level {
             if (idx < pathArray.length && Timing.gameTime / 1000 >= pathArray[idx].time) {
                 new PathFollower(pathArray[idx++])
             }
-            if (idx >= pathArray.length - 1) {
+            if (idx >= pathArray.length) {
                 // Delete handler
                 game.currentScene().eventContext.unregisterFrameHandler(updater)
             }

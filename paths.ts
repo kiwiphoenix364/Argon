@@ -480,10 +480,10 @@ class DataDrivenEnemies {
     private static readonly animation: number[][] = [
         // ANIMATION MOVEMENT DATA BELOW
         [0, 0, 0, 0, 0, 0, 0], // No animation
-        [.25, 0, 10, 0, 0, 0, 0], // Left/right wave
-        [0, .25, 0, 10, 0, 0, 0], // Up/down wave
-        [.25, .25, 10, 10, 0, 0, 1], // Wave with facing
-        [.25, .25, 10, 10, 0, 0, 1], // Wave with facing and projectile
+        [10, 0, 10, 0, 0, 0, 0], // Left/right wave
+        [0, 10, 0, 10, 0, 0, 0], // Up/down wave
+        [10, 10, 10, 10, 0, 0, 1], // Wave with facing
+        [10, 10, 10, 10, 0, 0, 1], // Wave with facing and projectile
     ]
     // Animation used for each enemy
     /*
@@ -622,10 +622,20 @@ class SimpleEnemyProjectiles {
             return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][2])
         }
     }
-    public attemptSpawn(x: number, y: number) {
+    public attemptSpawn(val: PathFollowObject) {
         if (this.projectileType != -1 && Timing.gameTime >= this.nextShot) {
             this.nextShot += this.delay
-            ProjectileList.projectile[this.projectileType](x, y)
+            for (let k = 0; k < val.enemy.length; k++) {
+                if (val.enemyType >= 0) {
+                    // REG ENEMY
+                    ProjectileList.projectile[this.projectileType](val.enemy[k].sprite.x, val.enemy[k].sprite.y)
+                } else {
+                    // ARRAY
+                    for (let l = 0; l < val.enemy[k].array.spriteArray.length; l++) {
+                        ProjectileList.projectile[this.projectileType](val.enemy[k].array.spriteArray[l].x, val.enemy[k].array.spriteArray[l].y)
+                    }
+                }
+            }
         }
     }
     public destroy() {

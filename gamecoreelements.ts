@@ -350,15 +350,7 @@ class EnemyLayer {
                 for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
                     const val = PathFollower.pathFollowerList[i]
                     for (let j = 0; j < val.followObjectArray.length; j++) {
-                        for (let k = 0; k < val.followObjectArray[j].enemy.length; k++) {
-                            if (val.followObjectArray[j].enemyType >= 0) {
-                                val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j].enemy[k].sprite.x, val.followObjectArray[j].enemy[k].sprite.y)
-                            } else {
-                                for (let l = 0; l < val.followObjectArray[j].enemy[k].array.spriteArray.length; l++) {
-                                    val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j].enemy[k].array.spriteArray[l].x, val.followObjectArray[j].enemy[k].array.spriteArray[l].y)
-                                }
-                            }
-                        }
+                        val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j])
                     }
                 }
             }
