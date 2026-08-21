@@ -241,10 +241,9 @@ class PathFollowerUpdater {
                             Fx8((val.followObjectArray[i].disPixels + val.path.pointArray[val.path.pointArray.length - 2].segmentLength) / val.path.pointArray[val.path.pointArray.length - 2].segmentLength)
                         )
                     }
-                    if (val.followObjectArray[i].y) {
-                        val.followObjectArray[i].angle = new SimplePoint(val.nextPoint.x - val.followObjectArray[i].x, val.nextPoint.y - val.followObjectArray[i].y)
-                    } else {
-                        val.followObjectArray[i].angle = new SimplePoint(1, 0)
+                    if (val.followObjectArray[i].y && val.nextPoint.x - val.followObjectArray[i].x != 0 && val.nextPoint.y - val.followObjectArray[i].y != 0) {
+                        val.followObjectArray[i].angle.x = val.nextPoint.x - val.followObjectArray[i].x
+                        val.followObjectArray[i].angle.y = val.nextPoint.y - val.followObjectArray[i].y
                     }
                     val.followObjectArray[i].setPosPoint(
                         val.nextPoint
@@ -267,9 +266,11 @@ class PathFollowerUpdater {
                         val.followObjectArray.removeAt(i)
                         continue
                     }
-                    // Add to distance
-                    val.followObjectArray[i].disPixels += val.speed * Timing.delta
-                    val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
+                    if (val.followObjectArray[i].waitTime <= Timing.gameTime) {
+                        // Add to distance
+                        val.followObjectArray[i].disPixels += val.speed * Timing.delta
+                        val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
+                    }
                 }
                 // Destroy array if empty
                 if (val.count === 0 && val.followObjectArray.length === 0) {

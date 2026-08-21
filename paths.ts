@@ -305,6 +305,7 @@ class PathFollowObject {
     public dir = 0
     public static pathFollowObjectArray: PathFollowObject[] = []
     constructor(path: Path) {
+        this.angle = new SimplePoint(-Math.cos(path.pointArray[0].curveAngle), -Math.sin(path.pointArray[0].curveAngle))
         this.enemyType = path.enemyType
         this.enemyAnimation = path.enemyAnimation
         this.path = path
@@ -554,8 +555,8 @@ class DataDrivenEnemies {
         //ADD ENEMY ARRAYS HERE
         switch (arrType) {
             case 1: {
-                arr.xNum = 4
-                arr.yNum = 4
+                arr.xNum = 3
+                arr.yNum = 3
                 arr.xSeparate = 32
                 arr.ySeparate = 32
                 arr.xShift = 16
@@ -594,52 +595,52 @@ class DataDrivenEnemies {
 }
 // Updates with sprite position animations; enemy type index is same as projectile
 class SimpleEnemyProjectiles {
-    public delay: number
-    public projectileType: number
     public nextShot: number
+    public spawnList: number[]
+    public currentIdx: number = 1
     // Add projectiles fired by sprites here
     public static readonly enemyProjectileSpawnList: number[][] = [
-        // startDelay, delay, projectileIDX
+        // startDelay, projectileIDX, delay, projectileIDX, delay, etc...
         // Begins enemy idx 0
         // Put -1 in projectileIDX to disable
-        [0, 2000, 0]
+        [0, 0, 2000]
     ]
     public static readonly enemyArrayProjectileSpawnList: number[][] = [
-        // startDelay, delay, projectileIDX
+        // startDelay, projectileIDX, delay, projectileIDX, delay, etc...
         // Begins enemy (array) idx -1 going backwards
         // Put -1 in projectileIDX to disable
-        [0, 2000, 0]
+        [0, 0, 2000]
     ]
-    constructor(startDelay: number, delay: number, projectileType: number) {
-        this.delay = delay
-        this.projectileType = projectileType
-        this.nextShot = Timing.gameTime + startDelay
+    constructor(spawnList: number[]) {
+        this.nextShot = Timing.gameTime + spawnList[0]
+        this.spawnList = spawnList
     }
     public static spawnEnemyProjectile(enemyType: number) {
         if (enemyType >= 0) {
-            return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType][2])
+            return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[enemyType])
         } else {
-            return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][0], SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][1], SimpleEnemyProjectiles.enemyProjectileSpawnList[Math.abs(enemyType + 1)][2])
+            return new SimpleEnemyProjectiles(SimpleEnemyProjectiles.enemyArrayProjectileSpawnList[Math.abs(enemyType + 1)])
         }
     }
     public attemptSpawn(val: PathFollowObject) {
-        if (this.projectileType != -1 && Timing.gameTime >= this.nextShot) {
-            this.nextShot += this.delay
+        if (this.spawnList[this.currentIdx] >= 0 && Timing.gameTime >= this.nextShot) {
+            this.nextShot += this.currentIdx + 1 - this.spawnList.length < 0 ? this.spawnList[this.currentIdx + 1] : 0
             for (let k = 0; k < val.enemy.length; k++) {
                 if (val.enemyType >= 0) {
                     // REG ENEMY
-                    ProjectileList.projectile[this.projectileType](val.enemy[k].sprite.x, val.enemy[k].sprite.y)
+                    ProjectileList.projectile[this.spawnList[this.currentIdx]](val.enemy[k].sprite.x, val.enemy[k].sprite.y)
                 } else {
                     // ARRAY
                     for (let l = 0; l < val.enemy[k].array.spriteArray.length; l++) {
-                        ProjectileList.projectile[this.projectileType](val.enemy[k].array.spriteArray[l].x, val.enemy[k].array.spriteArray[l].y)
+                        ProjectileList.projectile[this.spawnList[this.currentIdx]](val.enemy[k].array.spriteArray[l].x, val.enemy[k].array.spriteArray[l].y)
                     }
                 }
             }
+            this.currentIdx = (this.currentIdx + 2) % this.spawnList.length != 0 ? (this.currentIdx + 2) % this.spawnList.length : 1
         }
     }
     public destroy() {
-        this.delay = this.nextShot = this.projectileType = null
+        this.nextShot = this.spawnList = null
     }
 }
 class ProjectileList {
