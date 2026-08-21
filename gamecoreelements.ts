@@ -189,12 +189,9 @@ class PathFollowerUpdater {
                         }
                     }
                 }
-                for (let i = 0; i < val.followObjectArray.length; i++) {
+                for (let i = val.followObjectArray.length - 1; i >= 0; i--) {
                     // Trigger if not paused
                     if (val.followObjectArray[i].waitTime <= Timing.gameTime) {
-                        // Add to distance
-                        val.followObjectArray[i].disPixels += val.speed * Timing.delta
-                        val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
                         if (val.followObjectArray[i].currentPoint >= 0) {
                             // In or after line
                             if (val.followObjectArray[i].segmentDisPixels > val.path.pointArray[val.followObjectArray[i].currentPoint].segmentLengths[val.followObjectArray[i].segmentLengthPos]) {
@@ -260,6 +257,7 @@ class PathFollowerUpdater {
                     ) {
                         val.followObjectArray[i].destroy()
                         val.followObjectArray.removeAt(i)
+                        continue
                     } else if (
                         val.enemyType < 0 &&
                         val.followObjectArray[i].currentPoint > val.path.pointArray.length - 2 &&
@@ -267,7 +265,11 @@ class PathFollowerUpdater {
                     ) {
                         val.followObjectArray[i].destroy()
                         val.followObjectArray.removeAt(i)
+                        continue
                     }
+                    // Add to distance
+                    val.followObjectArray[i].disPixels += val.speed * Timing.delta
+                    val.followObjectArray[i].segmentDisPixels += val.speed * Timing.delta
                 }
                 // Destroy array if empty
                 if (val.count === 0 && val.followObjectArray.length === 0) {
