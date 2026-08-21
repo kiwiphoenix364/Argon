@@ -45,6 +45,8 @@ class OverallGameStats {
     public static currentGameState = "start"
     public static readonly screenWidth = 160
     public static readonly screenHeight = 120
+    public static graphics = 0
+    public static competitive = false
     constructor() {
 
     }
@@ -392,5 +394,12 @@ class GameUtils{
         ADV_Projectile_Spawner_Updater.startADVProjectileSpawnerUpdater()
         PathFollowerUpdater.startPathFollowerUpdater()
         PathFollowObjectUpdater.startPathFollowObjectUpdater()
+        if (control.ramSize() <= 196608) {
+            OverallGameStats.graphics = 0
+        } else if (control.ramSize() <= 524288) {
+            OverallGameStats.graphics = 1
+        } else {
+            OverallGameStats.graphics = 2
+        }
     }
 }

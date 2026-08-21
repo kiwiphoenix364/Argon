@@ -49,7 +49,6 @@ namespace userconfig {
 }
 
 Level.startGame()
-
 //let test2 = new DialogController(DialogText.dialog[0], 0, 60, 160, 120, 100, 50, 160, 60, 0, 0, 100, 60)
 let cur = new Cursor(img`
         . . 3 . .
