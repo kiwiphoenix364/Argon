@@ -11,30 +11,52 @@ class Timing {
         if (Timing.paused === true) {
             Timing.paused = false
             Timing.pausedTime = 0
-            control.timer8.reset()
-            Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                Timing.gameTime = control.timer8.millis()
-                Timing.delta = control.eventContext().deltaTime
-                info.setScore(Timing.gameTime)
-            })
+            Timing.gameTime = 0
+            if (OverallGameStats.competitive) {
+                Timing.delta = 125 / 6
+                Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
+                    Timing.gameTime += Timing.delta
+                    info.setScore(Timing.gameTime)
+                })
+            } else {
+                control.timer8.reset()
+                Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
+                    Timing.gameTime = control.timer8.millis()
+                    Timing.delta = control.eventContext().deltaTime
+                    info.setScore(Timing.gameTime)
+                })
+            }
         }
     }
     public static pauseTimer() {
         if (Timing.paused === false) {
             Timing.paused = true
-            Timing.pausedTime = control.timer8.millis() + Timing.pausedTime
+            if (OverallGameStats.competitive) {
+                Timing.pausedTime = Timing.gameTime
+            } else {
+                Timing.pausedTime = control.timer8.millis() + Timing.pausedTime
+            }
             game.currentScene().eventContext.unregisterFrameHandler(Timing.updater)
         }
     }
     public static unpauseTimer() {
         if (Timing.paused === true) {
             Timing.paused = false
-            control.timer8.reset()
-            Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                Timing.gameTime = control.timer8.millis() + Timing.pausedTime
-                Timing.delta = control.eventContext().deltaTime
-                info.setScore(Timing.gameTime)
-            })
+            Timing.gameTime = 0
+            if (OverallGameStats.competitive) {
+                Timing.delta = 125 / 6
+                Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
+                    Timing.gameTime += Timing.delta
+                    info.setScore(Timing.gameTime)
+                })
+            } else {
+                control.timer8.reset()
+                Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
+                    Timing.gameTime = control.timer8.millis() + Timing.pausedTime
+                    Timing.delta = control.eventContext().deltaTime
+                    info.setScore(Timing.gameTime)
+                })
+            }
         }
     }
     public static getPausedState() {
