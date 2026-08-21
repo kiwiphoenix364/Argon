@@ -143,8 +143,8 @@ class Cursor {
                 this.sprite.x = controller.acceleration(ControllerDimension.X) / 1.28 * this.gyroSensitivity + 80
                 this.sprite.y = controller.acceleration(ControllerDimension.Y) / 1.71 * this.gyroSensitivity + 60
             }
-            this.sprite.x = Math.constrain(this.sprite.x, 0, 160)
-            this.sprite.y = Math.constrain(this.sprite.y, 0, 120)
+            this.sprite.x = Math.constrain(this.sprite.x, 1, OverallGameStats.screenWidth + 1)
+            this.sprite.y = Math.constrain(this.sprite.y, 1, OverallGameStats.screenHeight + 1)
         })
     }
     public changeCursorImg(image: Image) {
@@ -370,6 +370,7 @@ class PauseMenuCore{
             if (!Timing.getPausedState()) {
                 Timing.pauseTimer()
                 game.pushScene()
+                screen.mapRect(0, 0, OverallGameStats.screenWidth, OverallGameStats.screenHeight, GameShaderIntegration.shaderPack.getShaderShade("dark"))
                 scene.setBackgroundImage(screen.clone())
             } else {
                 game.popScene()
