@@ -29,7 +29,8 @@
         "localSimpleShader5.0.5.ts",
         "gamecoreelements.ts",
         "pauseMenu.ts",
-        "menuclasses.ts"
+        "menuclasses.ts",
+        "lightstripapi.ts"
     ],
     "testFiles": [
         "test.ts"

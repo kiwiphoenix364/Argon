@@ -21,6 +21,7 @@ class Level {
     }
     public static RunLevel(levelData: string) {
         game.pushScene()
+        LS.addToFront(0x111111)
         GameUtils.setupGame()
         pathArray = []
         decompString(levelData)
