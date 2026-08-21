@@ -539,17 +539,11 @@ class DataDrivenEnemies {
                     x + Math.sin(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * Math.cos(this.currentAngle + 1.57) * this.currentAnimationSet[2],
                     y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * Math.sin(this.currentAngle + 1.57) * this.currentAnimationSet[3]
                 )
-                if (this.currentAnimationSet[7] === 1 && this.currentAnimationSet[8] % frame === 0) {
-                    //new Multi_Proj_VEL()
-                }
             } else  {
                 enemy[i].setPos(
                     x + Math.cos(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * this.currentAnimationSet[2],
                     y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * this.currentAnimationSet[3]
                 )
-                if (this.currentAnimationSet[7] === 1 && this.currentAnimationSet[8] % frame === 0) {
-                    //new Multi_Proj_VEL()
-                }
             }
         }
     }

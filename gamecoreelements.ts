@@ -170,7 +170,7 @@ class PathFollowerUpdater {
     public static startPathFollowerUpdater() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(19, () => {
             for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
-                const val = PathFollower.pathFollowerList[i]
+                let val = PathFollower.pathFollowerList[i]
                 if ((Timing.gameTime - val.path.timeOffset) >= val.timeCounter && val.count > 0) {
                     val.count--
                     val.timeCounter += val.spacing
@@ -244,8 +244,10 @@ class PathFollowerUpdater {
                             Fx8((val.followObjectArray[i].disPixels + val.path.pointArray[val.path.pointArray.length - 2].segmentLength) / val.path.pointArray[val.path.pointArray.length - 2].segmentLength)
                         )
                     }
-                    if (val.nextPoint.x - val.followObjectArray[i].x != 0 && val.nextPoint.y - val.followObjectArray[i].y != 0 && val.nextPoint.x - val.followObjectArray[i].x - val.nextPoint.y - val.followObjectArray[i].y != NaN) {
+                    if (val.followObjectArray[i].y) {
                         val.followObjectArray[i].angle = new SimplePoint(val.nextPoint.x - val.followObjectArray[i].x, val.nextPoint.y - val.followObjectArray[i].y)
+                    } else {
+                        val.followObjectArray[i].angle = new SimplePoint(1, 0)
                     }
                     val.followObjectArray[i].setPosPoint(
                         val.nextPoint
@@ -284,7 +286,7 @@ class PathFollowObjectUpdater {
         this.updater = game.currentScene().eventContext.registerFrameHandler(20, () => {
             for (let i = PathFollowObject.pathFollowObjectArray.length - 1; i >= 0; i--) {
                 const val = PathFollowObject.pathFollowObjectArray[i]
-                val.animationFrame++
+                val.animationFrame += Timing.delta
                 DataDrivenEnemies.runAnimation(val.enemy, val.enemyAnimation, val.animationFrame, val.x, val.y, val.angle)
             }
         })
