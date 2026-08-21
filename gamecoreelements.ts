@@ -384,7 +384,7 @@ class GameUtils{
 
     }
     public static setupGame() {
-        LS.setBrightness(15)
+        LS.setBrightness(30)
         PauseMenuCore.pauseMenu()
         Timing.startTimer()
         EnemyLayer.startEnemyLayer()

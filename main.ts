@@ -38,10 +38,10 @@ let lvlEdit = true
 let debug = true
 game.stats = true
 
-LS.addToFront(LS_COLORS.Green)
-LS.addToFront(LS_COLORS.White)
 LS.addToFront(LS_COLORS.Yellow)
-LS.addToFront(LS_COLORS.Orange_Light)
+LS.addToFront(LS_COLORS.Red_Light)
+LS.addToFront(LS_COLORS.Green)
+LS.addToFront(LS_COLORS.Blue_Mid)
 LS.addToFront(LS_COLORS.Blue_Navy)
 namespace userconfig {
     export const ARCADE_SCREEN_HEIGHT = 128

@@ -53,7 +53,7 @@ class LS {
     private static updateLightStrip() {
         if (LS.lightStripMode < 2) {
             for (let i = 0; i < LS.lights.length; i++) {
-                light.setPixelColor(i, LS.palette[LS.lights[i]])
+                light.setPixelColor(i, LS.getHexPalette(i))
             }
         }
     }
@@ -63,6 +63,12 @@ class LS {
                 img.fillRect(i * OverallGameStats.screenWidth * .2, OverallGameStats.screenHeight + 1, OverallGameStats.screenWidth * .2, 8, LS.lights[i])
             }
         }
+    }
+    public static getHexPalette(num: number) {
+        let r = ((LS.palette[LS.lights[num]] & 0xFF0000) >> 3) & 0xFF0000
+        let g = ((LS.palette[LS.lights[num]] & 0x00FF00) >> 3) & 0x00FF00
+        let b = ((LS.palette[LS.lights[num]] & 0x0000FF) >> 3) & 0x0000FF
+        return r + g + b
     }
 }
 enum LS_COLORS {
