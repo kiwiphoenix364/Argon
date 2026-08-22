@@ -18,6 +18,7 @@ namespace SpriteKind {
 // UPDATE_PRIORITY = 20;
 // Spawn timed projectiles at 21
 // spritedamagetick at 21, SpriteTick at 22
+// Collision check at 25
 // PRE_RENDER_UPDATE_PRIORITY = 55;
 // RENDER_BACKGROUND_PRIORITY = 60;
 // RENDER_SPRITES_PRIORITY = 90;

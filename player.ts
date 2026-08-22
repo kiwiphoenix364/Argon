@@ -1,46 +1,9 @@
 class Player {
-    public playerNum: controller.Controller
-    public playerSprite: PlayerSprite
-    constructor(playerNum: controller.Controller) {
-        this.playerNum = playerNum
-        this.playerSprite = new PlayerSprite(controller.player1)
-        if (this.playerNum != null) {
-            playerNum.moveSprite(this.playerSprite.playerSprite)
-        }
-    }
-}
-class DummyPlayer extends Player {
-    constructor() {
-        super(null)
-    }
-}
-class PlayerSprite {
     public playerSprite: Sprite
-    public playerType: controller.Controller
-    constructor(playerType: controller.Controller) {
-        this.playerType = playerType
-        this.playerSprite = sprites.create(img`
-            8 . . . . 8 . . . 8 . . . . 8 .
-            b . . . . b . . . b . . . . b .
-            . b b d b . . . . . b b d b . .
-            . b d b b . 2 2 2 . b d b b . .
-            . c c c c 2 2 2 2 2 c c c c . .
-            . . c c . 2 d d d 2 . c c . . .
-            . . b b b d d d d d b b b . . .
-            a a . b b b d 8 d b b b . a a .
-            . . a a b b 8 a 8 b b a a . . .
-            . . . . a a a a a a a . . . . .
-            . . a a . c 8 a 8 c . a a . . .
-            a a . . . d d 8 d d . . . a a .
-            . . . . . d d d d d . . . . . .
-            . . . . . d d . d d . . . . . .
-            . . . . . c c . c c . . . . . .
-            . . . . . . c . c . . . . . . .
-        `, SpriteKind.Player)
+    constructor(img: Image) {
+        this.playerSprite = sprites.create(img)
     }
-    setPos(x: number, y: number) {
-        this.playerSprite.setPosition(x,y)
-    }
+    
 }
 //new Player(controller.player1)
 /*

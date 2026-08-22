@@ -69,6 +69,7 @@ class OverallGameStats {
     public static readonly screenHeight = 120
     public static graphics = 0
     public static competitive = false
+    public static playerSprites: Player[] = []
     constructor() {
 
     }
@@ -331,6 +332,13 @@ class EnemyLayer {
             if (!Timing.getPausedState()) {
                 // Stuff is optimized into separate lists so it doesnt have if statements and can run the fastest possible
                 // Lol I'm an idiot it's of not in but smh why doesnt the compiler just treat them the same
+                // Attempt Spawn Enemy Projectiles
+                for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
+                    const val = PathFollower.pathFollowerList[i]
+                    for (let j = 0; j < val.followObjectArray.length; j++) {
+                        val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j])
+                    }
+                }
                 // Simple projectiles
                 for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.fast_proj_list[i]
@@ -373,16 +381,52 @@ class EnemyLayer {
                     const val = EnemyRender.enemy_render_list[i]
                     screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
-                // Attempt Spawn Enemy Projectiles
-                for (let i = PathFollower.pathFollowerList.length - 1; i >= 0; i--) {
-                    const val = PathFollower.pathFollowerList[i]
-                    for (let j = 0; j < val.followObjectArray.length; j++) {
-                        val.followObjectArray[j].enemyProjectileSpawner.attemptSpawn(val.followObjectArray[j])
-                    }
-                }
+                // Spawn hitboxSize
+                
             }
             LS.drawLightStrip(screenImg)
         })
+    }
+}
+class ProjectileCollidor {
+    public static collisionSprite: Sprite
+    // Add custom hitboxes here
+    public static readonly projectileHitboxDrawFunctions: ((proj: any) => void)[] = [
+        (proj: any) => { ProjectileCollidor.collisionSprite.image.drawCircle(proj.x, proj.y, proj.hitboxSize, 1) }, // Circle
+    ]
+    constructor() {
+
+    }
+    static setupProjectileCollidor() {
+        ProjectileCollidor.collisionSprite = new Sprite(image.create(OverallGameStats.screenWidth, OverallGameStats.screenHeight))
+        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughWalls, true)
+        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Invisible, true)
+        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.RelativeToCamera, true)
+    }
+    // See startEnemyLayer for collision logic calculations
+    static clearCollisionSprite() {
+        ProjectileCollidor.collisionSprite.image.fill(0)
+    }
+    static spawnProjectileHitboxes() {
+        for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
+            const proj = Adv_Projectile.slow_proj_list[i]
+            ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
+        }
+        for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
+            const proj = Adv_Projectile.slow_proj_list[i]
+            ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
+        }
+        for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
+            const proj = Adv_Projectile.slow_proj_list[i]
+            ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
+        }
+    }
+    static spawnEnemyHitboxes() {
+        for (let i = EnemyRender.enemy_render_list.length - 1; i >= 0; i--) {
+            const enemy = EnemyRender.enemy_render_list[i]
+            ProjectileCollidor.projectileHitboxDrawFunctions[enemy.hitboxType](enemy)
+        }
     }
 }
 class TextTimings{
@@ -433,6 +477,7 @@ class GameUtils{
         PathFollowerUpdater.startPathFollowerUpdater()
         PathFollowObjectUpdater.startPathFollowObjectUpdater()
         TextTimings.startTextTimingsLayer()
+        ProjectileCollidor.setupProjectileCollidor()
         if (control.ramSize() <= 196608) {
             OverallGameStats.graphics = 0
         } else if (control.ramSize() <= 524288) {

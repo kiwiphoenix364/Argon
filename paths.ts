@@ -347,14 +347,21 @@ class Enemy {
     public enemyType: number
     public sprite: EnemyRender
     public array: EnemyArray
+    public hitboxSize: number
+    public hitboxType: number
+    public img: Image
     constructor(enemyType: number) {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
+        DataDrivenEnemies.setupEnemy[enemyType](this)
         if (this.enemyType <= -1) {
             this.array = new EnemyArray(this.enemyType)
         } else if (this.enemyType >= 0) {
-            this.sprite = new EnemyRender(DataDrivenEnemies.getEnemy(enemyType))
+            this.sprite = new EnemyRender(this.img)
+            this.sprite.hitboxSize = this.hitboxSize
+            this.sprite.hitboxType = this.hitboxType
+            this.img = this.hitboxType = this.hitboxSize = null
         }
     }
     public setPos(x: number, y: number) {
@@ -371,7 +378,7 @@ class Enemy {
         } else {
             this.array.destroy()
         }
-        this.enemyType = this.sprite = this.array = null
+        this.enemyType = this.sprite = this.array = this.hitboxType = this.hitboxSize = this.img = null
     }
 }
 class EnemyArray {
@@ -391,17 +398,22 @@ class EnemyArray {
     public img: Image
     public spriteArray: EnemyRender[]
     public path: Path
+    public hitboxSize: number
+    public hitboxType: number
     constructor(enemyType: number) {
         //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
         this.arrayType = Math.abs(enemyType)
         this.spriteArray = []
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
-        DataDrivenEnemies.setupEnemyArr(this, this.arrayType)
+        DataDrivenEnemies.setupEnemyArr[enemyType](this)
         this.setAnchor()
         for (let i = 0; i < this.xNum * this.yNum; i++) {
             this.spriteArray.push(new EnemyRender(this.img))
+            this.spriteArray[i].hitboxSize = this.hitboxSize
+            this.spriteArray[i].hitboxSize = this.hitboxType
         }
+        this.img = this.hitboxType = this.hitboxSize = null
         this.updatePos()
     }
     public setPos(x: number, y: number) {
@@ -433,20 +445,22 @@ class EnemyArray {
         for (let e of this.spriteArray) {
             e.destroy()
         }
-        this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.arrayType = this.anchorX = this.anchorY = this.spriteArray = null
+        this.hitboxSize = this.hitboxType = this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.arrayType = this.anchorX = this.anchorY = this.spriteArray = null
     }
 }
 class EnemyRender {
     public img: Image
     public x: number = 0
     public y: number = 0
+    public hitboxSize: number
+    public hitboxType: number
     public static enemy_render_list: EnemyRender[] = []
     constructor(img: Image) {
         this.img = img
         EnemyRender.enemy_render_list.push(this)
     }
     destroy() {
-        this.img = this.x = this.y = null
+        this.img = this.x = this.y = this.hitboxSize = this.hitboxType = null
         EnemyRender.enemy_render_list.removeElement(this)
     }
 }
@@ -502,9 +516,10 @@ class DataDrivenEnemies {
         [3],
         [1, 2]
     ]
-    private static readonly enemyImages: Image[] = [
-        //ADD ENEMIES HERE
-        img`
+    // Enemy Setup
+    public static readonly setupEnemy: ((enemy: Enemy) => void)[] = [
+        (enemy: Enemy) => {
+            enemy.img = img`
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -521,8 +536,48 @@ class DataDrivenEnemies {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-        `,
-
+            `,
+            enemy.hitboxSize = 5
+            enemy.hitboxType = 0
+        },
+    ]
+    // Enemy Array Setup
+    public static readonly setupEnemyArr: ((arr: EnemyArray) => void)[] = [
+        (arr: EnemyArray) => {
+            arr.xNum = 1
+            arr.yNum = 2
+            arr.xSeparate = 32
+            arr.ySeparate = 32
+            arr.xShift = 16
+            arr.yShift = 0
+            arr.x = 0
+            arr.y = 0
+            arr.relX = 0
+            arr.relY = 0
+            arr.arrayType = 1
+            arr.anchorX = 0
+            arr.anchorY = 0
+            arr.hitboxSize = 5
+            arr.hitboxType = 0
+            arr.img = img`
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+                `
+        }
     ]
     constructor () {
 
@@ -545,50 +600,6 @@ class DataDrivenEnemies {
                     x + Math.cos(frame * this.currentAnimationSet[0] + this.currentAnimationSet[4]) * this.currentAnimationSet[2],
                     y + Math.sin(frame * this.currentAnimationSet[1] + this.currentAnimationSet[5]) * this.currentAnimationSet[3]
                 )
-            }
-        }
-    }
-    static getEnemy(enemyType: number) {
-        return DataDrivenEnemies.enemyImages[enemyType]
-    }
-    static setupEnemyArr(arr: EnemyArray, arrType: number) {
-        //ADD ENEMY ARRAYS HERE
-        switch (arrType) {
-            case 1: {
-                arr.xNum = 1
-                arr.yNum = 2
-                arr.xSeparate = 32
-                arr.ySeparate = 32
-                arr.xShift = 16
-                arr.yShift = 0
-                arr.x = 0
-                arr.y = 0
-                arr.relX = 0
-                arr.relY = 0
-                arr.arrayType = 1
-                arr.anchorX = 0
-                arr.anchorY = 0
-                arr.img = img`
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-                `
-            }
-            default: {
-
             }
         }
     }
@@ -660,7 +671,7 @@ class ProjectileList {
                             3 3 3 3 3 3
                             . . . . . .
                             . . . . . .
-                        `, true, 1000, test2.tempX, test2.tempY, 0, Math.PI * 2, 100, 0, 0, 1, 0.2, 1)
+                        `, true, 1000, 3, 0, test2.tempX, test2.tempY, 0, Math.PI * 2, 100, 0, 0, 1, 0.2, 1)
                     }, 200, 10)
                 }, img`
     . . . . . . . e e e e . . . . .
@@ -679,7 +690,7 @@ class ProjectileList {
     4 5 4 e 5 5 5 5 e e . . . . . .
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
-                `, true, 2100, x, x + 10, y, y + 10)
+                `, true, 2100, 5, 0, x, x + 10, y, y + 10)
             }, 1000, 2)
         },
         (x: number, y: number) => {
