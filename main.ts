@@ -58,7 +58,7 @@ let cur = new Cursor(img`
         3 3 . 3 3
         . . 3 . .
         . . 3 . .
-`, 0)
+`, 1)
 /*let test = new Multi_Proj_BOTH(img`
     . . . . . .
     . . . . . .

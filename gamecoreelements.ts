@@ -381,6 +381,7 @@ class EnemyLayer {
                     const val = EnemyRender.enemy_render_list[i]
                     screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
+                ProjectileCollidor.clearCollisionSprite()
                 // Spawn Hitboxes
                 ProjectileCollidor.spawnProjectileHitboxes()
                 ProjectileCollidor.spawnEnemyHitboxes()
@@ -404,7 +405,6 @@ class ProjectileCollidor {
         ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughTiles, true)
         ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughWalls, true)
         ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Invisible, true)
-        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.RelativeToCamera, true)
     }
     // See startEnemyLayer for collision logic calculations
     static clearCollisionSprite() {
@@ -434,6 +434,7 @@ class ProjectileCollidor {
         for (let i = 0; i < OverallGameStats.playerSprites.length; i++) {
             if (OverallGameStats.playerSprites[i].playerHitbox.overlapsWith(ProjectileCollidor.collisionSprite)) {
                 info.player1.changeLifeBy(1)
+                console.log(0)
             }
         }
     }
