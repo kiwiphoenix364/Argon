@@ -144,6 +144,9 @@ class ADV_Projectile_Spawner_Scripts {
         
     }
 }
+
+// OLD PROJECTILE CODE THAT IS NOW DEPRICATED IN FAVOR OF THE NEW HIGHLY CUSTOMIZABLE PROJECTILE SYSTEM
+/*
 class Multi_Proj_POS {
     public spriteImg: Image
     public x: number
@@ -349,3 +352,4 @@ class DataDrivenProjectiles {
         new Multi_Proj_VEL(DataDrivenProjectiles.enemyProjImgs[DataDrivenProjectiles.enemyProjStats[proj][0]], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][0] === 0 ? false : true, DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][1], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][2], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][3], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][4], enemy.sprite.x, enemy.sprite.y, DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][5], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][6], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][7], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][8], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][9], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][10], DataDrivenProjectiles.projPattern[DataDrivenProjectiles.enemyProjStats[proj][1]][11])
     }
 }
+*/

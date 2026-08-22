@@ -555,8 +555,8 @@ class DataDrivenEnemies {
         //ADD ENEMY ARRAYS HERE
         switch (arrType) {
             case 1: {
-                arr.xNum = 3
-                arr.yNum = 3
+                arr.xNum = 1
+                arr.yNum = 2
                 arr.xSeparate = 32
                 arr.ySeparate = 32
                 arr.xShift = 16

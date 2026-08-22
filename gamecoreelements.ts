@@ -167,8 +167,8 @@ class Cursor {
                 this.sprite.x = controller.acceleration(ControllerDimension.X) / 1.28 * this.gyroSensitivity + 80
                 this.sprite.y = controller.acceleration(ControllerDimension.Y) / 1.71 * this.gyroSensitivity + 60
             }
-            this.sprite.x = Math.constrain(this.sprite.x, 1, OverallGameStats.screenWidth + 1)
-            this.sprite.y = Math.constrain(this.sprite.y, 1, OverallGameStats.screenHeight + 1)
+            this.sprite.x = Math.constrain(this.sprite.x, 1, OverallGameStats.screenWidth)
+            this.sprite.y = Math.constrain(this.sprite.y, 1, OverallGameStats.screenHeight)
         })
     }
     public changeCursorImg(image: Image) {

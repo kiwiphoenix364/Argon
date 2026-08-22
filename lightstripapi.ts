@@ -60,7 +60,7 @@ class LS {
     public static drawLightStrip(img: Image) {
         if (LS.lightStripMode != 1) {
             for (let i = 0; i < 5; i++) {
-                img.fillRect(i * OverallGameStats.screenWidth * .2, OverallGameStats.screenHeight + 1, OverallGameStats.screenWidth * .2, 8, LS.lights[i])
+                img.fillRect(i * OverallGameStats.screenWidth * .2, OverallGameStats.screenHeight, OverallGameStats.screenWidth * .2, 8, LS.lights[i])
             }
         }
     }
