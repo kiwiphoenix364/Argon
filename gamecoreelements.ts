@@ -385,6 +385,22 @@ class EnemyLayer {
         })
     }
 }
+class TextTimings{
+    public static updater: control.FrameCallback
+    constructor() {
+
+    }
+    public static startTextTimingsLayer() {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(9, () => {
+            for (let i = TextPrinter.printTextArr.length - 1; i >= 0; i--) {
+                TextPrinter.printTextArr[i].printText()
+            }
+            for (let i = TextPrinter.printTextDialogArr.length - 1; i >= 0; i--) {
+                TextPrinter.printTextDialogArr[i].printTextDialog()
+            }
+        })
+    }
+}
 class PauseMenuCore{
     constructor() {
 
@@ -416,6 +432,7 @@ class GameUtils{
         ADV_Projectile_Spawner_Updater.startADVProjectileSpawnerUpdater()
         PathFollowerUpdater.startPathFollowerUpdater()
         PathFollowObjectUpdater.startPathFollowObjectUpdater()
+        TextTimings.startTextTimingsLayer()
         if (control.ramSize() <= 196608) {
             OverallGameStats.graphics = 0
         } else if (control.ramSize() <= 524288) {

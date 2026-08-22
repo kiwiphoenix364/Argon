@@ -2,6 +2,7 @@ namespace SpriteKind {
     export const MenuSprite = SpriteKind.create()
 }
 
+// Text = 9
 // Timing = 6;
 // Cursor = 7
 // CONTROLLER_PRIORITY = 8;
@@ -34,7 +35,7 @@ namespace SpriteKind {
 let pathArray: Path[]
 let idCounter: number
 let idCache: number
-let lvlEdit = true
+let lvlEdit = false
 let debug = true
 game.stats = true
 
@@ -47,7 +48,6 @@ namespace userconfig {
     export const ARCADE_SCREEN_HEIGHT = 128
     // Extra height used for virtual light strip
 }
-OverallGameStats.competitive = true
 Level.startGame()
 //let test2 = new DialogController(DialogText.dialog[0], 0, 60, 160, 120, 100, 50, 160, 60, 0, 0, 100, 60)
 let cur = new Cursor(img`
@@ -118,3 +118,5 @@ let test2 = new ADV_Projectile_Spawner(() => {
     `, true, 5000, 10, 100, 10, 100)
 }, 1000, 10)
 */
+
+//let dialogController = new DialogController(DialogText.dialog[0], 0, 80, 160, 120, 120, 70, 160, 80, 0, 0, 100, 60)

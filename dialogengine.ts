@@ -1,10 +1,7 @@
-class BoolRef {
-    public bool: Boolean
-    constructor (value: boolean) {
-        this.bool = value
-    }
-}
 class DialogWindow {
+    public static interrupt: boolean = false
+    public static xpad: number = 2
+    public static ypad: number = 2
     public dialogBoxImage: Image
     public dialogBox: Image
     public nameBoxImage: Image
@@ -23,21 +20,10 @@ class DialogWindow {
     public clearNameBox() {
         this.nameBox.copyFrom(this.nameBoxImage)
     }
-    public drawDialog(text: String, interrupt: BoolRef) {
-        interrupt.bool = false
-        let xPadding = 2
-        let yPadding = 2
-        let pause = 40
-        let keyWords: number[] = []
-        let spaces: number[] = []
-        let spaceIdx: number = -1
-        let emphasized = false
-        let keyWordsLoc = 0
-        let spaceLoc = 0
+    public drawDialog(text: String) {
+        DialogWindow.interrupt = false
         let currentLetterImg: Image
-        let x = xPadding
-        let xName = xPadding
-        let y = yPadding
+        let xName = DialogWindow.xpad
         let name: String = ""
         this.clearNameBox()
         this.clearDialogBox()
@@ -52,64 +38,119 @@ class DialogWindow {
         }
         //Draw avatar
         this.avatarImage.copyFrom(DialogText.avatars[DialogText.avatarNames.indexOf(name)])
-        //Print name
-        control.runInBackground(() => { 
-            for (let i = 0; i < name.length; i++) {
-                currentLetterImg = DialogText.font[DialogText.fontLetters.indexOf(name.charAt(i).toUpperCase())].clone()
-                this.nameBox.drawTransparentImage(currentLetterImg, xName, 2)
-                xName += currentLetterImg.width + 1
-                if (!interrupt.bool) {
-                    DialogWindow.pause()
-                }
-            }
-        })
-        //Print text
-        for (let i = 0; i < text.length; i++) {
-            if (text.charAt(i) === " ") {
-                if (DialogText.emphasizedWords.indexOf(text.slice(spaceIdx + 1, i)) >= 0) {
-                    keyWords.push(spaceIdx + 1)
-                    keyWords.push(i)
-                }
-                spaceIdx = i
-                spaces.push(i)
-            }
-        }
-        spaces.push(text.length)
-        control.runInBackground(() => {
-            for (let i = 0; i < text.length; i++) {
-                currentLetterImg = DialogText.font[DialogText.fontLetters.indexOf(text.charAt(i).toUpperCase())].clone()
-                if (!emphasized && i === keyWords[keyWordsLoc]) {
-                    emphasized = true
-                    keyWordsLoc++
-                }
-                if (emphasized && i === keyWords[keyWordsLoc]) {
-                    emphasized = false
-                    keyWordsLoc++
-                }
-                if (emphasized) {
-                    currentLetterImg.replace(14, 8)
-                }
-                this.dialogBox.drawTransparentImage(currentLetterImg, x, y)
-                x += currentLetterImg.width + 1
-                if (spaces[spaceLoc] === i) {
-                    spaceLoc++
-                }
-                if (x > this.dialogBox.width - xPadding - DialogText.distToSpace(text, i, spaces[spaceLoc])) {
-                    x = xPadding
-                    y += 6
-                }
-                if (!interrupt.bool) {
-                    DialogWindow.pause()
-                }
-            }
-            interrupt.bool = true
-        })
-    }
-    static pause() {
-        pause(40)
+        // Print name
+        new TextPrinter(this.nameBox, name, 40, false)
+        // Print text
+        new TextPrinter(this.dialogBox, text, 40, true)
     }
     public destroy() {
         this.dialogBoxImage = this.dialogBox = this.nameBox = this.nameBoxImage = null
+    }
+}
+class TextPrinter {
+    public spaceIdx: number = -1
+    public keyWords: number[] = []
+    public spaces: number[] = []
+    public currentLetterImg: Image
+    public keyWordsLoc = 0
+    public spaceLoc = 0
+    public emphasized = false
+    public xPadding = DialogWindow.xpad
+    public yPadding = DialogWindow.ypad
+    public x = DialogWindow.xpad
+    public y = DialogWindow.ypad
+    public dialogBox: Image
+    public text: String
+    public pause: number
+    public currentTime = Timing.gameTime
+    public chars: number = 0
+    public static printTextArr: TextPrinter[] = []
+    public static printTextDialogArr: TextPrinter[] = []
+    constructor(dialogBox: Image, text: String, pause: number, dialog = false) {
+        this.dialogBox = dialogBox
+        this.text = text
+        this.pause = pause
+        if (dialog) {
+            this.printTextDialogSetup()
+            TextPrinter.printTextDialogArr.push(this)
+        } else {
+            TextPrinter.printTextArr.push(this)
+        }
+    }
+    public printText() {
+        if (Timing.gameTime >= this.currentTime) {
+            this.currentTime += this.pause
+            this.currentLetterImg = DialogText.font[DialogText.fontLetters.indexOf(this.text.charAt(this.chars).toUpperCase())].clone()
+            this.dialogBox.drawTransparentImage(this.currentLetterImg, this.x, 2)
+            this.x += this.currentLetterImg.width + 1
+            this.chars++
+            if (this.chars >= this.text.length) {
+                this.destroy()
+                return
+            }
+            if (DialogWindow.interrupt) {
+                this.currentTime -= this.pause
+            }
+            if (Timing.gameTime >= this.currentTime) {
+                this.printText()
+            }
+        }
+    }
+    public printTextDialogSetup() {
+        //Print text
+        for (let i = 0; i < this.text.length; i++) {
+            if (this.text.charAt(i) === " ") {
+                if (DialogText.emphasizedWords.indexOf(this.text.slice(this.spaceIdx + 1, i)) >= 0) {
+                    this.keyWords.push(this.spaceIdx + 1)
+                    this.keyWords.push(i)
+                }
+                this.spaceIdx = i
+                this.spaces.push(i)
+            }
+        }
+        this.spaces.push(this.text.length)
+    }
+    public printTextDialog() {
+        if (Timing.gameTime >= this.currentTime) {
+            this.currentTime += this.pause
+            this.currentLetterImg = DialogText.font[DialogText.fontLetters.indexOf(this.text.charAt(this.chars).toUpperCase())].clone()
+            if (!this.emphasized && this.chars === this.keyWords[this.keyWordsLoc]) {
+                this.emphasized = true
+                this.keyWordsLoc++
+            }
+            if (this.emphasized && this.chars === this.keyWords[this.keyWordsLoc]) {
+                this.emphasized = false
+                this.keyWordsLoc++
+            }
+            if (this.emphasized) {
+                this.currentLetterImg.replace(14, 8)
+            }
+            this.dialogBox.drawTransparentImage(this.currentLetterImg, this.x, this.y)
+            this.x += this.currentLetterImg.width + 1
+            if (this.spaces[this.spaceLoc] === this.chars) {
+                this.spaceLoc++
+            }
+            if (this.x > this.dialogBox.width - this.xPadding - DialogText.distToSpace(this.text, this.chars, this.spaces[this.spaceLoc])) {
+                this.x = this.xPadding
+                this.y += 6
+            }
+            this.chars++
+            if (this.chars >= this.text.length) {
+                this.destroy()
+                return
+            }
+            if (DialogWindow.interrupt) {
+                this.currentTime -= this.pause
+            }
+            if (Timing.gameTime >= this.currentTime) {
+                this.printTextDialog()
+            }
+        }
+    }
+    public destroy() {
+        TextPrinter.printTextArr.removeElement(this)
+        TextPrinter.printTextDialogArr.removeElement(this)
+        this.spaceIdx = this.keyWords = this.spaces = this.currentLetterImg = this.keyWordsLoc = this.spaceLoc = this.emphasized = this.xPadding = this.yPadding = this.x = this.y = this.dialogBox = this.text = this.pause = this.currentTime = this.chars = null
     }
 }
 class DialogText {
@@ -195,10 +236,73 @@ class DialogText {
             1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
             1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
             1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+        `,
+        img`
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111133333111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111133333333331111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111333333333333311111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111333333333333311111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111333333333333331111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111113333333333333331111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111113333333333333333111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111113333333333333333111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111133333333333333333311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111113333333333333331111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111113333333333333311111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111333333333333111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111133333333311111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111131333333311111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111131111113311111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111131111113111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111331111113111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111133333311111113111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111333311111111111113331111111111111111111111111111111111111111111111111111
+            1111111111111111111111111113311111111111111111133311111111111111111111111111111111111111111111111111
+            1111111111111111111111111113111111111111111111111331111111111111111111111111111111111111111111111111
+            1111111111111111111111111133111111111111111111111133111111111111111111111111111111111111111111111111
+            1111111111111111111111111131111111111111111111111113311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111311111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111331111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
         `
     ]
     public static readonly avatarNames: String[] = [
-        "usr1"
+        "usr1",
+        "usr2"
     ]
     public static readonly font: Image[] = [
         img`
@@ -493,12 +597,11 @@ class DialogController {
     }
     protected drawDialog() {
         for (let i = 0; i < this.tree.length; i++) {
-            let interrupt = new BoolRef(false)
-            this.dialogWindow.drawDialog(this.tree[i], interrupt)
+            this.dialogWindow.drawDialog(this.tree[i])
             pauseUntil(() => !controller.A.isPressed())
-            pauseUntil(() => controller.A.isPressed() || interrupt.bool === true)
+            pauseUntil(() => controller.A.isPressed() || DialogWindow.interrupt === true)
             pauseUntil(() => !controller.A.isPressed())
-            interrupt.bool = true
+            DialogWindow.interrupt = true
             pauseUntil(() => !controller.A.isPressed())
             pauseUntil(() => controller.A.isPressed())
             pauseUntil(() => !controller.A.isPressed())
