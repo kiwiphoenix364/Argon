@@ -354,10 +354,10 @@ class Enemy {
         this.enemyType = enemyType
         //ENEMY SPRITE TYPES
         //TYPES IN THOUSANDS ARE FOR ARRAYS
-        DataDrivenEnemies.setupEnemy[enemyType](this)
         if (this.enemyType <= -1) {
             this.array = new EnemyArray(this.enemyType)
         } else if (this.enemyType >= 0) {
+            DataDrivenEnemies.setupEnemy[enemyType](this)
             this.sprite = new EnemyRender(this.img)
             this.sprite.hitboxSize = this.hitboxSize
             this.sprite.hitboxType = this.hitboxType
@@ -392,7 +392,6 @@ class EnemyArray {
     public y = 0
     public relX = 0
     public relY = 0
-    public arrayType = 1
     public anchorX = 0
     public anchorY = 0
     public img: Image
@@ -402,16 +401,15 @@ class EnemyArray {
     public hitboxType: number
     constructor(enemyType: number) {
         //ANCHOR IS BASED ON SPAWN POSITION, PREFERABLY SPAWN ON EDGE OF MAP
-        this.arrayType = Math.abs(enemyType)
         this.spriteArray = []
         //FOR ARRAYTYPE FILL ARRAY HOWEVER YOU WANT AND DEFINE PARAMETERS OTHER THAN THE DEFAULT
         //ARRAY MUST HAVE EQUIVALENT TO xNum * yNum IN QUANTITY
-        DataDrivenEnemies.setupEnemyArr[enemyType](this)
+        DataDrivenEnemies.setupEnemyArr[Math.abs(enemyType + 1)](this)
         this.setAnchor()
         for (let i = 0; i < this.xNum * this.yNum; i++) {
             this.spriteArray.push(new EnemyRender(this.img))
             this.spriteArray[i].hitboxSize = this.hitboxSize
-            this.spriteArray[i].hitboxSize = this.hitboxType
+            this.spriteArray[i].hitboxType = this.hitboxType
         }
         this.img = this.hitboxType = this.hitboxSize = null
         this.updatePos()
@@ -445,7 +443,7 @@ class EnemyArray {
         for (let e of this.spriteArray) {
             e.destroy()
         }
-        this.hitboxSize = this.hitboxType = this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.arrayType = this.anchorX = this.anchorY = this.spriteArray = null
+        this.hitboxSize = this.hitboxType = this.xNum = this.yNum = this.xSeparate = this.ySeparate = this.xShift = this.yShift = this.x = this.y = this.relX = this.relY = this.anchorX = this.anchorY = this.spriteArray = null
     }
 }
 class EnemyRender {
@@ -554,7 +552,6 @@ class DataDrivenEnemies {
             arr.y = 0
             arr.relX = 0
             arr.relY = 0
-            arr.arrayType = 1
             arr.anchorX = 0
             arr.anchorY = 0
             arr.hitboxSize = 5

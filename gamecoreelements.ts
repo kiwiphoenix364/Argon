@@ -381,8 +381,10 @@ class EnemyLayer {
                     const val = EnemyRender.enemy_render_list[i]
                     screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
-                // Spawn hitboxSize
-                
+                // Spawn Hitboxes
+                ProjectileCollidor.spawnProjectileHitboxes()
+                ProjectileCollidor.spawnEnemyHitboxes()
+                ProjectileCollidor.checkCollision()
             }
             LS.drawLightStrip(screenImg)
         })
@@ -391,8 +393,8 @@ class EnemyLayer {
 class ProjectileCollidor {
     public static collisionSprite: Sprite
     // Add custom hitboxes here
-    public static readonly projectileHitboxDrawFunctions: ((proj: any) => void)[] = [
-        (proj: any) => { ProjectileCollidor.collisionSprite.image.drawCircle(proj.x, proj.y, proj.hitboxSize, 1) }, // Circle
+    public static readonly projectileHitboxDrawFunctions: ((proj: Adv_Projectile | EnemyRender) => void)[] = [
+        (proj: Adv_Projectile | EnemyRender) => { ProjectileCollidor.collisionSprite.image.drawCircle(proj.x, proj.y, proj.hitboxSize, 1) }, // Circle
     ]
     constructor() {
 
@@ -414,11 +416,11 @@ class ProjectileCollidor {
             ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
         }
         for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
-            const proj = Adv_Projectile.slow_proj_list[i]
+            const proj = Adv_Projectile.proj_list[i]
             ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
         }
         for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
-            const proj = Adv_Projectile.slow_proj_list[i]
+            const proj = Adv_Projectile.fast_proj_list[i]
             ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
         }
     }
@@ -426,6 +428,13 @@ class ProjectileCollidor {
         for (let i = EnemyRender.enemy_render_list.length - 1; i >= 0; i--) {
             const enemy = EnemyRender.enemy_render_list[i]
             ProjectileCollidor.projectileHitboxDrawFunctions[enemy.hitboxType](enemy)
+        }
+    }
+    static checkCollision() {
+        for (let i = 0; i < OverallGameStats.playerSprites.length; i++) {
+            if (OverallGameStats.playerSprites[i].playerHitbox.overlapsWith(ProjectileCollidor.collisionSprite)) {
+                info.player1.changeLifeBy(1)
+            }
         }
     }
 }

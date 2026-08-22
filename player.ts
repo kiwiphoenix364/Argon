@@ -1,9 +1,31 @@
 class Player {
     public playerSprite: Sprite
-    constructor(img: Image) {
+    public playerHitbox: Sprite
+    public cursor: Cursor
+    public speed: number
+    public updater: control.FrameCallback
+    constructor(img: Image, hitboxImg: Image, cursor: Cursor, speed: number) {
         this.playerSprite = sprites.create(img)
+        this.playerSprite.setFlag(SpriteFlag.Ghost, true)
+        this.playerHitbox = sprites.create(hitboxImg)
+        this.playerHitbox.setFlag(SpriteFlag.GhostThroughTiles, true)
+        this.playerHitbox.setFlag(SpriteFlag.GhostThroughWalls, true)
+        this.playerHitbox.setFlag(SpriteFlag.Invisible, true)
+        this.cursor = cursor
+        this.speed = speed
+        this.followCursor()
     }
-    
+    private followCursor() {
+        this.updater = game.currentScene().eventContext.registerFrameHandler(24, () => {
+            this.playerHitbox.x = Player.follow(this.playerHitbox.x, this.cursor.sprite.x, this.speed)
+            this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.speed)
+            this.playerSprite.x = this.playerHitbox.x
+            this.playerSprite.y = this.playerHitbox.y
+        })
+    }
+    private static follow(sValue: number, eValue: number, maxDev: number) {
+        return sValue + Math.constrain(eValue - sValue, -maxDev, maxDev)
+    }
 }
 //new Player(controller.player1)
 /*

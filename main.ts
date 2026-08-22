@@ -18,6 +18,7 @@ namespace SpriteKind {
 // UPDATE_PRIORITY = 20;
 // Spawn timed projectiles at 21
 // spritedamagetick at 21, SpriteTick at 22
+// Player Movement at 24
 // Collision check at 25
 // PRE_RENDER_UPDATE_PRIORITY = 55;
 // RENDER_BACKGROUND_PRIORITY = 60;
@@ -57,7 +58,7 @@ let cur = new Cursor(img`
         3 3 . 3 3
         . . 3 . .
         . . 3 . .
-`, 2)
+`, 0)
 /*let test = new Multi_Proj_BOTH(img`
     . . . . . .
     . . . . . .
@@ -121,3 +122,28 @@ let test2 = new ADV_Projectile_Spawner(() => {
 */
 
 //let dialogController = new DialogController(DialogText.dialog[0], 0, 80, 160, 120, 120, 70, 160, 80, 0, 0, 100, 60)
+let player = new Player(img`
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 9 8 8 9 . . . . . .
+    . . . . . . . 8 9 . . . . . . .
+    . . . . 8 8 8 8 8 8 8 9 . . . .
+    . . . . 8 8 8 8 8 8 8 8 . . . .
+    . . . . 8 8 8 8 8 8 8 8 . . . .
+    . . . . 8 8 8 8 8 8 8 8 . . . .
+    . . . . 9 8 8 8 8 8 8 9 . . . .
+    . . . . . . 8 8 8 9 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+`, img`
+    . 1 1 1 .
+    1 1 1 1 1
+    1 1 1 1 1
+    1 1 1 1 1
+    . 1 1 1 .
+`, cur, 5)
+OverallGameStats.playerSprites.push(player)

@@ -13,7 +13,7 @@ class Adv_Projectile {
     public static fast_proj_list: Adv_Projectile[] = []
     public static proj_list: Adv_Projectile[] = []
     public static slow_proj_list: Adv_Projectile[] = []
-    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, hitboxSize: number, hitboxType: number, posX: number, posY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
+    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, hitboxSize: number, hitboxType = 0, posX: number, posY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
         if (angleMode === 0) {
             // Angle 0, just image
             this.img = spriteImg
