@@ -13,9 +13,9 @@ class Timing {
             Timing.pausedTime = 0
             Timing.gameTime = 0
             if (OverallGameStats.competitive) {
-                Timing.delta = 125 / 6
+                Timing.delta = 1/48
                 Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                    Timing.gameTime += Timing.delta
+                    Timing.gameTime += 125/6
                     info.setScore(Timing.gameTime)
                 })
             } else {
@@ -42,8 +42,8 @@ class Timing {
     public static unpauseTimer() {
         if (Timing.paused === true) {
             Timing.paused = false
-            Timing.gameTime = 0
             if (OverallGameStats.competitive) {
+                Timing.gameTime = Timing.pausedTime
                 Timing.delta = 125 / 6
                 Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
                     Timing.gameTime += Timing.delta

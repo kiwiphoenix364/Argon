@@ -47,7 +47,7 @@ namespace userconfig {
     export const ARCADE_SCREEN_HEIGHT = 128
     // Extra height used for virtual light strip
 }
-
+OverallGameStats.competitive = true
 Level.startGame()
 //let test2 = new DialogController(DialogText.dialog[0], 0, 60, 160, 120, 100, 50, 160, 60, 0, 0, 100, 60)
 let cur = new Cursor(img`
