@@ -29,8 +29,8 @@ class Adv_Projectile {
             this.img = image.create(spriteImg.width, spriteImg.height)
             helpers.imageDrawScaledRotated(this.img, 0, 0, spriteImg, 1, 1, angleAcceleration)
         }
-        this.x = posX - (spriteImg.width >> 1)
-        this.y = posY - (spriteImg.height >> 1)
+        this.x = posX
+        this.y = posY
         this.vX = Math.cos(angleVelocity) * vSpeed
         this.vY = Math.sin(angleVelocity) * vSpeed
         this.aX = Math.cos(angleAcceleration) * aSpeed

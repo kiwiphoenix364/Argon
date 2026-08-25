@@ -348,7 +348,7 @@ class EnemyLayer {
                         val.destroy(Adv_Projectile.fast_proj_list)
                         continue
                     }
-                    screenImg.drawTransparentImage(val.img, val.x, val.y)
+                    screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
                 // Projectiles with acceleration
                 for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
@@ -361,7 +361,7 @@ class EnemyLayer {
                         val.destroy(Adv_Projectile.proj_list)
                         continue
                     }
-                    screenImg.drawTransparentImage(val.img, val.x, val.y)
+                    screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
                 // Projectiles with acceleration and turning
                 for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
@@ -374,7 +374,7 @@ class EnemyLayer {
                         val.destroy(Adv_Projectile.slow_proj_list)
                         continue
                     }
-                    helpers.imageDrawScaledRotated(screenImg, val.x, val.y, val.img, 1, 1, Math.atan2(val.vY, val.vX))
+                    helpers.imageDrawScaledRotated(screenImg, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1), val.img, 1, 1, Math.atan2(val.vY, val.vX))
                 }
                 // Enemy Sprites
                 for (let i = EnemyRender.enemy_render_list.length - 1; i >= 0; i--) {
@@ -413,22 +413,18 @@ class ProjectileCollidor {
     }
     static spawnProjectileHitboxes() {
         for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
-            const proj = Adv_Projectile.slow_proj_list[i]
-            ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
+            ProjectileCollidor.projectileHitboxDrawFunctions[Adv_Projectile.slow_proj_list[i].hitboxType](Adv_Projectile.slow_proj_list[i])
         }
         for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
-            const proj = Adv_Projectile.proj_list[i]
-            ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
+            ProjectileCollidor.projectileHitboxDrawFunctions[Adv_Projectile.proj_list[i].hitboxType](Adv_Projectile.proj_list[i])
         }
         for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
-            const proj = Adv_Projectile.fast_proj_list[i]
-            ProjectileCollidor.projectileHitboxDrawFunctions[proj.hitboxType](proj)
+            ProjectileCollidor.projectileHitboxDrawFunctions[Adv_Projectile.fast_proj_list[i].hitboxType](Adv_Projectile.fast_proj_list[i])
         }
     }
     static spawnEnemyHitboxes() {
         for (let i = EnemyRender.enemy_render_list.length - 1; i >= 0; i--) {
-            const enemy = EnemyRender.enemy_render_list[i]
-            ProjectileCollidor.projectileHitboxDrawFunctions[enemy.hitboxType](enemy)
+            ProjectileCollidor.projectileHitboxDrawFunctions[EnemyRender.enemy_render_list[i].hitboxType](EnemyRender.enemy_render_list[i])
         }
     }
     static checkCollision() {
