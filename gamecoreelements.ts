@@ -348,7 +348,7 @@ class EnemyLayer {
                         val.destroy(Adv_Projectile.fast_proj_list)
                         continue
                     }
-                    screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
+                    screenImg.drawTransparentImage(val.img, val.x, val.y)
                 }
                 // Projectiles with acceleration
                 for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
