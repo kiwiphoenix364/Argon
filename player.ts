@@ -8,9 +8,10 @@ class Player {
         this.playerSprite = sprites.create(img)
         this.playerSprite.setFlag(SpriteFlag.Ghost, true)
         this.playerHitbox = sprites.create(hitboxImg)
-        this.playerHitbox.setFlag(SpriteFlag.GhostThroughTiles, true)
-        this.playerHitbox.setFlag(SpriteFlag.GhostThroughWalls, true)
-        this.playerHitbox.setFlag(SpriteFlag.Invisible, true)
+        this.playerHitbox.setFlag(SpriteFlag.Ghost, false)
+        //this.playerHitbox.setFlag(SpriteFlag.GhostThroughTiles, true)
+        //this.playerHitbox.setFlag(SpriteFlag.GhostThroughWalls, true)
+        //this.playerHitbox.setFlag(SpriteFlag.Invisible, true)
         this.cursor = cursor
         this.speed = speed
         this.followCursor()

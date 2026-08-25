@@ -395,16 +395,17 @@ class ProjectileCollidor {
     public static collisionSprite: Sprite
     // Add custom hitboxes here
     public static readonly projectileHitboxDrawFunctions: ((proj: Adv_Projectile | EnemyRender) => void)[] = [
-        (proj: Adv_Projectile | EnemyRender) => { ProjectileCollidor.collisionSprite.image.drawCircle(proj.x, proj.y, proj.hitboxSize, 1) }, // Circle
+        (proj: Adv_Projectile | EnemyRender) => { ProjectileCollidor.collisionSprite.image.fillCircle(proj.x, proj.y, proj.hitboxSize, 1) }, // Circle
     ]
     constructor() {
 
     }
     static setupProjectileCollidor() {
         ProjectileCollidor.collisionSprite = new Sprite(image.create(OverallGameStats.screenWidth, OverallGameStats.screenHeight))
-        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughTiles, true)
-        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughWalls, true)
-        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Invisible, true)
+        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Ghost, false)
+        //ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+        //ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughWalls, true)
+        //ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Invisible, true)
     }
     // See startEnemyLayer for collision logic calculations
     static clearCollisionSprite() {
@@ -433,8 +434,7 @@ class ProjectileCollidor {
     static checkCollision() {
         for (let i = 0; i < OverallGameStats.playerSprites.length; i++) {
             if (OverallGameStats.playerSprites[i].playerHitbox.overlapsWith(ProjectileCollidor.collisionSprite)) {
-                info.player1.changeLifeBy(1)
-                console.log(0)
+                info.changeLifeBy(1)
             }
         }
     }

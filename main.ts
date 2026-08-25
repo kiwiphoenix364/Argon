@@ -122,7 +122,7 @@ let test2 = new ADV_Projectile_Spawner(() => {
 */
 
 //let dialogController = new DialogController(DialogText.dialog[0], 0, 80, 160, 120, 120, 70, 160, 80, 0, 0, 100, 60)
-let player = new Player(img`
+let player1 = new Player(img`
     . . . . . . 8 8 8 8 . . . . . .
     . . . . . . 8 8 8 8 . . . . . .
     . . . . . . 8 8 8 8 . . . . . .
@@ -146,4 +146,4 @@ let player = new Player(img`
     1 1 1 1 1
     . 1 1 1 .
 `, cur, 5)
-OverallGameStats.playerSprites.push(player)
+OverallGameStats.playerSprites.push(player1)
