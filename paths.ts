@@ -535,7 +535,7 @@ class DataDrivenEnemies {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
             `,
-            enemy.hitboxSize = 3
+            enemy.hitboxSize = 5
             enemy.hitboxType = 0
         },
     ]
@@ -687,7 +687,7 @@ class ProjectileList {
     4 5 4 e 5 5 5 5 e e . . . . . .
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
-                `, true, 2100, 3, 0, x, (x + 10), y, (y + 10))
+                `, true, 2100, 5, 0, x, (x + 10), y, (y + 10))
             }, 400, 2)
         },
         (x: number, y: number) => {
