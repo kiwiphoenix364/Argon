@@ -386,7 +386,7 @@ class EnemyLayer {
                 ProjectileCollidor.spawnProjectileHitboxes()
                 ProjectileCollidor.spawnEnemyHitboxes()
                 ProjectileCollidor.checkCollision()
-                screenImg.drawTransparentImage(ProjectileCollidor.collisionSprite, 0, 0)
+                //screenImg.drawTransparentImage(ProjectileCollidor.collisionSprite, 0, 0)
             }
             LS.drawLightStrip(screenImg)
         })

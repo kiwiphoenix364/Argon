@@ -611,7 +611,7 @@ class SimpleEnemyProjectiles {
         // startDelay, projectileIDX, delay, projectileIDX, delay, etc...
         // Begins enemy idx 0
         // Put -1 in projectileIDX to disable
-        [0, 0, 400]
+        [0, 0, 2000]
     ]
     public static readonly enemyArrayProjectileSpawnList: number[][] = [
         // startDelay, projectileIDX, delay, projectileIDX, delay, etc...
@@ -668,7 +668,7 @@ class ProjectileList {
                             3 3 3 3 3 3
                             . . . . . .
                             . . . . . .
-                        `, true, 1000, 3, 0, test2.tempX, test2.tempY, 0, Math.PI * 2, 100, 0, 0, 1, 0.2, 1)
+                        `, true, 1000, 1, 0, test2.tempX, test2.tempY, 0, Math.PI * 2, 100, 0, 0, 1, 0.2, 1)
                     }, 200, 10)
                 }, img`
     . . . . . . . e e e e . . . . .
