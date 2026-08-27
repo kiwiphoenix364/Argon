@@ -172,7 +172,7 @@ class Path {
             Path.interpolate(dist, item1.y, midIntY),
             Path.interpolate(dist, midIntY, item2.y)
         )
-        return(new SimplePoint(Fx.toFloat(pixelX), Fx.toFloat(pixelY)))
+        return (new SimplePoint(Fx.toFloat(pixelX), Fx.toFloat(pixelY)))
     }
     public distBetweenIdx(pointIndex: number, precision = 10) {
         let distArray = []
@@ -535,7 +535,7 @@ class DataDrivenEnemies {
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
                 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
             `,
-            enemy.hitboxSize = 5
+            enemy.hitboxSize = 3
             enemy.hitboxType = 0
         },
     ]
@@ -611,7 +611,7 @@ class SimpleEnemyProjectiles {
         // startDelay, projectileIDX, delay, projectileIDX, delay, etc...
         // Begins enemy idx 0
         // Put -1 in projectileIDX to disable
-        [0, 0, 2000]
+        [0, 0, 400]
     ]
     public static readonly enemyArrayProjectileSpawnList: number[][] = [
         // startDelay, projectileIDX, delay, projectileIDX, delay, etc...
@@ -687,8 +687,8 @@ class ProjectileList {
     4 5 4 e 5 5 5 5 e e . . . . . .
     . 4 5 4 5 5 4 e . . . . . . . .
     . . 4 4 e e e . . . . . . . . .
-                `, true, 2100, 5, 0, x, x + 10, y, y + 10)
-            }, 1000, 2)
+                `, true, 2100, 3, 0, x, (x + 10), y, (y + 10))
+            }, 400, 2)
         },
         (x: number, y: number) => {
 

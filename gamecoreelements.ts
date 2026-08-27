@@ -13,17 +13,15 @@ class Timing {
             Timing.pausedTime = 0
             Timing.gameTime = 0
             if (OverallGameStats.competitive) {
-                Timing.delta = 1/48
+                Timing.delta = 0.02083
                 Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                    Timing.gameTime += 125/6
-                    info.setScore(Timing.gameTime)
+                    Timing.gameTime += 20.83
                 })
             } else {
                 control.timer8.reset()
                 Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
                     Timing.gameTime = control.timer8.millis()
                     Timing.delta = control.eventContext().deltaTime
-                    info.setScore(Timing.gameTime)
                 })
             }
         }
@@ -44,17 +42,15 @@ class Timing {
             Timing.paused = false
             if (OverallGameStats.competitive) {
                 Timing.gameTime = Timing.pausedTime
-                Timing.delta = 125 / 6
+                Timing.delta = 0.02083
                 Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
-                    Timing.gameTime += Timing.delta
-                    info.setScore(Timing.gameTime)
+                    Timing.gameTime += 20.83
                 })
             } else {
                 control.timer8.reset()
                 Timing.updater = game.currentScene().eventContext.registerFrameHandler(6, () => {
                     Timing.gameTime = control.timer8.millis() + Timing.pausedTime
                     Timing.delta = control.eventContext().deltaTime
-                    info.setScore(Timing.gameTime)
                 })
             }
         }
@@ -68,7 +64,7 @@ class OverallGameStats {
     public static readonly screenWidth = 160
     public static readonly screenHeight = 120
     public static graphics = 0
-    public static competitive = false
+    public static competitive: boolean
     public static playerSprites: Player[] = []
     constructor() {
 
@@ -121,6 +117,8 @@ class Cursor {
         this.mode = mode
         this.speed = speed
         this.sprite.z = 10000
+        this.sprite.x = 80
+        this.sprite.y = 60
         this.createConstructor()
     }
     private createConstructor() {
@@ -342,22 +340,23 @@ class EnemyLayer {
                 // Simple projectiles
                 for (let i = Adv_Projectile.fast_proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.fast_proj_list[i]
-                    val.x += val.vX * Timing.delta
-                    val.y += val.vY * Timing.delta
+                    val.x = (val.x + val.vX * Timing.delta)
+                    val.y = (val.y + val.vY * Timing.delta)
                     if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight || Timing.gameTime > val.life)) {
                         val.destroy(Adv_Projectile.fast_proj_list)
                         continue
                     }
-                    screenImg.drawTransparentImage(val.img, val.x, val.y)
+                    
+                    screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
                 // Projectiles with acceleration
                 for (let i = Adv_Projectile.proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.proj_list[i]
-                    val.x += val.vX * Timing.delta
-                    val.y += val.vY * Timing.delta
-                    val.vX += val.aX * Timing.delta
-                    val.vY += val.aY * Timing.delta
-                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight) || Timing.gameTime > val.life) {
+                    val.x = val.x + val.vX * Timing.delta
+                    val.y = val.y + val.vY * Timing.delta
+                    val.vX = val.vX + val.aX * Timing.delta
+                    val.vY = val.vY + val.aY * Timing.delta
+                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight || Timing.gameTime > val.life)) {
                         val.destroy(Adv_Projectile.proj_list)
                         continue
                     }
@@ -366,11 +365,11 @@ class EnemyLayer {
                 // Projectiles with acceleration and turning
                 for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
                     const val = Adv_Projectile.slow_proj_list[i]
-                    val.x += val.vX * Timing.delta
-                    val.y += val.vY * Timing.delta
-                    val.vX += val.aX * Timing.delta
-                    val.vY += val.aY * Timing.delta
-                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight) || Timing.gameTime > val.life) {
+                    val.x = val.x + val.vX * Timing.delta
+                    val.y = val.y + val.vY * Timing.delta
+                    val.vX = val.vX + val.aX * Timing.delta
+                    val.vY = val.vY + val.aY * Timing.delta
+                    if (val.autoDestroy && (val.x <= -val.img.width || val.x >= OverallGameStats.screenWidth || val.y <= -val.img.height || val.y >= OverallGameStats.screenHeight || Timing.gameTime > val.life)) {
                         val.destroy(Adv_Projectile.slow_proj_list)
                         continue
                     }
@@ -382,36 +381,41 @@ class EnemyLayer {
                     screenImg.drawTransparentImage(val.img, val.x - (val.img.width >> 1), val.y - (val.img.height >> 1))
                 }
                 ProjectileCollidor.clearCollisionSprite()
+                
                 // Spawn Hitboxes
                 ProjectileCollidor.spawnProjectileHitboxes()
                 ProjectileCollidor.spawnEnemyHitboxes()
                 ProjectileCollidor.checkCollision()
+                screenImg.drawTransparentImage(ProjectileCollidor.collisionSprite, 0, 0)
             }
             LS.drawLightStrip(screenImg)
         })
     }
 }
 class ProjectileCollidor {
-    public static collisionSprite: Sprite
+    public static collisionSprite: Image
     // Add custom hitboxes here
     public static readonly projectileHitboxDrawFunctions: ((proj: Adv_Projectile | EnemyRender) => void)[] = [
-        (proj: Adv_Projectile | EnemyRender) => { ProjectileCollidor.collisionSprite.image.fillCircle(proj.x, proj.y, proj.hitboxSize, 1) }, // Circle
+        (proj: Adv_Projectile | EnemyRender) => { ProjectileCollidor.collisionSprite.drawCircle(proj.x | 0, proj.y | 0, proj.hitboxSize | 0, 1) }, // Circle
+
+        
     ]
     constructor() {
 
     }
     static setupProjectileCollidor() {
-        ProjectileCollidor.collisionSprite = new Sprite(image.create(OverallGameStats.screenWidth, OverallGameStats.screenHeight))
-        ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Ghost, false)
+        ProjectileCollidor.collisionSprite = image.create(OverallGameStats.screenWidth, OverallGameStats.screenHeight)
         //ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughTiles, true)
         //ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.GhostThroughWalls, true)
         //ProjectileCollidor.collisionSprite.setFlag(SpriteFlag.Invisible, true)
     }
     // See startEnemyLayer for collision logic calculations
     static clearCollisionSprite() {
-        ProjectileCollidor.collisionSprite.image.fill(0)
+        ProjectileCollidor.collisionSprite.fill(0)
     }
     static spawnProjectileHitboxes() {
+
+        
         for (let i = Adv_Projectile.slow_proj_list.length - 1; i >= 0; i--) {
             ProjectileCollidor.projectileHitboxDrawFunctions[Adv_Projectile.slow_proj_list[i].hitboxType](Adv_Projectile.slow_proj_list[i])
         }
@@ -429,7 +433,10 @@ class ProjectileCollidor {
     }
     static checkCollision() {
         for (let i = 0; i < OverallGameStats.playerSprites.length; i++) {
-            if (OverallGameStats.playerSprites[i].playerHitbox.overlapsWith(ProjectileCollidor.collisionSprite)) {
+            //if (ProjectileCollidor.collisionSprite.getPixel(OverallGameStats.playerSprites[i].playerHitbox.x, OverallGameStats.playerSprites[i].playerHitbox.y) != 0) {
+            //    info.changeLifeBy(1)
+            //}
+            if (ProjectileCollidor.collisionSprite.overlapsWith(OverallGameStats.playerSprites[i].playerHitbox.image, OverallGameStats.playerSprites[i].playerHitbox.x | 0, OverallGameStats.playerSprites[i].playerHitbox.y | 0)) {
                 info.changeLifeBy(1)
             }
         }

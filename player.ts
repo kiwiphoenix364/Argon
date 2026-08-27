@@ -14,6 +14,10 @@ class Player {
         //this.playerHitbox.setFlag(SpriteFlag.Invisible, true)
         this.cursor = cursor
         this.speed = speed
+        this.playerHitbox.x = 80
+        this.playerHitbox.y = 60
+        this.playerSprite.x = this.playerHitbox.x
+        this.playerSprite.y = this.playerHitbox.y
         this.followCursor()
     }
     private followCursor() {

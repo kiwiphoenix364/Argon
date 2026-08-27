@@ -13,7 +13,7 @@ class Adv_Projectile {
     public static fast_proj_list: Adv_Projectile[] = []
     public static proj_list: Adv_Projectile[] = []
     public static slow_proj_list: Adv_Projectile[] = []
-    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, hitboxSize: number, hitboxType = 0, posX: number, posY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
+    constructor(spriteImg: Image, destroyOutOfScreen: boolean, life: number, hitboxSize: number, hitboxType = 0, posX: number, posY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 0) {
         if (angleMode === 0) {
             // Angle 0, just image
             this.img = spriteImg
@@ -29,8 +29,8 @@ class Adv_Projectile {
             this.img = image.create(spriteImg.width, spriteImg.height)
             helpers.imageDrawScaledRotated(this.img, 0, 0, spriteImg, 1, 1, angleAcceleration)
         }
-        this.x = posX
-        this.y = posY
+        this.x = posX | 0
+        this.y = posY | 0
         this.vX = Math.cos(angleVelocity) * vSpeed
         this.vY = Math.sin(angleVelocity) * vSpeed
         this.aX = Math.cos(angleAcceleration) * aSpeed
@@ -88,8 +88,8 @@ class ADV_Projectile_Spawner {
     // Custom time-based spawning scripts below
     public multi_spawner_line_timed(extraScript: () => void, spriteImg: Image, destroyOutOfScreen: boolean, life: number, hitboxSize: number, hitboxType: number, sPosX: number, ePosX: number, sPosY: number, ePosY: number, angleVelocity = 0, vSpeed = 0, angleAcceleration = 0, aSpeed = 0, angleMode = 1) {
         let ratio = this.numberToSpawn - 1 > 0 ? this.currentValue / (this.numberToSpawn - 1) : 0
-        this.tempX = Path.interpolateFloat(ratio, sPosX, ePosX)
-        this.tempY = Path.interpolateFloat(ratio, sPosY, ePosY)
+        this.tempX = Path.interpolateFloat(ratio, sPosX, ePosX) | 0
+        this.tempY = Path.interpolateFloat(ratio, sPosY, ePosY) | 0
         new Adv_Projectile(spriteImg, destroyOutOfScreen, life, hitboxSize, hitboxType, this.tempX, this.tempY, angleVelocity, vSpeed, angleAcceleration, aSpeed, angleMode)
         extraScript()
     }
@@ -98,7 +98,7 @@ class ADV_Projectile_Spawner {
         let actualAngleChange = ((angleChange * (eAngleVelocity - sAngleVelocity)) / this.numberToSpawn) * this.currentValue
         let actualAngleOverflow = (angleOverflow * (eAngleVelocity - sAngleVelocity)) / this.numberToSpawn
         let currentAngle = actualAngleOverflow != 0 ? actualAngleChange % actualAngleOverflow : 0
-        ADV_Projectile_Spawner_Scripts.multi_cone_raw(spriteImg, destroyOutOfScreen, life, hitboxSize, hitboxType, posX, posY, sAngleVelocity, eAngleVelocity, vSpeed, currentAngle, perVolley)
+        ADV_Projectile_Spawner_Scripts.multi_cone_raw(spriteImg, destroyOutOfScreen, life, hitboxSize, hitboxType, posX | 0, posY | 0, sAngleVelocity, eAngleVelocity, vSpeed, currentAngle, perVolley)
         //new Adv_Projectile(spriteImg, destroyOutOfScreen, life, posX, posY, Path.interpolateFloat(ratio, sAngleVelocity, eAngleVelocity) + currentAngle, vSpeed, angleAcceleration, aSpeed, angleMode)
     }
 }
@@ -125,12 +125,12 @@ class ADV_Projectile_Spawner_Scripts {
     constructor() {
     }
     public static singleProj(img: Image, destr: boolean, life: number, hitboxSize: number, hitboxType: number, x: number, y: number, angle: number, speed: number) {
-        new Adv_Projectile(img, destr, life, hitboxSize, hitboxType, x, y, angle, speed)
+        new Adv_Projectile(img, destr, life, hitboxSize, hitboxType, x | 0, y | 0, angle, speed)
     }
     public static multi_cone_raw(img: Image, destr: boolean, life: number, hitboxSize: number, hitboxType: number, x: number, y: number, startAngle: number, endAngle: number, speed: number, currentAngle: number, perVolley: number) {
         for (let j = 0; j < perVolley; j++) {
             let ratio = j / perVolley
-            new Adv_Projectile(img, destr, life, hitboxSize, hitboxType, x, y, Path.interpolateFloat(ratio, startAngle, endAngle) + currentAngle, speed)
+            new Adv_Projectile(img, destr, life, hitboxSize, hitboxType, x | 0, y | 0, Path.interpolateFloat(ratio, startAngle, endAngle) + currentAngle, speed)
         }
     }
     public static multi_cone(img: Image, destr: boolean, life: number, hitboxSize: number, hitboxType: number, x: number, y: number, perVolley: number, startAngle: number, endAngle: number, speed: number, offset: number) {
@@ -140,7 +140,7 @@ class ADV_Projectile_Spawner_Scripts {
         currentAngle = actualAngleOverflow != 0 ? (currentAngle + actualAngleChange) % actualAngleOverflow : 0
         for (let j = 0; j < perVolley; j++) {
             let ratio = perVolley - 1 > 0 ? j / (perVolley - 1) : 0
-            new Adv_Projectile(img, destr, life, hitboxSize, hitboxType, x, y, Path.interpolateFloat(ratio, startAngle, endAngle) + currentAngle, speed)
+            new Adv_Projectile(img, destr, life, hitboxSize, hitboxType, x | 0, y | 0, Path.interpolateFloat(ratio, startAngle, endAngle) + currentAngle, speed)
         }
     }
     public static multi_spawner_line_timed() {

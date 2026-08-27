@@ -40,6 +40,7 @@ let idCache: number
 let lvlEdit = false
 let debug = true
 game.stats = true
+OverallGameStats.competitive = true
 
 LS.addToFront(LS_COLORS.Yellow)
 LS.addToFront(LS_COLORS.Red_Light)
@@ -58,7 +59,7 @@ let cur = new Cursor(img`
         3 3 . 3 3
         . . 3 . .
         . . 3 . .
-`, 1)
+`, 0)
 /*let test = new Multi_Proj_BOTH(img`
     . . . . . .
     . . . . . .
