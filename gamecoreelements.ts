@@ -438,6 +438,8 @@ class ProjectileCollidor {
             //}
             if (ProjectileCollidor.collisionSprite.overlapsWith(OverallGameStats.playerSprites[i].playerHitbox.image, OverallGameStats.playerSprites[i].playerHitbox.x | 0, OverallGameStats.playerSprites[i].playerHitbox.y | 0)) {
                 info.changeLifeBy(1)
+                music.play(music.createSoundEffect(WaveShape.Sawtooth, 3027, 26, 0, 255, 400, SoundExpressionEffect.None, InterpolationCurve.Logarithmic), music.PlaybackMode.InBackground)
+                music.play(music.createSoundEffect(WaveShape.Noise, 118, 251, 155, 0, 400, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
             }
         }
     }
