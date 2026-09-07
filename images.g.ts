@@ -3,7 +3,14 @@ namespace myImages {
 
     helpers._registerFactory("image", function(name: string) {
         switch(helpers.stringTrim(name)) {
-
+            case "image1":
+            case "palette":return img`
+. . . 1 . . . . . . 
+. . . 2 . . . . . . 
+d e f 5 c b a 9 8 6 
+. . . 4 . . . . . . 
+. . . 3 . . . . . . 
+`;
         }
         return null;
     })
