@@ -26,11 +26,11 @@ class Player {
         this.updater = game.currentScene().eventContext.registerFrameHandler(24, () => {
             // Account for i frames
             if (this.invulnerableTimer < Timing.gameTime) {
-                this.playerHitbox.x = Player.follow(this.playerHitbox.x, this.cursor.sprite.x, this.speed)
-                this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.speed)
-                this.playerSprite.x = this.playerHitbox.x
-                this.playerSprite.y = this.playerHitbox.y
-            } else if (Math.trunc(this.blinkTimer - Timing.gameTime) / 500 % 1 === 0) {
+                //this.playerHitbox.x = Player.follow(this.playerHitbox.x, this.cursor.sprite.x, this.speed)
+                //this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.speed)
+                //this.playerSprite.x = this.playerHitbox.x
+                //this.playerSprite.y = this.playerHitbox.y
+            } else if (Math.trunc((Timing.gameTime - this.blinkTimer) / 500) % 2 === 1) {
                 this.playerSprite.setFlag(SpriteFlag.Invisible, true)
             } else {
                 this.playerSprite.setFlag(SpriteFlag.Invisible, false)
@@ -204,7 +204,7 @@ class PlayerBank {
         OverallGameStats.playerSprites[0].playerSprite.setImage(PlayerBank.playerImages[playernum])
         OverallGameStats.playerSprites[0].playerHitbox.setImage(PlayerBank.playerHitboxes[playernum])
         OverallGameStats.playerSprites[0].setPos(80, 100)
-        OverallGameStats.playerSprites[0].invulnerableTimer = Timing.gameTime + 1000
+        OverallGameStats.playerSprites[0].invulnerableTimer = Timing.gameTime + 2500
         OverallGameStats.playerSprites[0].blinkTimer = Timing.gameTime
     }
     public destroy() {

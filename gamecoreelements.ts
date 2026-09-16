@@ -501,6 +501,40 @@ class GameUtils{
         } else {
             OverallGameStats.graphics = 2
         }
+
+        //let dialogController = new DialogController(DialogText.dialog[0], 0, 80, 160, 120, 120, 70, 160, 80, 0, 0, 100, 60)
+        let cur = new Cursor(img`
+        . . 3 . .
+        . . 3 . .
+        3 3 . 3 3
+        . . 3 . .
+        . . 3 . .
+`, 1)
+        let player1 = new Player(img`
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 9 8 8 9 . . . . . .
+    . . . . . . . 8 9 . . . . . . .
+    . . . . 8 8 8 8 8 8 8 9 . . . .
+    . . . . 8 8 8 8 8 8 8 8 . . . .
+    . . . . 8 8 8 8 8 8 8 8 . . . .
+    . . . . 8 8 8 8 8 8 8 8 . . . .
+    . . . . 9 8 8 8 8 8 8 9 . . . .
+    . . . . . . 8 8 8 9 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+    . . . . . . 8 8 8 8 . . . . . .
+        `, img`
+    . 1 1 1 .
+    1 1 1 1 1
+    1 1 1 1 1
+    1 1 1 1 1
+    . 1 1 1 .
+        `, cur, 5)
+        OverallGameStats.playerSprites.push(player1)
         OverallGameStats.playerBank = new PlayerBank([0, 1, 2, 3, 4])
     }
 }
