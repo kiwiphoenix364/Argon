@@ -66,6 +66,7 @@ class OverallGameStats {
     public static graphics = 0
     public static competitive: boolean
     public static playerSprites: Player[] = []
+    public static playerBank: PlayerBank
     constructor() {
 
     }
@@ -500,5 +501,6 @@ class GameUtils{
         } else {
             OverallGameStats.graphics = 2
         }
+        OverallGameStats.playerBank = new PlayerBank([0, 1, 2, 3, 4])
     }
 }

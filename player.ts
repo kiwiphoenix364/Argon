@@ -4,6 +4,8 @@ class Player {
     public cursor: Cursor
     public speed: number
     public updater: control.FrameCallback
+    public invulnerableTimer: number = 0
+    public blinkTimer: number = 0
     constructor(img: Image, hitboxImg: Image, cursor: Cursor, speed: number) {
         this.playerSprite = sprites.create(img)
         this.playerSprite.setFlag(SpriteFlag.Ghost, true)
@@ -22,14 +24,191 @@ class Player {
     }
     private followCursor() {
         this.updater = game.currentScene().eventContext.registerFrameHandler(24, () => {
-            this.playerHitbox.x = Player.follow(this.playerHitbox.x, this.cursor.sprite.x, this.speed)
-            this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.speed)
-            this.playerSprite.x = this.playerHitbox.x
-            this.playerSprite.y = this.playerHitbox.y
+            // Account for i frames
+            if (this.invulnerableTimer < Timing.gameTime) {
+                this.playerHitbox.x = Player.follow(this.playerHitbox.x, this.cursor.sprite.x, this.speed)
+                this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.speed)
+                this.playerSprite.x = this.playerHitbox.x
+                this.playerSprite.y = this.playerHitbox.y
+            } else if (Math.trunc(this.blinkTimer - Timing.gameTime) / 500 % 1 === 0) {
+                this.playerSprite.setFlag(SpriteFlag.Invisible, true)
+            } else {
+                this.playerSprite.setFlag(SpriteFlag.Invisible, false)
+            }
         })
     }
     private static follow(sValue: number, eValue: number, maxDev: number) {
         return sValue + Math.constrain(eValue - sValue, -maxDev, maxDev)
+    }
+    public setPos(x: number, y: number) {
+        this.playerHitbox.x = x
+        this.playerHitbox.y = y
+        this.playerSprite.x = x
+        this.playerSprite.y = y
+    }
+}
+class PlayerBank {
+    currentPlayer: number
+    playerCache: number[]
+    public static readonly playerImages: Image[] = [
+        img`
+            . . . . . 5 5 5 5 5 5 . . . . .
+            . . . . . 5 4 4 4 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            5 5 5 5 5 4 4 3 3 4 4 5 5 5 5 5
+            5 4 4 4 4 4 3 3 3 3 4 4 4 4 4 5
+            . 5 5 5 4 4 4 3 3 4 4 4 5 5 5 .
+            . . . 5 5 5 4 3 3 4 5 5 5 . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . 5 5 4 3 3 4 5 5 . . . .
+            . . . . 5 4 4 3 3 4 4 5 . . . .
+            . . . 5 5 4 4 4 4 4 4 5 5 . . .
+            . . . 5 5 5 5 5 5 5 5 5 5 . . .
+        `,
+        img`
+            . . . . . 5 5 5 5 5 5 . . . . .
+            . . . . . 5 4 4 4 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            5 5 5 5 5 4 4 3 3 4 4 5 5 5 5 5
+            5 4 4 4 4 4 3 3 3 3 4 4 4 4 4 5
+            . 5 5 5 4 4 4 3 3 4 4 4 5 5 5 .
+            . . . 5 5 5 4 3 3 4 5 5 5 . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . 5 5 4 3 3 4 5 5 . . . .
+            . . . . 5 4 4 3 3 4 4 5 . . . .
+            . . . 5 5 4 4 4 4 4 4 5 5 . . .
+            . . . 5 5 5 5 5 5 5 5 5 5 . . .
+        `,
+        img`
+            . . . . . 5 5 5 5 5 5 . . . . .
+            . . . . . 5 4 4 4 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            5 5 5 5 5 4 4 3 3 4 4 5 5 5 5 5
+            5 4 4 4 4 4 3 3 3 3 4 4 4 4 4 5
+            . 5 5 5 4 4 4 3 3 4 4 4 5 5 5 .
+            . . . 5 5 5 4 3 3 4 5 5 5 . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . 5 5 4 3 3 4 5 5 . . . .
+            . . . . 5 4 4 3 3 4 4 5 . . . .
+            . . . 5 5 4 4 4 4 4 4 5 5 . . .
+            . . . 5 5 5 5 5 5 5 5 5 5 . . .
+        `,
+        img`
+            . . . . . 5 5 5 5 5 5 . . . . .
+            . . . . . 5 4 4 4 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            5 5 5 5 5 4 4 3 3 4 4 5 5 5 5 5
+            5 4 4 4 4 4 3 3 3 3 4 4 4 4 4 5
+            . 5 5 5 4 4 4 3 3 4 4 4 5 5 5 .
+            . . . 5 5 5 4 3 3 4 5 5 5 . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . 5 5 4 3 3 4 5 5 . . . .
+            . . . . 5 4 4 3 3 4 4 5 . . . .
+            . . . 5 5 4 4 4 4 4 4 5 5 . . .
+            . . . 5 5 5 5 5 5 5 5 5 5 . . .
+        `,
+        img`
+            . . . . . 5 5 5 5 5 5 . . . . .
+            . . . . . 5 4 4 4 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            5 5 5 5 5 4 4 3 3 4 4 5 5 5 5 5
+            5 4 4 4 4 4 3 3 3 3 4 4 4 4 4 5
+            . 5 5 5 4 4 4 3 3 4 4 4 5 5 5 .
+            . . . 5 5 5 4 3 3 4 5 5 5 . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . . 5 4 3 3 4 5 . . . . .
+            . . . . 5 5 4 3 3 4 5 5 . . . .
+            . . . . 5 4 4 3 3 4 4 5 . . . .
+            . . . 5 5 4 4 4 4 4 4 5 5 . . .
+            . . . 5 5 5 5 5 5 5 5 5 5 . . .
+        `
+    ]
+    public static readonly playerHitboxes: Image[] = [
+        img`
+            . 1 1 1 .
+            1 1 1 1 1
+            1 1 1 1 1
+            1 1 1 1 1
+            . 1 1 1 .
+        `,
+        img`
+            . 1 1 1 .
+            1 1 1 1 1
+            1 1 1 1 1
+            1 1 1 1 1
+            . 1 1 1 .
+        `,
+        img`
+            . 1 1 1 .
+            1 1 1 1 1
+            1 1 1 1 1
+            1 1 1 1 1
+            . 1 1 1 .
+        `,
+        img`
+            . 1 1 1 .
+            1 1 1 1 1
+            1 1 1 1 1
+            1 1 1 1 1
+            . 1 1 1 .
+        `,
+        img`
+            . 1 1 1 .
+            1 1 1 1 1
+            1 1 1 1 1
+            1 1 1 1 1
+            . 1 1 1 .
+        `
+    ]
+    public static readonly playerColors: number[] = [
+        1,
+        2,
+        3,
+        4
+    ]
+    constructor(playerCache: number[] = []) {
+        this.playerCache = playerCache
+        this.spawnPlayer(this.playerCache.pop())
+        LS.setAllColors([
+            PlayerBank.playerColors[this.playerCache[0]],
+            PlayerBank.playerColors[this.playerCache[1]],
+            PlayerBank.playerColors[this.playerCache[2]],
+            PlayerBank.playerColors[this.playerCache[3]],
+            PlayerBank.playerColors[this.playerCache[4]]
+        ])
+    }
+    public killPlayer() {
+        this.spawnPlayer(this.playerCache.pop())
+        LS.removeFromFront()
+    }
+    public spawnPlayer(playernum: number) {
+        OverallGameStats.playerSprites[0].playerSprite.setImage(PlayerBank.playerImages[playernum])
+        OverallGameStats.playerSprites[0].playerHitbox.setImage(PlayerBank.playerHitboxes[playernum])
+        OverallGameStats.playerSprites[0].setPos(80, 100)
+        OverallGameStats.playerSprites[0].invulnerableTimer = Timing.gameTime + 1000
+        OverallGameStats.playerSprites[0].blinkTimer = Timing.gameTime
+    }
+    public destroy() {
+        this.currentPlayer = this.playerCache = null
     }
 }
 //new Player(controller.player1)
