@@ -533,7 +533,7 @@ class GameUtils{
     1 1 1 1 1
     1 1 1 1 1
     . 1 1 1 .
-        `, cur, 5)
+        `, cur, 5, 1)
         OverallGameStats.playerSprites.push(player1)
         OverallGameStats.playerBank = new PlayerBank([0, 1, 2, 3, 4])
     }

@@ -3,10 +3,11 @@ class Player {
     public playerHitbox: Sprite
     public cursor: Cursor
     public speed: number
+    public slowSpeed: number
     public updater: control.FrameCallback
     public invulnerableTimer: number = 0
     public blinkTimer: number = 0
-    constructor(img: Image, hitboxImg: Image, cursor: Cursor, speed: number) {
+    constructor(img: Image, hitboxImg: Image, cursor: Cursor, speed: number, slowSpeed: number) {
         this.playerSprite = sprites.create(img)
         this.playerSprite.setFlag(SpriteFlag.Ghost, true)
         this.playerHitbox = sprites.create(hitboxImg)
@@ -16,6 +17,7 @@ class Player {
         //this.playerHitbox.setFlag(SpriteFlag.Invisible, true)
         this.cursor = cursor
         this.speed = speed
+        this.slowSpeed = slowSpeed
         this.playerHitbox.x = 80
         this.playerHitbox.y = 60
         this.playerSprite.x = this.playerHitbox.x
@@ -30,7 +32,13 @@ class Player {
                 this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.speed)
                 this.playerSprite.x = this.playerHitbox.x
                 this.playerSprite.y = this.playerHitbox.y
-            } else if (Math.trunc((Timing.gameTime - this.blinkTimer) / 250) % 2 === 1) {
+            } else {
+                this.playerHitbox.x = Player.follow(this.playerHitbox.x, this.cursor.sprite.x, this.slowSpeed)
+                this.playerHitbox.y = Player.follow(this.playerHitbox.y, this.cursor.sprite.y, this.slowSpeed)
+                this.playerSprite.x = this.playerHitbox.x
+                this.playerSprite.y = this.playerHitbox.y
+            }
+            if (Math.trunc((Timing.gameTime - this.blinkTimer) / 250) % 2 === 1) {
                 this.playerSprite.setFlag(SpriteFlag.Invisible, true)
             } else {
                 this.playerSprite.setFlag(SpriteFlag.Invisible, false)
