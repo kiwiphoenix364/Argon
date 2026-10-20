@@ -38,7 +38,7 @@ class Player {
                 this.playerSprite.x = this.playerHitbox.x
                 this.playerSprite.y = this.playerHitbox.y
             }
-            if (Math.trunc((Timing.gameTime - this.blinkTimer) / 250) % 2 === 1) {
+            if (Math.trunc((Timing.gameTime - this.blinkTimer) / 250) % 2 === 1 && this.invulnerableTimer > Timing.gameTime) {
                 this.playerSprite.setFlag(SpriteFlag.Invisible, true)
             } else {
                 this.playerSprite.setFlag(SpriteFlag.Invisible, false)
